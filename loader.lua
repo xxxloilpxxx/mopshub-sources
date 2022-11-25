@@ -24,5 +24,6 @@ for id,scriptstr in pairs(games) do
 end
 
 if not found then
-	warn(string.format("[mopsHub Loader]: No script found for gameid [%s]\n> Loading Universal Script", getgenv().gameid))
+	Notify({Title="<font color='#ff0000'>Not supported</font>",Description="We currently don't have any script for this game!"})
+	warn(string.format("[mopsHub Loader]: No script found for gameid [%s]\n> ", getgenv().gameid))
 end
