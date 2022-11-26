@@ -1,6 +1,8 @@
 local games, found = {
 	[286090429] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/arsenal.lua",
-	[9759729519] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua"
+	[9759729519] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua",
+	[10950541730] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua",
+	[10950394697] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua"
 }, false
 local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 local Notify = AkaliNotif.Notify;
