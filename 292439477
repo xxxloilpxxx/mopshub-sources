@@ -271,7 +271,7 @@ local function getClosest(dir, origin, ignore)
 end
 
 local function trajectory(dir, velocity, accel, speed)
-	if not getgenv()._slientaimbot or not getgenv().test1 then return end	
+	if not getgenv()._slientaimbot then return end	
     local t1, t2, t3, t4 = solve(
         accel:Dot(accel) * 0.25,
         accel:Dot(velocity),
@@ -287,7 +287,7 @@ end
 -- hooks
 local old;
 old = hookfunction(particle.new, function(args)
-	if not getgenv()._slientaimbot or not getgenv().test1 then return end
+	if not getgenv()._slientaimbot then return end
     if debug.info(2, "n") == "fireRound" then
         local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
         if position and entry then
