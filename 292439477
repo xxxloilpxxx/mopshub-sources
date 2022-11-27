@@ -1,10 +1,12 @@
 repeat
 	task.wait()
 until game:IsLoaded()
+
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 local Notify = AkaliNotif.Notify;
 local eps = {}
+
 getgenv().eps = {}
 
 local Window = Rayfield:CreateWindow({
@@ -31,11 +33,22 @@ local Window = Rayfield:CreateWindow({
 local Tab1 = Window:CreateTab("Weapon")
 local Tab2 = Window:CreateTab("Visual")
 local Tab3 = Window:CreateTab("Character")
-local Tab4 = Window:CreateTab("Credits")
+local Tab4 = Window:CreateTab("Misc")
+local Tab5 = Window:CreateTab("Credits")
 
-Tab4:CreateSection("Developers")
-local Paragraph = Tab4:CreateParagraph({Title = "Main Developer", Content = "ShyFlooo"})
+Tab5:CreateSection("Developers")
+local Paragraph = Tab5:CreateParagraph({Title = "Main Developer", Content = "ShyFlooo"})
 
+getgenv()._autorespawn = false
+Tab4:CreateToggle({
+	Name = "Auto Respawn",
+	Flag = "_autorespawn",
+	Callback = function (Value)
+		getgenv()._autorespawn = Value
+	end
+})
+
+Tab3:CreateSection("Infinite Jump")
 --Infinite Jump
 getgenv()._infinitejump = false
 local _infjump = Tab3:CreateToggle({
@@ -68,114 +81,89 @@ end)
 --ESP
 Tab2:CreateSection("ESP")
 getgenv()._esp = false
-local _esp = Tab2:CreateButton({
-	Name = "ESP",
+local _esp = Tab2:CreateToggle({
+	Name = "Chams ESP",
 	Flag = "_esp",
 	Callback = function(Value)
-	getgenv()._esp = true
-		assert(Drawing, "missing dependency: drawing\nesp disabled\nreason: your executor is not supporting the Drawing dependency. use synapse or krnl")
-
-		-- Services
-		local players = game:GetService("Players")
-		local run_service = game:GetService("RunService")
-		-- Localizing
-		local local_player = players.LocalPlayer
-		local get_children = game.GetChildren
-		local find_first_child = game.FindFirstChild
-		local new_drawing = Drawing.new
-		local camera = workspace.CurrentCamera or game:GetService("Workspace").CurrentCamera
-
-		-- Setup
-		local rootPart = "Head"
-		local objects_folder: Folder = game:GetService("Workspace").Players
-		local coreGui = game:GetService("CoreGui")
-		-- main
-		local object_ID = {}
-		local eps = {}
-
-		local function Setup()
-		if not getgenv()._esp then return end
-			for _, team in pairs(objects_folder:GetChildren()) do
-				for _, object in pairs(get_children(team)) do
-					local id = object:GetDebugId()
-					if not table.find(object_ID, id) then
-						table.insert(object_ID, id)
-						eps[id] = {
-							esp_object = object,
-							text_esp = new_drawing("Text", true),
-							highlight = Instance.new("Highlight", coreGui),
-						}
-						eps[id].text_esp.Center = true
-						eps[id].text_esp.Outline = true
-						eps[id].text_esp.Font = 1
-						eps[id].text_esp.Size = 14
-						eps[id].highlight.Adornee = eps[id].esp_object
-						eps[id].highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-						eps[id].highlight.Enabled = true
-						eps[id].highlight.FillTransparency = true
-					end
-				end
-			end
+		getgenv()._esp = Value
+		if Value == true then
+			enableesp()
+		else
+			disableesp()	
 		end
-
-		Setup()
-		shared.max_distance = math.huge
-		shared.object_esp_enabled = true
-		run_service.RenderStepped:Connect(function()
-			if not shared.object_esp_enabled and not getgenv()._esp then
-				return
-			end
-			for _, value in pairs(eps) do
-				if
-					shared.object_esp_enabled
-					and find_first_child(value.esp_object, rootPart)
-					and value.esp_object.Parent.Name ~= local_player.TeamColor.Name
-				then
-					local name = value.esp_object.Name
-					local vec3_position = find_first_child(value.esp_object, rootPart).Position
-					local screen_position, on_screen = camera:WorldToScreenPoint(vec3_position)
-					local distant_from_character = local_player:DistanceFromCharacter(vec3_position)
-					if on_screen and math.round(distant_from_character) <= shared.max_distance then
-						value.text_esp.Position = Vector2.new(
-							screen_position.X,
-							screen_position.Y + math.clamp(distant_from_character / 10, 10, 30) - 10
-						)
-						value.text_esp.Color = Color3.fromHSV(math.clamp(distant_from_character / 5, 0, 125) / 255, 0.75, 1)
-						value.text_esp.Text = name .. "[" .. math.round(distant_from_character) .. "]"
-						value.text_esp.Size = math.clamp(30 - distant_from_character / 10, 16, 30)
-						value.text_esp.Transparency = math.clamp((500 - distant_from_character) / 200, 0.2, 1)
-						value.text_esp.Visible = true
-						value.highlight.FillColor =
-							Color3.fromHSV(math.clamp(distant_from_character / 5, 0, 125) / 255, 0.75, 1)
-						value.highlight.FillTransparency = math.clamp((500 - distant_from_character) / 200, 0.2, 1)
-
-						value.highlight.Enabled = true
-					else
-						value.text_esp.Visible = false
-						value.highlight.Enabled = false
-					end
-				else
-					value.text_esp.Visible = false
-					value.highlight.Enabled = false
-				end
-			end
-		end)
-		objects_folder.DescendantAdded:Connect(function()
-		if not getgenv()._esp then return end
-			Setup()
-		end)
-		objects_folder.DescendantRemoving:Connect(function(child)
-		if not getgenv()._esp then return end
-			local id = child:GetDebugId()
-			if table.find(object_ID, id) then
-				eps[id].text_esp:Remove()
-				eps[id].highlight:Destroy()
-				eps[id].esp_object = nil
-				eps[id] = nil
-			end
-		end)
 	end,
 })
+
+
+function gs(serv)
+   return game:GetService(serv)
+end
+
+local plrs = gs"Players"
+local lp   = plrs.LocalPlayer
+local ws   = gs"Workspace"
+
+function disableesp()
+	for _,v in pairs(game.CoreGui:GetChildren()) do
+		if v:IsA("Highlight") then
+			v:Destroy()
+		end
+	end
+end
+
+function isEnemy(character)
+   if character.Parent.Name == tostring(lp.TeamColor) then
+       return false
+   else
+       return true
+   end
+end
+
+function createChams(player)
+   local newChams = Instance.new("Highlight")
+   newChams.Adornee = player
+   newChams.Parent = game.CoreGui
+end
+
+function enableesp()
+   for i,v in pairs(ws.Players:GetDescendants()) do
+       if isEnemy(v) and v.Name == "Player" then
+           createChams(v)
+       end
+   end
+end
+
+spawn(function()
+   ws.Players["Bright orange"].ChildAdded:connect(function(child)
+       if not getgenv()._esp then return end
+       task.wait(1)
+       if isEnemy(child) == true then
+           local newChams = Instance.new("Highlight")
+           newChams.Parent = child
+       end
+   end)
+end)
+
+spawn(function()
+   ws.Players["Bright blue"].ChildAdded:connect(function(child)
+	   if not getgenv()._esp then return end
+       task.wait(1)
+       if isEnemy(child) == true then
+           local newChams = Instance.new("Highlight")
+           newChams.Parent = child
+       end
+   end)
+end)
+
+spawn(function()
+   ws.Ignore.DeadBody.ChildAdded:connect(function(child)
+       if child:FindFirstChildOfClass("Highlight") then
+           child:FindFirstChildOfClass("Highlight"):Destroy()
+       end
+   end)
+end)
+
+Tab1:CreateSection("Aimbot")
 
 --Silent Aimbot
 getgenv()._hitchance = 50
@@ -189,6 +177,7 @@ local _slientaimbot = Tab1:CreateToggle({
 		getgenv()._slientaimbot = Value
 	end,
 })
+
 --[[
 local _fovvisible = Tab1:CreateToggle({
 	Name = "FOV Visible",
@@ -224,6 +213,7 @@ local _hitpart = Tab1:CreateDropdown({
 		getgenv()._hitpart = Value
 	end,
 })
+
 -- variables
 local players = game:GetService("Players");
 local localplayer = players.LocalPlayer;
@@ -238,72 +228,70 @@ local solve = debug.getupvalue(physics.timehit, 2);
 
 -- functions
 local function isVisible(position, ignore)
-	if not getgenv()._slientaimbot then return end
-    return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
+	return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
 end
 
 local function getClosest(dir, origin, ignore)
-	if not getgenv()._slientaimbot then return end
-    local _angle = math.rad(fov or 180);
-    local _position, _entry;
+	local _angle = math.rad(fov or 180);
+	local _position, _entry;
 
-    replication.operateOnAllEntries(function(player, entry)
-        local tpObject = entry and entry._thirdPersonObject;
-        local character = tpObject and tpObject._character;
-        if character and player.Team ~= localplayer.Team then
-            local position = character[getgenv()._hitpart == "Random" and
-                (math.random() < (headChance or 0.5) and "Head" or "Torso") or
-                (getgenv()._hitpart or "Head")].Position;
+	replication.operateOnAllEntries(function(player, entry)
+		local tpObject = entry and entry._thirdPersonObject;
+		local character = tpObject and tpObject._character;
+		if character and player.Team ~= localplayer.Team then
+			local position = character[getgenv()._hitpart == "Random" and
+				(math.random() < (headChance or 0.5) and "Head" or "Torso") or
+				(getgenv()._hitpart or "Head")].Position;
 
-            if not (getgenv()._visibleCheck and not isVisible(position, ignore)) then
-                local product = dir.Unit:Dot((position - origin).Unit);
-                local angle = math.acos(product);
-                if angle < _angle then
-                    _angle = angle;
-                    _position = position;
-                    _entry = entry;
-                end
-            end
-        end
-    end);
+			if not (getgenv()._visibleCheck and not isVisible(position, ignore)) and getgenv()._slientaimbot then
+				local product = dir.Unit:Dot((position - origin).Unit);
+				local angle = math.acos(product);
+				if angle < _angle then
+					_angle = angle;
+					_position = position;
+					_entry = entry;
+				end
+			end
+		end
+	end);
 
-    return _position, _entry;
+	return _position, _entry;
 end
 
 local function trajectory(dir, velocity, accel, speed)
-	if not getgenv()._slientaimbot then return end	
-    local t1, t2, t3, t4 = solve(
-        accel:Dot(accel) * 0.25,
-        accel:Dot(velocity),
-        accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
-        dir:Dot(velocity) * 2,
-        dir:Dot(dir));
+	local t1, t2, t3, t4 = solve(
+		accel:Dot(accel) * 0.25,
+		accel:Dot(velocity),
+		accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
+		dir:Dot(velocity) * 2,
+		dir:Dot(dir));
 
-    local time = (t1>0 and t1) or (t2>0 and t2) or (t3>0 and t3) or t4;
-    local bullet = 0.5*accel*time + dir/time + velocity;
-    return bullet, time;
+	local time = (t1>0 and t1) or (t2>0 and t2) or (t3>0 and t3) or t4;
+	local bullet = 0.5*accel*time + dir/time + velocity;
+	return bullet, time;
 end
 
 -- hooks
 local old;
 old = hookfunction(particle.new, function(args)
-	if not getgenv()._slientaimbot then return end
-    if debug.info(2, "n") == "fireRound" then
-        local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
-        if position and entry then
-            local index = table.find(debug.getstack(2), args.velocity);
+	if debug.info(2, "n") == "fireRound" then
+		local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
+		if position and entry then
+			local index = table.find(debug.getstack(2), args.velocity);
 
-            args.velocity = trajectory(
-                position - args.visualorigin,
-                entry._velspring._p0,
-                -args.acceleration,
-                args.velocity.Magnitude);
+			args.velocity = trajectory(
+				position - args.visualorigin,
+				entry._velspring._p0,
+				-args.acceleration,
+				args.velocity.Magnitude);
 
-            debug.setstack(2, index, args.velocity);
-        end
-    end
-    return old(args);
+			debug.setstack(2, index, args.velocity);
+		end
+	end
+	return old(args);
 end);
+
+
 --[[
 local circle = Drawing.new("Circle")
 circle.Thickness = 2
@@ -320,3 +308,434 @@ game:GetService("RunService").RenderStepped:Connect(function()
         circle.Radius = getgenv()._fov
     end
 end)]]
+
+getgenv().camera = {
+    no_sway = false,
+    no_shake = false,
+}
+Tab1:CreateSection("Gun Mods")
+local _nosway = Tab1:CreateToggle({
+	Name = "No Sway",
+	Flag = "_nosway",
+	Callback = function(Value)
+		getgenv().camera.no_sway = Value
+	end,
+})
+local _nosway = Tab1:CreateToggle({
+	Name = "No Camera Shake",
+	Flag = "_noshake",
+	Callback = function(Value)
+		getgenv().camera.no_shake = Value
+	end,
+})
+
+local game_client = {}
+do
+    for i,v in next, getgc(true) do
+        if typeof(v) == "table" then
+            if rawget(v, 'setSway') then
+                game_client.camera = v
+            end
+        end
+    end
+end
+
+local old_set_sway = game_client.camera.setSway
+local old_shake = game_client.camera.shake
+game_client.camera.setSway = function(self, amount)
+    local sway = getgenv().camera.no_sway and 0 or amount
+
+    return old_set_sway(self, sway)
+end
+
+game_client.camera.shake = function(self, amount)
+    local shake = getgenv().camera.no_shake and Vector3.zero or amount
+
+    return old_shake(self, shake)
+end
+
+--Radar Hack
+getgenv()._showenemiesonradar = true
+Tab2:CreateToggle({
+	Name = "Show Enmies on radar",
+	Flag = "_enemiesonradar",
+	Callback = function(Value)
+		getgenv()._showenemiesonradar = Value
+		local game_client = {}
+		for i,v in next, getgc(true) do
+			if typeof(v) == "table" then
+				if rawget(v, 'goingLoud') and rawget(v, 'isInSight') then
+					game_client.spotting = v
+				elseif rawget(v, "getCharacterObject") then
+					game_client.character_controller = v
+				end
+			end
+		end
+
+		local old_is_spotted = game_client.spotting.isSpotted
+		game_client.spotting.isSpotted = function(character)
+			if game_client.character_controller.isAlive() and getgenv()._showenemiesonradar then
+				return true
+			else
+				return old_is_spotted(character)
+			end
+		end
+	end,
+})
+
+Tab2:CreateSection("Hitbox Extender")
+
+getgenv()._hitboxext = false
+getgenv()._hextsize = 8
+getgenv()._hexttransparency = 0.5
+getgenv()._hteamcolor = false
+Tab2:CreateToggle({
+	Name = "Hitbox Extender",
+	Flag = "_hitboxext",
+	Callback = function(Value)
+		getgenv()._hitboxext = Value
+	end,
+})
+Tab2:CreateSlider({
+	Name = "Hitbox Extender Size",
+	Flag = "_hextsize",
+	Range = {2, 8},
+	Increment = 1,
+	Suffix = "",
+	CurrentValue = getgenv()._hextsize,
+	Callback = function(Value)
+		getgenv()._hextsize = Value
+	end,
+})
+Tab2:CreateSlider({
+	Name = "Hitbox Extender Transparency",
+	Flag = "_hexttransparency",
+	Range = {0, 1},
+	Increment = 0.1,
+	Suffix = "",
+	CurrentValue = getgenv()._hexttransparency,
+	Callback = function(Value)
+		getgenv()._hexttransparency = Value
+	end,
+})
+Tab2:CreateToggle({
+	Name = "Hitbox Extender Team Color",
+	Flag = "_hteamcolor",
+	Callback = function(Value)
+		getgenv()._hteamcolor = Value
+	end,
+})
+
+local hsize = 1
+local htrans = 0
+
+game:GetService("RunService").Stepped:Connect(function()
+	if getgenv()._hitboxext then
+		hsize = getgenv()._hextsize
+		htrans = getgenv()._hexttransparency
+	else
+		hsize = 1
+		htrans = 0
+	end
+	for i,v in next, workspace.Players:GetDescendants() do
+		if v:FindFirstChild("Head") and not v:FindFirstChildWhichIsA("MeshPart") then
+			sethiddenproperty(v.Head, "Massless", true)
+			v.Head.CanCollide = false
+			v.Head.Transparency = htrans
+			if v.Head.Size ~= Vector3.new(hsize,hsize,hsize) and v.Head.Mesh.Scale ~= Vector3.new(hsize,hsize,hsize) then
+				v.Head.Size = Vector3.new(hsize,hsize,hsize)
+				v.Head.Mesh.Scale = Vector3.new(hsize,hsize,hsize)
+			end
+			if getgenv()._hitboxext then
+				if getgenv()._hteamcolor and v.Head.Parent.Parent.Name == "Bright blue" then
+					v.Head.BrickColor = BrickColor.new("Bright blue")
+				else
+					v.Head.BrickColor = BrickColor.new("Cashmere")	
+				end
+				if getgenv()._hteamcolor and v.Head.Parent.Parent.Name == "Bright orange" then
+					v.Head.BrickColor = BrickColor.new("Bright orange")
+				else
+					v.Head.BrickColor = BrickColor.new("Cashmere")		
+				end
+			else
+				v.Head.BrickColor = BrickColor.new("Cashmere")
+			end
+		end
+	end
+end)
+
+--fly
+getgenv()._fly = false
+Tab3:CreateToggle({
+	Name = "Fly (Double Space)",
+	Flag = "_fly",
+
+	Callback = function(Value)
+		getgenv()._fly = Value
+	end
+})
+
+local binds = {}
+local binds_first = {}
+local forcebinds = {}
+local uis = game:GetService'UserInputService';
+
+function bind(key, func)
+	binds[key] = func;
+end
+function bind_first(key, func)
+	binds_first[key] = func;
+end
+function forcebind(key, func)
+	forcebinds[key] = func;
+end
+function unbind(key)
+	binds[key] = nil;
+	binds_first[key] = nil;
+end
+
+uis.InputBegan:Connect(function(key)
+	key = key.KeyCode.Name:lower();
+	local inChat = uis:GetFocusedTextBox() and true or false;
+	if not inChat then
+		if binds_first[key] and typeof(binds_first[key]) == 'function' then
+			binds_first[key]();
+		end
+	end
+end)
+
+uis.InputEnded:Connect(function(input)
+	key = input.KeyCode.Name:lower();
+	local inChat = uis:GetFocusedTextBox();
+	if not inChat then
+		if binds[key] and typeof(binds[key]) == 'function' and input.UserInputType.Name == 'Keyboard' then
+			binds[key]();
+		end
+		if input.UserInputType.Name == 'MouseButton1' and binds.mouse1 ~= nil then
+			binds.mouse1();
+		end
+		if input.UserInputType.Name == 'MouseButton2' and binds.mouse2 ~= nil then
+			binds.mouse2();
+		end
+	else
+		if forcebinds[key] and typeof(binds[key]) == 'function' then
+			forcebinds[key]();
+		end
+	end
+end)
+
+getgenv().bind = bind;
+getgenv().bind_first = bind_first;
+getgenv().forcebind = forcebind;
+getgenv().unbind = unbind;
+local input = {}
+local uis = game:service'UserInputService'
+
+input.mouse = game:GetService'Players'.LocalPlayer:GetMouse();
+
+input.down = setmetatable({}, {
+	__index = function(i, v)
+		local isDown = false;
+		v = v:lower();
+		for _, key in pairs(Enum.UserInputType:GetEnumItems()) do
+			if (key.Name:lower() == v and uis:IsMouseButtonPressed(key.Name)) then
+				isDown = true;
+			end
+		end
+		for _, key in pairs(Enum.KeyCode:GetEnumItems()) do
+			if (key.Name:lower() == v and uis:IsKeyDown(key.Name)) then
+				isDown = true;
+			end
+		end
+		return isDown
+	end
+})
+
+getgenv().input = input;
+
+local player = game:GetService'Players'.LocalPlayer;
+local mouse = player:GetMouse();
+local camera = workspace.CurrentCamera;
+local runservice = game:GetService'RunService';
+local uis = game:GetService'UserInputService';
+
+local fly = true;
+local lsf = 0;
+local flySpeed = 50;
+local maxSpeed = 260;
+local disp;
+
+local gayGames = {
+    3016661674;
+    3541987450;
+};
+
+for i, v in ipairs(gayGames) do
+    gayGames[v] = true;
+    gayGames[i] = false;
+end
+
+local gay = gayGames[game.PlaceId];
+
+shared.sfls = script;
+
+if Drawing then
+    disp = shared.fdisp or Drawing.new'Text';
+    disp.Text = 'FlySpeed: ' .. flySpeed;
+    disp.Size = 18;
+    disp.Center = false;
+    disp.Outline = true;
+    disp.Visible = true;
+    disp.Color = Color3.new(1, 1, 1);
+    disp.Position = Vector2.new(150, 7);
+
+    shared.fdisp = disp;
+end
+
+function IsInZone(Object1, Object2, YCheck) -- broken 2 lazy 2 fix
+    if (typeof(Object1) ~= 'Instance' and typeof(Object1) ~= 'table') or (typeof(Object2) ~= 'Instance' and typeof(Object2) ~= 'table') then return 'NIGGER'; end
+    if YCheck ~= nil and typeof(YCheck) ~= 'boolean' then return end
+
+    YCheck = (YCheck ~= nil and YCheck or false);
+
+    local RYCheck = true;
+
+    local Object = Object1;
+    
+    local Positive = (Object2.CFrame * CFrame.new(Object2.Size.X / 2, Object2.Size.Y / 2, Object2.Size.Z / 2));
+    local Negative = (Object2.CFrame * CFrame.new(-Object2.Size.X / 2, -Object2.Size.Y / 2, -Object2.Size.Z / 2));
+
+    if YCheck then
+        RYCheck = (YCheck == true and
+            (Object.Position.Y > Positive.Y) and
+            (Object.Position.Y < Negative.Y));
+    end
+
+    -- print(1, (Object.Position.X < Positive.X), Object.Position.X, Positive.X)
+    -- print(2, (Object.Position.X > Negative.X), Object.Position.X, Negative.X)
+    -- print(3, (Object.Position.Z > Positive.Z), Object.Position.Z, Positive.Z)
+    -- print(4, (Object.Position.Z < Negative.Z), Object.Position.Z, Negative.Z)
+    -- print(5, RYCheck);
+
+    return (Object.Position.X < Positive.X) and
+        (Object.Position.X > Negative.X) and
+        (Object.Position.Z > Positive.Z) and
+        (Object.Position.Z < Negative.Z) and
+        (RYCheck);
+end
+
+function GetIndex(Table, Value)
+    for i, v in pairs(Table) do
+        if v == Value then
+            return i;
+        end
+    end
+
+    return -1;
+end
+
+local PartIgnore = {};
+
+function DisableClip(Part)
+    if Part:IsA'BasePart' and Part.CanCollide then
+        local Start = tick();
+        local OldTransparency = Part.Transparency;
+        
+        table.insert(PartIgnore, Part);
+
+        while tick() - Start < 300 and player.Character and player.Character:FindFirstChild'HumanoidRootPart' and not input.down.f4 do
+            
+            if not input.down.space then
+                break;
+            end
+
+            Part.CanCollide = false;
+            
+            Part.Transparency = 0.75;
+
+            wait(1 / 8);
+        end
+
+        table.remove(PartIgnore, GetIndex(PartIgnore, Part));
+
+        Part.Transparency = OldTransparency;
+        Part.CanCollide = true;
+    end
+end
+
+local lastDC = 0;
+
+
+uis.InputChanged:Connect(function(Input)
+    if script ~= shared.sfls then return; end
+
+    if Input.UserInputType == Enum.UserInputType.MouseWheel then
+        if input.down.leftcontrol then
+            local inc = Input.Position.Z > 0 and 25 or -25;
+
+            flySpeed = math.clamp(flySpeed + (inc * (input.down.leftshift and 2 or 1)), 0, maxSpeed);
+            lastDC = tick();
+        end
+    end
+
+  
+end);
+
+local lastSpace = 0;
+bind_first('space', function()
+    if getgenv()._fly and tick() - lastSpace < 0.3 and player.Character and player.Character:FindFirstChild'HumanoidRootPart' and player.Character:FindFirstChildOfClass'Humanoid' then
+        local root = player.Character.HumanoidRootPart;
+        local hum = player.Character:FindFirstChildOfClass'Humanoid';
+        
+        while input.down.space and fly do
+            if not gay then hum.PlatformStand = true; end
+            local start = mouse.Hit.p;
+            local dir = (start - camera.CFrame.p);
+
+            root.Velocity = dir.unit * (math.random((flySpeed - 1) * 1000, (flySpeed + 2.5) * 1000) / 1000); -- adds random speed so the velocity doesn't always measure to a certain amount (prevents detection)
+
+            local ray = Ray.new(root.Position, dir.unit * 50);
+            local hit, pos = workspace:FindPartOnRayWithIgnoreList(ray, {player.Character, camera, unpack(PartIgnore)});
+
+            
+
+            runservice.RenderStepped:wait();
+        end
+        
+        if not gay then
+            hum.PlatformStand = false;
+            root.Velocity = Vector3.new();
+            hum:SetStateEnabled(0, false);
+        end
+    end
+
+    lastSpace = tick();
+end)
+
+
+--auto respawn
+local plr = game.Players.LocalPlayer
+local gui = plr.PlayerGui:FindFirstChild("MenuScreenGui")
+function spawnplr()
+	assert(keypress, "executor too bad to use auto respawn srry")
+    keypress(0x20)
+    task.wait()
+    keyrelease(0x20)
+end
+
+while task.wait() do
+	if getgenv()._esp then
+		for i,v in next, workspace.Ignore.DeadBody:GetChildren() do
+			v:Destroy()
+		end
+	end
+
+	if getgenv()._autorespawn then
+		task.wait(0.5)
+    	if gui.Enabled == true then
+        	repeat
+            	spawnplr()
+        	until gui.Enabled == false
+    	end
+	end
+end
