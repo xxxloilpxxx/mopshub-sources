@@ -582,7 +582,7 @@ local gay = gayGames[game.PlaceId];
 
 shared.sfls = script;
 
-if Drawing then
+--[[if Drawing then
     disp = shared.fdisp or Drawing.new'Text';
     disp.Text = 'FlySpeed: ' .. flySpeed;
     disp.Size = 18;
@@ -593,7 +593,7 @@ if Drawing then
     disp.Position = Vector2.new(150, 7);
 
     shared.fdisp = disp;
-end
+end]]
 
 function IsInZone(Object1, Object2, YCheck) -- broken 2 lazy 2 fix
     if (typeof(Object1) ~= 'Instance' and typeof(Object1) ~= 'table') or (typeof(Object2) ~= 'Instance' and typeof(Object2) ~= 'table') then return 'NIGGER'; end
