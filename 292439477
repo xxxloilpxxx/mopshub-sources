@@ -38,6 +38,9 @@ local Tab5 = Window:CreateTab("Credits")
 
 Tab5:CreateSection("Developers")
 local Paragraph = Tab5:CreateParagraph({Title = "Main Developer", Content = "ShyFlooo"})
+Tab5:CreateSection("Credits")
+local Paragraph = Tab5:CreateParagraph({Title = "Fly Script", Content = "Idk who made it but i didnt"})
+
 
 getgenv()._autorespawn = false
 Tab4:CreateToggle({
@@ -357,7 +360,7 @@ end
 --Radar Hack
 getgenv()._showenemiesonradar = true
 Tab2:CreateToggle({
-	Name = "Show Enemies on radar",
+	Name = "Show Enmies on radar",
 	Flag = "_enemiesonradar",
 	Callback = function(Value)
 		getgenv()._showenemiesonradar = Value
@@ -402,7 +405,7 @@ Tab2:CreateSlider({
 	Range = {2, 8},
 	Increment = 1,
 	Suffix = "",
-	CurrentValue = getgenv()._hextsize,
+	CurrentValue = 8,
 	Callback = function(Value)
 		getgenv()._hextsize = Value
 	end,
