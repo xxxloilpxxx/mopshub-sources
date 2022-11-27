@@ -41,6 +41,95 @@ local Paragraph = Tab5:CreateParagraph({Title = "Main Developer", Content = "Shy
 Tab5:CreateSection("Credits")
 local Paragraph = Tab5:CreateParagraph({Title = "Fly Script", Content = "Idk who made it but i didnt"})
 
+local game_client = {}
+
+do 
+    local garbage = getgc(true)
+    local loaded_modules = getloadedmodules()
+
+    for i = 1, #garbage do
+        local v = garbage[i]
+        if typeof(v) == "table" then
+            if rawget(v, "send") and rawget(v, "fetch") then 
+                game_client.network = v
+            elseif rawget(v, 'goingLoud') and rawget(v, 'isInSight') then 
+                game_client.spotting_interface = v
+            elseif rawget(v, 'setMinimapStyle') and rawget(v, 'setRelHeight') then 
+                game_client.radar_interface = v
+            elseif rawget(v, "getCharacterModel") and rawget(v, 'popCharacterModel') then 
+                game_client.third_person_object = v
+            elseif rawget(v, "getCharacterObject") then 
+                game_client.character_interface = v
+            elseif rawget(v, "isSprinting") and rawget(v, "getArmModels") then 
+                game_client.character_object = v
+            elseif rawget(v, "updateReplication") and rawget(v, "getThirdPersonObject") then 
+                game_client.replication_object = v
+            elseif rawget(v, "setHighMs") and rawget(v, "setLowMs") then 
+                game_client.replication_interface = v
+            elseif rawget(v, 'setSway') and rawget(v, "_applyLookDelta") then 
+                game_client.main_camera_object = v
+            elseif rawget(v, 'getActiveCamera') and rawget(v, "getCameraType") then 
+                game_client.camera_interface = v
+            elseif rawget(v, 'getFirerate') and rawget(v, "getFiremode") then 
+                game_client.firearm_object = v
+            elseif rawget(v, 'canMelee') and rawget(v, "_processMeleeStateChange") then 
+                game_client.melee_object = v
+            elseif rawget(v, 'canCancelThrow') and rawget(v, "canThrow") then 
+                game_client.grenade_object = v
+            elseif rawget(v, "vote") then 
+                game_client.votekick_interface = v
+            elseif rawget(v, "getActiveWeapon") then 
+                game_client.weapon_controller_object = v
+            elseif rawget(v, "getController") then 
+                game_client.weapon_controller_interface = v
+            elseif rawget(v, "updateVersion") and rawget(v, "inMenu") then 
+                game_client.chat_interface = v
+            elseif rawget(v, "trajectory") and rawget(v, "timehit") then
+                game_client.physics = v
+            elseif rawget(v, "slerp") and rawget(v, "toanglesyx") then 
+                game_client.vector = v
+            end
+        end
+    end
+
+    for i = 1, #loaded_modules do
+        local v = loaded_modules[i]
+        if v.Name == "PlayerSettingsInterface" then
+            game_client.player_settings = require(v)
+        elseif v.Name == "PublicSettings" then 
+            game_client.public_settings = require(v)
+        elseif v.Name == "particle" then 
+            game_client.particle = require(v)
+        elseif v.Name == "BulletCheck" then 
+            game_client.bullet_check = require(v)
+        end
+    end
+
+end
+
+--walkspeed
+Tab3:CreateSection("Walkspeed Modifier (switch guns once to apply & currently resets on respawn)")
+Tab3:CreateSlider({
+	Name = "Walkspeed Modifier",
+	Flag = "_walkspeed",
+	Range = {0, 40},
+	Increment = 1,
+	Suffix = "",
+	CurrentValue = 16,
+	Callback = function(Value)
+		getgenv()._walkspeed = Value
+		if game_client.weapon_controller_interface.getController() == nil then return warn("weapon controller not found. be sure ur deployed") end
+		local _activeWeaponRegistries = {}
+
+		for _,v in pairs(game_client.weapon_controller_interface.getController()._activeWeaponRegistry) do
+			table.insert(_activeWeaponRegistries, v)
+		end
+		for _,v in pairs(_activeWeaponRegistries) do
+			setreadonly(v._weaponData, false)
+			v._weaponData.walkspeed = Value
+		end
+	end,
+})
 
 getgenv()._autorespawn = false
 Tab4:CreateToggle({
@@ -331,27 +420,52 @@ local _nosway = Tab1:CreateToggle({
 		getgenv().camera.no_shake = Value
 	end,
 })
+--[[getgenv()._fastequip = false
+getgenv()._oldfastqv = nil
+local _fastequip = Tab1:CreateToggle({
+	Name = "Fast Gun Equip",
+	Flag = "_fastequip",
+	Callback = function(Value)
+		getgenv()._fastequip = Value
+		if game_client.weapon_controller_interface.getController() == nil then return warn("weapon controller not found. be sure ur deployed") end
+		local _activeWeaponRegistries = {}
 
-local game_client = {}
+		for _,v in pairs(game_client.weapon_controller_interface.getController()._activeWeaponRegistry) do
+			table.insert(_activeWeaponRegistries, v)
+		end
+
+		if Value == false then
+			if v then
+				getgenv()._oldfastqv = v._weaponData.equipspeed
+				v._weaponData.equipspeed = 1000
+			end
+		else
+			if v then
+				v._weaponData.equipspeed = getgenv()._oldfastqv
+			end
+		end 
+	end,
+})]]
+
+local game_client2 = {}
 do
     for i,v in next, getgc(true) do
         if typeof(v) == "table" then
             if rawget(v, 'setSway') then
-                game_client.camera = v
+                game_client2.camera = v
             end
         end
     end
 end
-
-local old_set_sway = game_client.camera.setSway
-local old_shake = game_client.camera.shake
-game_client.camera.setSway = function(self, amount)
+local old_set_sway = game_client2.camera.setSway
+local old_shake = game_client2.camera.shake
+game_client2.camera.setSway = function(self, amount)
     local sway = getgenv().camera.no_sway and 0 or amount
 
     return old_set_sway(self, sway)
 end
 
-game_client.camera.shake = function(self, amount)
+game_client2.camera.shake = function(self, amount)
     local shake = getgenv().camera.no_shake and Vector3.zero or amount
 
     return old_shake(self, shake)
@@ -466,6 +580,68 @@ game:GetService("RunService").Stepped:Connect(function()
 		end
 	end
 end)
+
+Tab2:CreateSection("Gun Customization [BUGGY]")
+
+--weapon color input
+getgenv()._weaponcolorinput = ""
+getgenv()._weapontrans = false
+getgenv()._normalmat = ""
+getgenv()._weaponcolorinputparsed = string.split(getgenv()._weaponcolorinput, ",")
+Tab2:CreateInput({
+	Name = "Custom Gun Color (RGB)",
+	PlaceholderText = "f.e. 255,255,255",
+	Flag = "_weaponcolorinput",
+	RemoveTextAfterFocusLost = false,
+	Callback = function(Text)
+		getgenv()._weaponcolorinput = Text
+		getgenv()._weaponcolorinputparsed = string.split(getgenv()._weaponcolorinput, ",")
+		if typeof(getgenv()._weaponcolorinputparsed) == "table" and #getgenv()._weaponcolorinput > 0 then
+			if game_client.weapon_controller_interface.getController() == nil then return warn("weapon controller not found. be sure ur deployed") end
+			local _activeWeaponRegistries = {}
+
+			for _,v in pairs(game_client.weapon_controller_interface.getController()._activeWeaponRegistry) do
+				table.insert(_activeWeaponRegistries, v)
+			end
+
+			for _,v in pairs(_activeWeaponRegistries) do
+				for _,v in pairs(v._weaponModel:GetChildren()) do
+					if v.Color then
+						v.Color = Color3.fromRGB(getgenv()._weaponcolorinputparsed[1],getgenv()._weaponcolorinputparsed[2],getgenv()._weaponcolorinputparsed[3])
+					end
+				end
+			end
+		end
+	end,
+})
+
+Tab2:CreateToggle({
+	Name = "Transparent Gun",
+	Flag = "_weapontrans",
+	CurrentValue = false,
+	Callback = function(Value)
+		getgenv()._weapontrans = Value
+		if typeof(getgenv()._weaponcolorinputparsed) == "table" and #getgenv()._weaponcolorinput > 0 then
+			if game_client.weapon_controller_interface.getController() == nil then return end
+			local _activeWeaponRegistries = {}
+
+			for _,v in pairs(game_client.weapon_controller_interface.getController()._activeWeaponRegistry) do
+				table.insert(_activeWeaponRegistries, v)
+			end
+
+			for _,v in pairs(_activeWeaponRegistries) do
+				for _,v in pairs(v._weaponModel:GetChildren()) do
+					if v.Color and getgenv()._weapontrans then
+						getgenv()._normalmat = v.Material
+						v.Material = "ForceField"
+					elseif not getgenv()._weapontrans then
+						v.Material = getgenv()._normalmat
+					end
+				end
+			end
+		end
+	end,
+})
 
 Tab3:CreateSection("Fly")
 
