@@ -467,8 +467,11 @@ game:GetService("RunService").Stepped:Connect(function()
 	end
 end)
 
+Tab3:CreateSection("Fly")
+
 --fly
 getgenv()._fly = false
+getgenv()._flySpeed = 50;
 Tab3:CreateToggle({
 	Name = "Fly (Double Space)",
 	Flag = "_fly",
@@ -476,6 +479,17 @@ Tab3:CreateToggle({
 	Callback = function(Value)
 		getgenv()._fly = Value
 	end
+})
+Tab3:CreateSlider({
+	Name = "Fly Speed",
+	Flag = "_flySpeed",
+	Range = {5, 100},
+	Increment = 1,
+	Suffix = "",
+	CurrentValue = 50,
+	Callback = function(Value)
+		getgenv()._flySpeed = Value
+	end,
 })
 
 local binds = {}
@@ -564,7 +578,6 @@ local uis = game:GetService'UserInputService';
 
 local fly = true;
 local lsf = 0;
-local flySpeed = 50;
 local maxSpeed = 260;
 local disp;
 
@@ -584,7 +597,7 @@ shared.sfls = script;
 
 --[[if Drawing then
     disp = shared.fdisp or Drawing.new'Text';
-    disp.Text = 'FlySpeed: ' .. flySpeed;
+    disp.Text = 'FlySpeed: ' .. getgenv()._flySpeed;
     disp.Size = 18;
     disp.Center = false;
     disp.Outline = true;
@@ -676,7 +689,7 @@ uis.InputChanged:Connect(function(Input)
         if input.down.leftcontrol then
             local inc = Input.Position.Z > 0 and 25 or -25;
 
-            flySpeed = math.clamp(flySpeed + (inc * (input.down.leftshift and 2 or 1)), 0, maxSpeed);
+            getgenv()._flySpeed = math.clamp(getgenv()._flySpeed + (inc * (input.down.leftshift and 2 or 1)), 0, maxSpeed);
             lastDC = tick();
         end
     end
@@ -695,7 +708,7 @@ bind_first('space', function()
             local start = mouse.Hit.p;
             local dir = (start - camera.CFrame.p);
 
-            root.Velocity = dir.unit * (math.random((flySpeed - 1) * 1000, (flySpeed + 2.5) * 1000) / 1000); -- adds random speed so the velocity doesn't always measure to a certain amount (prevents detection)
+            root.Velocity = dir.unit * (math.random((getgenv()._flySpeed - 1) * 1000, (getgenv()._flySpeed + 2.5) * 1000) / 1000); -- adds random speed so the velocity doesn't always measure to a certain amount (prevents detection)
 
             local ray = Ray.new(root.Position, dir.unit * 50);
             local hit, pos = workspace:FindPartOnRayWithIgnoreList(ray, {player.Character, camera, unpack(PartIgnore)});
