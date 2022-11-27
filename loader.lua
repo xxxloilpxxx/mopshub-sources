@@ -16,7 +16,7 @@ for id, scriptstr in pairs(games) do
 		found = true
 		print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script from %s\n\n", getgenv().gameid,scriptstr))
 		local _s, _e = pcall(function() 
-			loadstring(game:HttpGet(scriptstr), true)()
+			loadstring(game:HttpGet(scriptstr))()
 		end)
 		if not _s and _e then
 			Notify({Title="<font color='#ff0000'>Error while loading script</font>",Description="Error: ".._e})
