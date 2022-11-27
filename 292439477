@@ -357,7 +357,7 @@ end
 --Radar Hack
 getgenv()._showenemiesonradar = true
 Tab2:CreateToggle({
-	Name = "Show Enmies on radar",
+	Name = "Show Enemies on radar",
 	Flag = "_enemiesonradar",
 	Callback = function(Value)
 		getgenv()._showenemiesonradar = Value
