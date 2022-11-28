@@ -1,7 +1,7 @@
 repeat
 	task.wait()
 until game:IsLoaded()
-
+getgenv().__mpho_1__loaded__ = true
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 local Notify = AkaliNotif.Notify;
