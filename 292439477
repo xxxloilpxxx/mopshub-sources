@@ -915,6 +915,8 @@ function spawnplr()
     keyrelease(0x20)
 end
 
+Rayfield:LoadConfiguration()
+
 while task.wait() do
 	if getgenv()._esp then
 		for i,v in next, workspace.Ignore.DeadBody:GetChildren() do
