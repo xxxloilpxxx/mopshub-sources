@@ -432,8 +432,8 @@ local s,e = pcall(function()
                     ui.input.PlaceholderColor3 = Color3.fromRGB(0, 146, 7)
                     writefile("MOPSHUB.key",Key)
                     task.wait(1)
-                    startMainLoader()
                     ui.ui:Destroy()
+                    startMainLoader()
                 else
                     ui.input.PlaceholderText = "Invalid Key!"
                     ui.input.PlaceholderColor3 = Color3.fromRGB(146, 0, 0)
