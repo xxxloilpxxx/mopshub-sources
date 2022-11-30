@@ -8,9 +8,9 @@ local mfloor,mabs,mround,mclamp,cos,atan2,sin,rad = math.floor,math.abs,math.rou
 local v2,v3,cf,c3rgb,c3new,gbb = Vector2.new,Vector3.new,CFrame.new,Color3.fromRGB,Color3.new,workspace.GetBoundingBox;
 
 local esp = {
-    highlight_target = {enabled = getgenv()._esphighlight, color = c3rgb(255,0,0),target = ''},
+    highlight_target = {enabled = false, color = c3rgb(255,0,0),target = ''},
     teamcheck        = false,
-    enabled          = getgenv()._esp, 
+    enabled          = false, 
     boldtext         = false, 
     limitdistance    = false,
     renderdistance   = 50,
@@ -20,15 +20,15 @@ local esp = {
     text             = {enabled = false, color = c3rgb(255,255,255)},
     misc_layout      = {
         ['arrows']    = {transparency = 1, enabled = false, size = 15, color = c3rgb(255,255,255),radius = 500},
-        ['box']       = {inner = false, inner_trans = 0.5, inner_color = c3rgb(0,0,0), enabled = getgenv()._espboxes, color = c3rgb(255,255,255)},
-        ['health']    = {enabled = getgenv()._esphealth, lower = c3rgb(255,0,0),higher = c3rgb(0,255,0)},
-        ['highlight'] = {enabled = getgenv()._esphighlight, outline = c3rgb(255,255,255),fill = c3rgb(255,255,255),outlinetrans = 0,filltrans = 1},
+        ['box']       = {inner = false, inner_trans = 0.5, inner_color = c3rgb(0,0,0), enabled = false, color = c3rgb(255,255,255)},
+        ['health']    = {enabled = false, lower = c3rgb(255,0,0),higher = c3rgb(0,255,0)},
+        ['highlight'] = {enabled = false, outline = c3rgb(255,255,255),fill = c3rgb(255,255,255),outlinetrans = 0,filltrans = 1},
     },
     text_layout      = {
-        ['health']   = {enabled = getgenv()._esphealth},
-        ['name']     = {enabled = getgenv()._espname},
-        ['distance'] = {enabled = getgenv()._espdistance},
-        ['tool']     = {enabled = getgenv()._esptool},
+        ['health']   = {enabled = false},
+        ['name']     = {enabled = false},
+        ['distance'] = {enabled = false},
+        ['tool']     = {enabled = false},
     },
     cache = {},
 };
@@ -192,7 +192,6 @@ function esp.add_plr(player)
 end
 
 function esp.update_esp(player,array)
-	print(player, esp.enabled)
     if esp.validate(player) then
         local character = esp.get_char(player)
         local rootpart = character:FindFirstChild('Torso') 
