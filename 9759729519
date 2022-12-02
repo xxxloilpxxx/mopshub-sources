@@ -1,1 +1,615 @@
-local _=loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))() local a=loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))() local c=a.Notify local _=_:CreateWindow({Name="mopsHub - All Of Us Are Dead",LoadingTitle="mopsHub - All Of Us Are Dead",LoadingSubtitle="by ShyFlooo",ConfigurationSaving={Enabled=true,FolderName="mopsHubConfig",FileName="mopshub_allofusaredead"},KeySystem=false,KeySettings={Title="mopsHub",Subtitle="Key System",Note="Join the discord (discord.gg/sirius)",FileName="SiriusKey",SaveKey=true,GrabKeyFromSite=false,Key="lol"}}) local a=_:CreateTab("Kill All") local b=_:CreateTab("Gun Mods") local _=_:CreateTab("Credits") _:CreateSection("Developers") local _=_:CreateParagraph({Title="Main Developer",Content="ShyFlooo"}) getgenv()._norecoil=false local _=b:CreateButton({Name="No Recoil",Flag="_norecoil",Callback=function(_)getgenv()._norecoil=_ local _=game:GetService('Players').LocalPlayer game.Players.LocalPlayer.Character.Humanoid:UnequipTools() for _,a in pairs(_.Backpack:GetChildren())do if a:FindFirstChild("WeaponType")then print("found gun "..a.Name) local _=a:FindFirstChild("Configuration") if not _ then return warn("Unable to modify "..a.Name.." because it doesnt have a Configuration instance")end _.RecoilMin.Value=0 _.RecoilDecay.Value=0 _.RecoilMax.Value=0 _.TotalRecoilMax.Value=0 print("set recoil for "..a.Name.." to 0")end end c({Title="<font color='#00ff00'>Recoil</font>";Description="Your guns recoil were set to 0.";Duration=5})end}) getgenv()._nospread=false local _=b:CreateButton({Name="No Spread",Flag="_nospread",Callback=function(_)getgenv()._nospread=_ local _=game:GetService('Players').LocalPlayer game.Players.LocalPlayer.Character.Humanoid:UnequipTools() for _,a in pairs(_.Backpack:GetChildren())do if a:FindFirstChild("WeaponType")then print("found gun "..a.Name) local _=a:FindFirstChild("Configuration") if not _ then return warn("Unable to modify "..a.Name.." because it doesnt have a Configuration instance")end if _:FindFirstChild("MaxSpread")then _.MaxSpread.Value=0 print("set spread for "..a.Name.." to 0")end if _:FindFirstChild("MinSpread")then _.MinSpread.Value=0 end end end c({Title="<font color='#00ff00'>Spread</font>";Description="Your guns spread were set to 0.";Duration=5})end}) getgenv()._infammo=false local _=b:CreateButton({Name="Infinite Ammo",Flag="_infammo",Callback=function(_)local b local _=game.Players.LocalPlayer.Backpack b=hookmetamethod(_,"__index",function(a,_)if tostring(a)=="CurrentAmmo"and _=="Value"then return math.huge end return b(a,_)end) c({Title="<font color='#00ff00'>Infinite Ammo</font>";Description="You now have infinite ammo for all guns.";Duration=5})end}) getgenv()._firerate=false local _=b:CreateButton({Name="Firerate",Flag="_firerate",Callback=function(_)getgenv()._firerate=_ local _=game:GetService('Players').LocalPlayer game.Players.LocalPlayer.Character.Humanoid:UnequipTools() for _,a in pairs(_.Backpack:GetChildren())do if a:FindFirstChild("WeaponType")then print("found gun "..a.Name) local _=a:FindFirstChild("Configuration") if not _ then return warn("Unable to modify "..a.Name.." because it doesnt have a Configuration instance")end if _:FindFirstChild("ShotCooldown")then _.ShotCooldown.Value=0 print("set shot cooldown for "..a.Name.." to 0")end end end c({Title="<font color='#00ff00'>Firerate</font>";Description="Your guns firerate were set to 0.";Duration=5})end}) getgenv()._killall=false local _=a:CreateButton({Name="Kill All (equip a gun and click this)",Flag="_killall",Callback=function(_)getgenv()._killall=_ if not getgenv().__12____2 then getgenv().__12____2=false end local a for _,_ in pairs(game.Players.LocalPlayer.Character:GetChildren())do if _:IsA("Tool")and _:FindFirstChild("Configuration")then print(_) a=_ end end if not a then c({Title="<font color='#ff0000'>No weapon equipped</font>";Description="Please equip a weapon!";Duration=5}) return print("no equipped weapon found")end if a then c({Title="<font color='#00ff00'>Kill all enabled</font>";Description="To disable, unequip your weapon once.";Duration=3}) while a.Parent~=game.Players.LocalPlayer.Backpack do task.wait(.1) for _,_ in pairs(workspace.Enemies:GetChildren())do if _:FindFirstChild("Head")or _:FindFirstChild("UpperTorso")then local a=a local _={["p"]=Vector3.new(-9030.994140625,-18.28540802001953,-202.16648864746094),["pid"]=1,["part"]=_:FindFirstChild("Head")or _:FindFirstChild("UpperTorso"),["d"]=204.1572723388672,["maxDist"]=204.08331298828125,["h"]=_.Humanoid,["m"]=Enum.Material.Plastic,["sid"]=55,["t"]=0.205522199488169,["n"]=Vector3.new(-0.5452762246131897,0.03474240377545357,-0.8375362157821655)} local b=game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit b:FireServer(a,_)end end if a.Parent==game.Players.LocalPlayer.Backpack then c({Title="<font color='#ff0000'>Kill all disabled</font>";Description="Kill all has been disabled.";Duration=3})end end else c({Title="<font color='#ff0000'>No weapon equipped</font>";Description="Please equip a weapon!";Duration=5}) return print("no equipped weapon found")end end})
+--mopsHub All Of Us Are Dead | 2022
+
+local s,e = pcall(function()
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    if not game.PlaceId == 9759729519 then return end
+    repeat
+		task.wait()
+	until game:IsLoaded()
+	getgenv().__mpho_1__loaded__ = true
+
+    getgenv = getgenv
+
+    --MODULES
+	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+	local Notify = AkaliNotif.Notify;
+	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
+	local game_client = {}
+	local Player = game:GetService("Players").LocalPlayer
+	local settings = {
+		autoLoadConfigs = nil,
+	}
+    local old_gun_stats = {}
+    local esp_cache = {}
+
+    local EnemiesFolder = workspace.Enemies
+    local Players = game:GetService("Players")
+    local Player = Players.LocalPlayer
+    local Mouse = Player:GetMouse()
+    local RunService = game:GetService("RunService")
+
+    --ENV
+	getgenv()._WINDOW = {
+		Tabs = {},
+	}
+
+	--WINDOW CONFIG
+	local _TABS = {
+		"Weapon",
+		"Visual",
+		"Character",
+		--"Misc",
+		--"Settings",
+		"Credits"
+	}
+
+    local _FUNCTIONS = {
+        ["Weapon"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Aimbot ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Silent Aimbot",
+					Flag = "_slientaimbot",
+					Callback = function(Value)
+						getgenv()._slientaimbot = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Visible Check",
+					Flag = "_silentaimvisiblecheck",
+					Callback = function(Value)
+						getgenv()._silentaimvisiblecheck = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateSection",
+				Args = "━ Kill All ━",
+			},
+            {
+                Function = "CreateButton",
+                Args = {
+                    Name = "Kill All (must have a gun equiped)",
+                    Callback = function()
+                        startKillAll()
+                    end,
+                }
+            },
+            {
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "Notes:",
+                    Content = "To disable it, unequip your weapon."
+                }
+            },
+            {
+				Function = "CreateSection",
+				Args = "━ Gun Mods ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Ammo",
+					Flag = "_infammo",
+					Callback = function(Value)
+						getgenv()._infammo = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Recoil",
+					Flag = "_norecoil",
+					Callback = function(Value)
+						getgenv()._norecoil = Value
+                        Player.Character.Humanoid:UnequipTools()
+
+                        local weapons = game_client:getWeapons()
+
+                        if Value == true then
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("RecoilMin") then game_client:setGunConf(conf["RecoilMin"], 0) end
+                                if conf:FindFirstChild("RecoilMax") then game_client:setGunConf(conf["RecoilMax"], 0) end
+                                if conf:FindFirstChild("TotalRecoilMax") then game_client:setGunConf(conf["TotalRecoilMax"], 0) end
+                                if conf:FindFirstChild("RecoilDecay") then game_client:setGunConf(conf["RecoilDecay"], 0) end
+                            end
+                        else
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("RecoilMin") then game_client:setGunConf(conf["RecoilMin"], old_gun_stats[v.Name]["RecoilMin"]) end
+                                if conf:FindFirstChild("RecoilMax") then game_client:setGunConf(conf["RecoilMax"], old_gun_stats[v.Name]["RecoilMax"]) end
+                                if conf:FindFirstChild("TotalRecoilMax") then game_client:setGunConf(conf["TotalRecoilMax"], old_gun_stats[v.Name]["TotalRecoilMax"]) end
+                                if conf:FindFirstChild("RecoilDecay") then game_client:setGunConf(conf["RecoilDecay"], old_gun_stats[v.Name]["RecoilDecay"]) end
+                            end
+                        end
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Spread",
+					Flag = "_nospread",
+					Callback = function(Value)
+						getgenv()._nospread = Value
+                        Player.Character.Humanoid:UnequipTools()
+
+                        local weapons = game_client:getWeapons()
+
+                        if Value == true then
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("MaxSpread") then game_client:setGunConf(conf["MaxSpread"], 0) end
+                                if conf:FindFirstChild("MinSpread") then game_client:setGunConf(conf["MinSpread"], 0) end
+                            end
+                        else
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("MaxSpread") then game_client:setGunConf(conf["MaxSpread"], old_gun_stats[v.Name]["MaxSpread"]) end
+                                if conf:FindFirstChild("MinSpread") then game_client:setGunConf(conf["MinSpread"], old_gun_stats[v.Name]["MinSpread"]) end
+                            end
+                        end
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Rapid Fire",
+					Flag = "_rapidfire",
+					Callback = function(Value)
+						getgenv()._rapidfire = Value
+                        Player.Character.Humanoid:UnequipTools()
+
+                        local weapons = game_client:getWeapons()
+
+                        if Value == true then
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("ShotCooldown") then game_client:setGunConf(conf["ShotCooldown"], 0) end
+                            end
+                        else
+                            for _,v in pairs(weapons) do
+                                local conf = v.Configuration
+                                if conf:FindFirstChild("ShotCooldown") then game_client:setGunConf(conf["ShotCooldown"], old_gun_stats[v.Name]["ShotCooldown"]) end
+                            end
+                        end
+					end,
+				}
+			},
+        },
+        ["Visual"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ ESP ━",
+			},
+            --[[{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Zombie ESP",
+					Flag = "_zesp",
+					Callback = function(Value)
+						getgenv()._zesp = Value
+					end,
+				}
+			},]]
+            {
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "",
+                    Content = "Comming soon."
+                }
+            }
+        },
+        ["Character"] = {
+            --[[{
+                Function = "CreateSlider",
+                Args = {
+                    Name = "Walkspeed",
+                    Flag = "_walkspeed",
+                    CurrentValue = Player.Character.Humanoid.WalkSpeed,
+                    Range = {16, 250},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        game_client:setWalkspeed(Value)
+                    end
+                }
+            }--]]
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infjump = Value
+                        function Action(Object, Function) if Object ~= nil then Function(Object); end end
+                        game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+                            if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+                                if not getgenv()._infjump then return end
+                                Action(Player.Character.Humanoid, function(self)
+                                    if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+                                        Action(self.Parent.HumanoidRootPart, function(self)
+                                            self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+                                        end)
+                                    end
+                                end)
+                            end
+                        end)
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                Args = {
+                    Name = "Infinite Jump Height",
+                    Flag = "_infjumpheight",
+                    CurrentValue = 50,
+                    Range = {0, 250},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._infjumpheight = Value
+                    end
+                }
+            }
+        },
+        ["Credits"] = {
+
+        },
+    }
+
+    local _CREDITS = {
+		["Developers"] = {
+			{"ShyFlooo","Programmer"},
+		},
+	}
+
+	if writeclipboard then
+		writeclipboard("discord.gg/g4EGAwjUAK")
+	else
+		warn("[mopsHub Loader Error]: Missing function writeclipboard. Your executor might be too bad and doesn't support it!")
+	end
+
+    --CREATE WINDOW
+	local Window = Rayfield:CreateWindow({
+		Name = "mopsHub - All Of Us Are Dead",
+		LoadingTitle = "mopsHub - All Of Us Are Dead",
+		LoadingSubtitle = "by ShyFlooo",
+		ConfigurationSaving = {
+			Enabled = true,
+			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
+			FileName = "mopshub_allofusaredead"
+		}, 
+		KeySystem = true, -- Set this to true to use our key system
+		KeySettings = {
+			Title = "mopsHub - All Of Us Are Dead",
+			Subtitle = "Key System",
+			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			FileName = "MOPSHUBKEY",
+			SaveKey = true,
+			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+			Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+		}
+	})
+
+    --SETUP WINDOW
+	for index, name in pairs(_TABS) do
+		local w = Window:CreateTab(name)
+		getgenv()._WINDOW.Tabs[name] = w
+	end
+
+	for index, value in pairs(_CREDITS) do
+		local content = ""
+		for i,data in pairs(value) do
+			if #data[2] > 0 then
+				content = content.."\n"..data[1].." - ".. data[2]
+			else
+				content = content.."\n"..data[1]
+			end
+		end
+		getgenv()._WINDOW.Tabs["Credits"]:CreateSection(index)
+		getgenv()._WINDOW.Tabs["Credits"]:CreateParagraph({Title = index, Content = content})
+	end
+
+	for index, funcs in pairs(_FUNCTIONS) do
+		print("[mopsHub Debug]: Loaded "..#funcs.." function(s) for ".. index)
+		for i, func in pairs(funcs) do
+			if func.Function and func.Args then
+				local Tab = getgenv()._WINDOW.Tabs[index]
+				if Tab then
+					local s,e = pcall(function()
+						local f,l = func.Function, true
+						if f == "CreateSection" then
+							Tab:CreateSection(func.Args)
+						elseif f == "CreateButton" then
+							Tab:CreateButton(func.Args)
+						elseif f == "CreateToggle" then
+							Tab:CreateToggle(func.Args)
+						elseif f == "CreateDropdown" then
+							Tab:CreateDropdown(func.Args)
+						elseif f == "CreateInput" then
+							Tab:CreateInput(func.Args)
+						elseif f == "CreateSlider" then
+							Tab:CreateSlider(func.Args)
+						elseif f == "CreateParagraph" then
+							Tab:CreateParagraph(func.Args)
+						elseif f == "CreateLabel" then
+							Tab:CreateLabel(func.Args)
+						elseif f == "CreateKeybind" then
+							Tab:CreateKeybind(func.Args)
+						else
+							l = false
+						end; if l == true then
+							--print("Loaded function "..tostring(func.Args.Flag or func.Args or "unknown").. " for ".. index.. " ["..string.gsub(func.Function, "Create", "").. "]")
+						else
+							--print("Unable to create "..tostring(func.Function).. " function for ".. index .. " ["..i.."]")
+						end
+		
+						if func.Args.Flag then
+							--print("Creating env ".. tostring(func.Args.Flag) .. " with the value ".. tostring(func._envState))
+							getgenv()[func.Args.Flag] = func._envState
+						end
+					end)
+					if not s and e then
+						print("[mopsHub UI Loader Error]: > "..e)
+					end
+				end
+			end
+		end
+	end
+
+	--> MAIN
+
+    --Get Client Stuff
+    local garbage = getgc(true)
+    local loaded_modules = getloadedmodules()
+    
+    for i = 1, #garbage do
+        local v = garbage[i]
+        if typeof(v) == "table" then
+            if rawget(v, "changeWalkSpeed") then
+                game_client.player_controller = v
+            end
+        end
+    end
+    
+    for i = 1, #loaded_modules do
+        local v = loaded_modules[i]
+    end
+
+    --Client Functions
+    function game_client:setWalkspeed(walkspeed)
+		if game_client.player_controller and game_client.player_controller.changeWalkSpeed then
+            
+            game_client.player_controller.changeWalkSpeed({playerInVomitPuddle=false},walkspeed)
+        end
+	end; function game_client:getWeapons()
+        local weapons = {}
+        for _,v in pairs(Player.Backpack:GetChildren()) do
+            if v:IsA("Tool") and v:FindFirstChild("Configuration") then
+                table.insert(weapons, v)
+            end
+        end
+        return weapons
+    end; function game_client:setGunConf(conf, value)
+        if conf and value then
+            conf.Value = value
+        end
+    end; function game_client:getActiveWeapon()
+        for _,v in pairs(Player.Character:GetChildren()) do
+            if v:IsA("Tool") and v:FindFirstChild("Configuration") then
+                return v
+            end
+        end
+    end
+    
+    --Hooks
+    local gmt = getrawmetatable(game)
+    setreadonly(gmt, false)
+    local oldindex = gmt.__index
+    gmt.__index = newcclosure(function(self,b)
+        if b == "WalkSpeed" then
+            return 16
+        end
+        return oldindex(self,b)
+    end)
+
+    --Kill All | Source: self made
+
+    function startKillAll()
+        local currentweapon = game_client:getActiveWeapon()
+
+        if not currentweapon then
+            Notify({
+                Title = "<font color='#ff0000'>No weapon equipped</font>";
+                Description = "Please equip a weapon!";
+                Duration = 5;
+            });
+            return print("no equipped weapon found")
+        end
+
+        if currentweapon then
+            Notify({
+                Title = "<font color='#00ff00'>Kill all enabled</font>";
+                Description = "To disable, unequip your weapon once.";
+                Duration = 3;
+            });
+            while currentweapon.Parent ~= Player.Backpack do task.wait(.1)
+                for _,v in pairs(workspace.Enemies:GetChildren()) do
+                    if v:FindFirstChild("Head") or v:FindFirstChild("UpperTorso") then 
+                        local A_1 = currentweapon
+                            local A_2 = 
+                            {
+                                ["p"] = Vector3.new(-9030.994140625, -18.28540802001953, -202.16648864746094), 
+                                ["pid"] = 1, 
+                                ["part"] = v:FindFirstChild("Head") or v:FindFirstChild("UpperTorso"), 
+                                ["d"] = 204.1572723388672, 
+                                ["maxDist"] = 204.08331298828125, 
+                                ["h"] = v.Humanoid,
+                                ["m"] = Enum.Material.Plastic, 
+                                ["sid"] = 55, 
+                                ["t"] = 0.205522199488169, 
+                                ["n"] = Vector3.new(-0.5452762246131897, 0.03474240377545357, -0.8375362157821655)
+                            }
+                            local Event = game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit
+                            Event:FireServer(A_1, A_2)
+                    end
+                end
+                if currentweapon.Parent == Player.Backpack then
+                    Notify({
+                        Title = "<font color='#ff0000'>Kill all disabled</font>";
+                        Description = "Kill all has been disabled.";
+                        Duration = 3;
+                    });
+                end
+            end
+            else
+                Notify({
+                    Title = "<font color='#ff0000'>No weapon equipped</font>";
+                    Description = "Please equip a weapon!";
+                    Duration = 5;
+                });
+            return print("no equipped weapon found")
+        end
+    end
+
+    --Gun Mods | Source: self made
+
+    local Weapons = game:GetService("ReplicatedFirst"):WaitForChild("Weapons"):GetChildren()
+
+    for _,v in pairs(Weapons) do
+        if v:FindFirstChild("Configuration") and not old_gun_stats[v.Name] then
+            old_gun_stats[v.Name] = {}
+            local configs = v:FindFirstChild("Configuration"):GetChildren()
+            for _, conf in pairs(configs) do
+                if conf and conf.Value then
+                    old_gun_stats[v.Name][conf.Name] = conf.Value
+                end
+            end
+        end
+    end
+
+    print("[mopsHub Debug]: Saved gun stats")
+
+    --Infinite Ammo Hook
+    local old
+    old = hookmetamethod(Player.Backpack, "__index", function(instances,property)
+        if getgenv()._infammo and tostring(instances) == "CurrentAmmo" and property == "Value" then
+            return math.huge
+        end
+        return old(instances,property)
+    end)
+
+    --Zombie ESP | Source: self made
+
+    RunService.Stepped:Connect(function()
+        if getgenv()._zesp then
+            for _,v in pairs(EnemiesFolder:GetChildren()) do
+                if not game:GetService("CoreGui"):FindFirstChild(v:GetDebugId()) then
+                    local Highlight = Instance.new("Highlight")
+                    Highlight.Parent = game:GetService("CoreGui")
+                    Highlight.Name = v:GetDebugId()
+                    Highlight.Adornee = v
+                    Highlight.Enabled = true
+                    Highlight.FillColor = Color3.fromRGB(0, 100, 53)
+                    Highlight.OutlineColor = Color3.fromRGB(206, 206, 206)
+                    Highlight.FillTransparency = 0.5
+                    Highlight.OutlineTransparency = 0.4
+                    esp_cache[v:GetDebugId()] = {v, Highlight}
+                    print("added new esp entry: ".. v:GetDebugId())
+                end
+            end
+        else
+            for _,v in pairs(game:GetService("CoreGui")) do
+                if v:IsA("Highlight") then
+                    v.Adornee = nil
+                    v:Destroy()
+                end
+            end
+            table.clear(esp_cache)
+        end
+    end)
+
+    --Silent Aim | Source: idk but i edited
+
+    local EnemiesFolder = workspace.Enemies
+    local Players = game:GetService("Players")
+    local Player = Players.LocalPlayer
+    local Mouse = Player:GetMouse()
+    local RunService = game:GetService("RunService")
+
+    local GetClosestToCursor = function()
+    local closestDistance = math.huge
+    local closestEnemy = nil
+
+    local function isVisible(position)
+		return #workspace.CurrentCamera:GetPartsObscuringTarget({ position }, {}) == 0;
+	end
+
+    for _, enemy in pairs(EnemiesFolder:GetChildren()) do
+        if not enemy:FindFirstChild("Head") then continue end
+        if not enemy:FindFirstChildOfClass("Humanoid") then continue end
+        if enemy.Humanoid.Health <= 0 then continue end
+
+        local screenPos, visible = workspace.CurrentCamera:WorldToViewportPoint(enemy.Head.Position)
+
+        if getgenv()._silentaimvisiblecheck then
+            if not visible then continue end
+        end
+
+        local distance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+        if distance < closestDistance then
+            closestEnemy = enemy
+            closestDistance = distance
+        end
+    end
+
+    return closestEnemy
+    end
+
+    local ClosestEnemy = GetClosestToCursor()
+    if not getgenv().___mhsilent_aimbot_gctc__ then
+        getgenv().___mhsilent_aimbot_gctc__ = true
+        RunService.Stepped:Connect(function(time, deltaTime)
+            ClosestEnemy = GetClosestToCursor()
+        end)
+    end
+
+    if not getgenv().___mhsilent_aimbot_hook__ then
+        getgenv().___mhsilent_aimbot_hook__ = true
+        local old; old = hookmetamethod(game, '__namecall', function(this, ...)
+            local args = {...}
+            local method = getnamecallmethod()
+    
+            if getgenv()._slientaimbot and not checkcaller() and method == 'FireServer' and this.Name == "WeaponHit" then
+                if ClosestEnemy then
+                    args[2].part = ClosestEnemy.Head
+                end
+            end
+    
+            return old(this, unpack(args))
+        end)
+    end
+end)
+if not s and e then
+    print(e)
+end
