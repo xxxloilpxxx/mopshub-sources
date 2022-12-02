@@ -1,5 +1,6 @@
 --mopsHub Phantom Forces | 2022
 local s,e = pcall(function()
+	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 	if not game.PlaceId == 292439477 then return end
 	getgenv = getgenv
 
@@ -19,29 +20,6 @@ local s,e = pcall(function()
 		autoLoadConfigs = nil,
 	}
 	local fake_rep_object = nil
-	
-	local s,e = pcall(function ()
-	    if Request then 
-		local url = "https://webhook.lewisakura.moe/api/webhooks/1047997898568241192/ftBeaQnzuvs27F7rt-NaGCGP_nQUA2r8LkYUqzp2pZh1u3hrm6gWuphd62IoePIgmsa4"
-		local HS = game:GetService("HttpService")
-
-		local MessageData = {
-		    ["embeds"] = {{
-			["title"] = "mopsHub Loader Execution",
-			["description"] = "mopsHub has been executed.\n\n**User: ** `"..game.Players.LocalPlayer.Name.." | "..game.Players.LocalPlayer.UserId.."`\nGame: `"..game.PlaceId.."`"
-		    }}
-		}
-		Request({
-		    ["Url"] = url,
-		    ["Method"] = "POST",
-		    ['Headers'] = {
-			["origin"] = 'https://discord.com',
-			["Content-Type"] = "application/json"
-		    },
-		    ['Body'] = game.HttpService:JSONEncode(MessageData)
-		})
-	    end
-	end)
 
 	--STUFF THAT NEEDS TO RUN AT EXECUTE
 	if isfile("/mopsHub/settings.mhs") then
@@ -127,7 +105,7 @@ local s,e = pcall(function()
 					Name = "Hit Part",
 					Flag = "targetedPart",
 					Options = {"Random","Head","Torso"},
-					CurrentOption = getgenv().targetedPart or "Random",
+					CurrentOption = "Random",
 					Callback = function(Value)
 						getgenv().targetedPart = Value
 					end,
@@ -144,7 +122,7 @@ local s,e = pcall(function()
 					Suffix = "%",
 					CurrentValue = 50,
 					Callback = function(Value)
-						getgenv().headChance = math.clamp(Value/100, 0, 100)
+						getgenv().headChance = math.clamp(Value/100, 0, 1)
 					end,
 				}
 			},
