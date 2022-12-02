@@ -2,7 +2,7 @@
 
 local s,e = pcall(function()
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-    if not game.PlaceId == 9759729519 then return end
+    if not game.PlaceId == 9759729519 or not game.PlaceId == 10950394697 or not game.PlaceId == 10950541730 then return end
     repeat
 		task.wait()
 	until game:IsLoaded()
