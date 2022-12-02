@@ -48,15 +48,15 @@ local L_5_ = L_1_:CreateWindow({
 		FolderName = "mopsHubConfig",
 		FileName = "mopshub_arsenal"
 	},
-	KeySystem = false,
+	KeySystem = true,
 	KeySettings = {
-		Title = "mopsHub",
+		Title = "mopsHub - Arsenal",
 		Subtitle = "Key System",
-		Note = "Join the discord (discord.gg/sirius)",
+		Note = "Key here (copied): discord.gg/g4EGAwjUAK",
 		FileName = "SiriusKey",
 		SaveKey = true,
 		GrabKeyFromSite = false,
-		Key = "Hello"
+		Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
 	}
 })
 local L_6_ = L_5_:CreateTab("Weapon")
