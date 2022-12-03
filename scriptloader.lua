@@ -31,6 +31,7 @@ local games, found = {
     [10950394697] = "https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/9759729519",
     [2988554876] = "https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/2988554876",
     [292439477] = "https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477",
+    [4787647409] = "https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/4787647409",
 }, false
 local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 local Notify = AkaliNotif.Notify;
@@ -40,7 +41,7 @@ getgenv().gameid = game.PlaceId
 for id, scriptstr in pairs(games) do
     if tonumber(id) == getgenv().gameid then
         found = true
-        print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script from [lol i leaked my script sources here but not amymore]\n\n", getgenv().gameid,scriptstr))
+        print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script for gameid %s\n\n", getgenv().gameid,id))
         local _s, _e = pcall(function() 
             loadstring(game:HttpGet(scriptstr))()
         end)
