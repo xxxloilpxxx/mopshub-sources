@@ -163,8 +163,8 @@ local s,e = pcall(function()
                             }, getnamecallmethod()
                             if getgenv()._slientaimbot and L_51_ == "FindPartOnRayWithIgnoreList" and not checkcaller() then
                                 local L_52_ = ClosestPlayer()
-                                if L_52_ and L_52_.Character and L_52_.Character.FindFirstChild(L_52_.Character, "Head") then
-                                    L_50_[1] = Ray.new(L_32_.CFrame.Position, (L_52_.Character.Head.Position - L_32_.CFrame.Position).Unit * 1000)
+                                if L_52_ and L_52_.Character and L_52_.Character.FindFirstChild(L_52_.Character, getgenv().getHitPart()) then
+                                    L_50_[1] = Ray.new(L_32_.CFrame.Position, (L_52_.Character[getgenv().getHitPart()].Position - L_32_.CFrame.Position).Unit * 1000)
                                     return L_37_(L_49_arg1, unpack(L_50_))
                                 end
                             end
@@ -188,17 +188,32 @@ local s,e = pcall(function()
 					Flag = "_wallbang",
 					Callback = function(Value)
 						getgenv()._wallbang = Value
+                        local L_57_ = getrawmetatable(game)
+                        local L_58_ = L_57_.__namecall
+                        setreadonly(L_57_, false)
+                        L_57_.__namecall = newcclosure(function(L_59_arg1, ...)
+                            local L_60_ = {
+                                ...
+                            }
+                            NamecallMethod = getnamecallmethod()
+                            if getgenv()._wallbang and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" then
+                                table.insert(L_60_[2], workspace.Map)
+                            end
+                            return L_58_(L_59_arg1, ...)
+                        end)
+                        loadstring(game:HttpGet("https://pastebin.com/raw/mNgwcGpj", true))()
+                        setreadonly(L_57_, true)
 					end,
 				}
 			},
             {
 				Function = "CreateDropdown",
-				_envState = "Random",
+				_envState = "LowerTorso",
 				Args = {
 					Name = "Hit Part",
 					Flag = "_silentaimhitpart",
 					Options = {"Head","LowerTorso","Random"},
-					CurrentOption = "Random",
+					CurrentOption = "LowerTorso",
 					Callback = function(Value)
 						getgenv()._silentaimhitpart = Value
 					end,
@@ -659,7 +674,7 @@ local s,e = pcall(function()
             end
         end;
         return L_116_
-    end; local function getHitPart()
+    end; getgenv().getHitPart = function()
         if getgenv()._silentaimhitpart == "Head" then
             return "Head"
         end;
@@ -763,24 +778,6 @@ local s,e = pcall(function()
 	end
 
 	--> MAIN
-
-    -- Wallbang | Source: self made
-
-    local L_57_ = getrawmetatable(game)
-    local L_58_ = L_57_.__namecall
-    setreadonly(L_57_, false)
-    L_57_.__namecall = newcclosure(function(L_59_arg1, ...)
-        local L_60_ = {
-            ...
-        }
-        nm = getnamecallmethod()
-        if getgenv()._wallbang and tostring(nm) == "FindPartOnRayWithIgnoreList" then
-            table.insert(L_60_[2], workspace.Map)
-        end
-        return L_58_(L_59_arg1, ...)
-    end)
-    loadstring(game:HttpGet("https://pastebin.com/raw/mNgwcGpj", true))()
-    setreadonly(L_57_, true)
 
     --Anti Aim | Source: self made
 
@@ -981,5 +978,5 @@ local s,e = pcall(function()
 	end
 end)
 if not s and e then
-    print("[mopsHub Error]:"..e)
+    print("[mopsHub Error]: "..e)
 end
