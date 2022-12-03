@@ -1,0 +1,500 @@
+local s,e = pcall(function()
+    if not game.PlaceId == 4787647409 then return end
+    repeat
+		task.wait()
+	until game:IsLoaded()
+    --if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+	getgenv().__mpho_1__loaded__ = true
+
+    getgenv = getgenv
+
+    --MODULES
+	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+	local Notify = AkaliNotif.Notify;
+    local ESPFramework = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
+	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
+	local Player = game:GetService("Players").LocalPlayer
+	local settings = {
+		autoLoadConfigs = nil,
+	}
+    local game_client = {}
+
+    local ESPSettings = {
+        PlayerESP = {
+            Enabled = getgenv()._esp,
+            TracersOn = getgenv()._esptracers,
+            BoxesOn = getgenv()._espboxes,
+            NamesOn = getgenv()._espnames,
+            DistanceOn = getgenv()._espdistance,
+            AttachShift = getgenv()._esptracerattachshift,
+            HealthOn = getgenv()._esphealth,
+            ToolOn = getgenv()._esptool,
+            TeamMates = getgenv()._espteamcheck,
+            FaceCamOn = false,
+            Distance = 2000,
+        },
+        ScrapESP = {
+            Enabled = false,
+            Distance = 2000,
+            LegendaryOnly = true,
+            RareOnly = true,
+            GoodOnly = true,
+            BadOnly = true
+        },
+        SafeESP = {
+            Enabled = false,
+            Distance = 2000,
+            BigOnly = true,
+            SmallOnly = true
+        },
+        RegisterESP = {
+            Enabled = false,
+            Distance = 2000
+        },
+        ESPColor = Color3.fromRGB(255, 255, 255),
+        ToolColor = Color3.fromRGB(255, 255, 255)
+    }
+
+    local Positions = {
+        ["Patient Housing"] = CFrame.new(121, -4, 49),
+        ["Zetalabs"] = CFrame.new(617, -150, 3),
+        ["The Entrance"] = CFrame.new(385, -63, -457),
+        ["Sector 1"] = CFrame.new(356, -25, -159),
+        ["Sector 3"] = CFrame.new(465, -18, -1),
+        ["Medical Lab"] = CFrame.new(253, -18, -73),
+        ["Missile Bunker"] = CFrame.new(556, -56, -53),
+        ["Checkpoint Top"] = CFrame.new(420, -18, -55),
+        ["Checkpoint Water"] = CFrame.new(475, -78, -121)
+    }
+    local TeleportDropdownOptions = {
+        "Patient Housing",
+        "Zetalabs",
+        "The Entrance",
+        "Sector 1",
+        "Sector 3",
+        "Medical Lab",
+        "Checkpoint Top",
+        "Checkpoint Water",
+        "Missile Bunker"
+    }
+
+    local Players = game:GetService("Players")
+    local Player = Players.LocalPlayer
+    local Mouse = Player:GetMouse()
+    local RunService = game:GetService("RunService")
+
+    --STUFF THAT NEEDS TO RUN AT EXECUTE
+	if isfile("/mopsHub/settings_blacksitezeta.mhs") then
+		local s,e = pcall(function()
+			local file_settings = readfile("/mopsHub/settings_blacksitezeta.mhs")
+			local parsedSettings = {}
+			local s,e = pcall(function()
+				parsedSettings = game:GetService("HttpService"):JSONDecode(file_settings)
+			end)
+			if s then
+				for _,v in pairs(parsedSettings) do
+					settings[_] = v
+				end
+			else
+				warn("[mopsHub Error]: Unable to parse local saved settings json.\nError:\n\n> ".. e)
+			end
+		end)
+		if not s and e then
+			print(e)
+		end
+	else
+		autoLoadConfigs = true
+		writefile("/mopsHub/settings_blacksitezeta.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+		print("[mopsHub Debug]: Created local config file.")
+	end
+
+    getgenv()._esptracerattachshift = 1
+    getgenv()._WINDOW = {
+		Tabs = {},
+	}
+
+	--WINDOW CONFIG
+	local _TABS = {
+		"Weapon",
+		"Visual",
+		"Teleport",
+		"Credits"
+	}
+
+    local _FUNCTIONS = {
+        ["Weapon"] = {
+            {
+                Function = "CreateSection",
+                Args = "━ Gun Mods ━",
+            },
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Recoil",
+					Flag = "_norecoil",
+					Callback = function(Value)
+						getgenv()._norecoil = Value
+                        if Value == true then
+                            game_client:enableNoRecoil()
+                        else
+                            game_client:disableNoRecoil()
+                        end
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Spread",
+					Flag = "_nospread",
+					Callback = function(Value)
+						getgenv()._nospread = Value
+                        if Value == true then
+                            game_client:enableNoSpread()
+                        else
+                            game_client:disableNoSpread()
+                        end
+					end,
+				}
+			},
+            {
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "! Change your team once to apply No Spread !"}
+			},
+        },
+        ["Visual"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ ESP ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "ESP",
+					Flag = "_esp",
+					Callback = function(Value)
+						getgenv()._esp = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Boxes",
+					Flag = "_espboxes",
+					Callback = function(Value)
+						getgenv()._espboxes = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Tracers",
+					Flag = "_esptracers",
+					Callback = function(Value)
+						getgenv()._esptracers = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateDropdown",
+				_envState = "Bottom",
+				Args = {
+					Name = "Tracers Orientation",
+					Flag = "_tracersorientation",
+					Options = {"Bottom","Middle","Top"},
+					CurrentOption = "Bottom",
+					Callback = function(Value)
+                        local v = 0
+
+                        if Value == "Bottom" then
+                            v = 1
+                        elseif Value == "Middle" then
+                            v = 2
+                        elseif Value == "Top" then
+                            v = 1000
+                        end
+						getgenv()._esptracerattachshift = v or 0
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Names",
+					Flag = "_espnames",
+					Callback = function(Value)
+						getgenv()._espnames = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Tools",
+					Flag = "_esptool",
+					Callback = function(Value)
+						getgenv()._esptool = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Health",
+					Flag = "_esphealth",
+					Callback = function(Value)
+						getgenv()._esphealth = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Distance",
+					Flag = "_espdistance",
+					Callback = function(Value)
+						getgenv()._espdistance = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState = true,
+				Args = {
+					Name = "Team Check",
+					Flag = "_espteamcheck",
+					Callback = function(Value)
+						getgenv()._espteamcheck = not Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+        },
+        ["Teleport"] = {
+            {
+                Function = "CreateSection",
+                Args = "━ Teleports ━",
+            },
+            {
+				Function = "CreateDropdown",
+				Args = {
+					Name = "Teleport to",
+					Options = TeleportDropdownOptions,
+					CurrentOption = "Select",
+					Callback = function(Value)
+                        if Positions[Value] then
+                            game_client:teleportPlayer(Positions[Value])
+                        end
+					end,
+				}
+			},
+        }
+    }
+
+    local _CREDITS = {
+		["Developers"] = {
+			{"ShyFlooo","Programmer"},
+		},
+	}
+
+    --Functions | Source: some self made
+
+    --CREATE WINDOW
+	local Window = Rayfield:CreateWindow({
+		Name = "mopsHub - Blacksite Zeta",
+		LoadingTitle = "mopsHub - Blacksite Zeta",
+		LoadingSubtitle = "by ShyFlooo",
+		ConfigurationSaving = {
+			Enabled = true,
+			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
+			FileName = "mopshub_blacksitezeta"
+		}, 
+		KeySystem = true, -- Set this to true to use our key system
+		KeySettings = {
+			Title = "mopsHub - Blacksite Zeta",
+			Subtitle = "Key System",
+			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			FileName = "MOPSHUBKEY",
+			SaveKey = true,
+			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+			Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+		}
+	})
+
+	--SETUP WINDOW
+	for index, name in pairs(_TABS) do
+		local w = Window:CreateTab(name)
+		getgenv()._WINDOW.Tabs[name] = w
+	end
+    getgenv()._WINDOW.Tabs["Credits"]:CreateSection("━ Credits ━")
+	for index, value in pairs(_CREDITS) do
+		local content = ""
+		for i,data in pairs(value) do
+			if #data[2] > 0 then
+				content = content.."\n"..data[1].." - ".. data[2]
+			else
+				content = content.."\n"..data[1]
+			end
+		end
+		getgenv()._WINDOW.Tabs["Credits"]:CreateParagraph({Title = index, Content = content})
+	end
+
+	for index, funcs in pairs(_FUNCTIONS) do
+		print("Loaded "..#funcs.." function(s) for ".. index)
+		for i, func in pairs(funcs) do
+			if func.Function and func.Args then
+				local Tab = getgenv()._WINDOW.Tabs[index]
+				if Tab then
+					local s,e = pcall(function()
+						local f,l = func.Function, true
+						if f == "CreateSection" then
+							Tab:CreateSection(func.Args)
+						elseif f == "CreateButton" then
+							Tab:CreateButton(func.Args)
+						elseif f == "CreateToggle" then
+							Tab:CreateToggle(func.Args)
+						elseif f == "CreateDropdown" then
+							Tab:CreateDropdown(func.Args)
+						elseif f == "CreateInput" then
+							Tab:CreateInput(func.Args)
+						elseif f == "CreateSlider" then
+							Tab:CreateSlider(func.Args)
+						elseif f == "CreateParagraph" then
+							Tab:CreateParagraph(func.Args)
+						elseif f == "CreateLabel" then
+							Tab:CreateLabel(func.Args)
+						elseif f == "CreateKeybind" then
+							Tab:CreateKeybind(func.Args)
+						else
+							l = false
+						end; if l == true then
+							--print("Created function "..tostring(func.Args.Flag or func.Args or "unknown").. " for ".. index.. " ["..string.gsub(func.Function, "Create", "").. "]")
+						else
+							print("Unable to create "..tostring(func.Function).. " function for ".. index .. " ["..i.."]")
+						end
+		
+						if func.Args.Flag then
+							--print("Creating env ".. tostring(func.Args.Flag) .. " with the value ".. tostring(func._envState))
+							getgenv()[func.Args.Flag] = func._envState
+						end
+					end)
+					if not s and e then
+						print("[mopsHub UI Loader Error]: > "..e)
+					end
+				end
+			end
+		end
+	end
+
+    --> Get Client Stuff
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    local garbage = getgc(true)
+    local loaded_modules = getloadedmodules()
+    
+    for i = 1, #garbage do
+        local v = garbage[i]
+        if typeof(v) == "table" then
+            if rawget(v, "SetWalkspeed")  then
+                game_client.character = v
+            end
+        end
+    end
+    
+    for i = 1, #loaded_modules do
+        local v = loaded_modules[i]
+    end
+    
+    --> Functions
+    function game_client:enableNoRecoil()
+        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
+            pcall(function()
+                local module = require(v)
+                if module.CamRecoilMin then
+                    module.CamRecoilMin = Vector3.new(0, 0, 0)
+                end
+                if module.CamRecoilMax then
+                    module.CamRecoilMax = Vector3.new(0, 0, 0)
+                end
+            end)
+        end
+    end; function game_client:enableNoSpread()
+        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
+            pcall(function()
+                local module = require(v)
+                if module.AccuracyMin then
+                    module.AccuracyMin = Vector3.new(-0, -0, 0)
+                end
+                if module.AccuracyMax then
+                    module.AccuracyMax = Vector3.new(0, 0, 0)
+                end
+            end)
+        end
+    end; function game_client:disableNoRecoil()
+        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
+            pcall(function()
+                local module = require(v)
+                if module.CamRecoilMin then
+                    module.CamRecoilMin = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMin
+                end
+                if module.CamRecoilMax then
+                    module.CamRecoilMax = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMax
+                end
+            end)
+        end
+    end; function game_client:disableNoSpread()
+        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
+            pcall(function()
+                local module = require(v)
+                if module.AccuracyMin then
+                    module.AccuracyMin = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).AccuracyMin
+                end
+                if module.AccuracyMax then
+                    module.AccuracyMax = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMax
+                end
+            end)
+        end
+    end; function game_client:teleportPlayer(cframe)
+        if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
+        local h = Player.Character.HumanoidRootPart
+        game:GetService("TweenService"):Create(h, TweenInfo.new(1), {CFrame = cframe}):Play()
+    end;
+
+    getgenv().updateespvalues = function()
+        ESPFramework.Color = ESPSettings.ESPColor
+        ESPFramework.ToolColor = ESPSettings.ToolColor
+        ESPFramework.Tracers = getgenv()._esptracers
+        ESPFramework.Names = getgenv()._espnames
+        ESPFramework.Health = getgenv()._esphealth
+        ESPFramework.Distance = getgenv()._espdistance
+        ESPFramework.Tool = getgenv()._esptool
+        ESPFramework.Boxes = getgenv()._espboxes
+        ESPFramework.FaceCamera = ESPSettings.PlayerESP.FaceCamOn
+        ESPFramework.TeamMates = getgenv()._espteamcheck
+        ESPFramework.AttachShift = getgenv()._esptracerattachshift
+        ESPFramework:Toggle(getgenv()._esp)
+    end; getgenv().updateespvalues()
+end)
+if not s and e then
+    print("[mopsHub Error]: "..e)
+end
