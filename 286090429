@@ -1,348 +1,985 @@
-getgenv().__mpho_1__loaded__ = true
-getgenv().__mpho_1__loaded__bpalrd = true
-if getgenv().__mpho_1__loaded__ and getgenv().__mpho_1__loaded__bpalrd == false then
-	return warn("mopsHub already loaded")
-end
-local L_1_ = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
-local L_2_ = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
-local L_3_ = {
-	PlayerESP = {
-		Enabled = false,
-		TracersOn = false,
-		BoxesOn = false,
-		NamesOn = false,
-		DistanceOn = false,
-		HealthOn = false,
-		ToolOn = false,
-		FaceCamOn = false,
-		Distance = 2000
-	},
-	ScrapESP = {
-		Enabled = false,
-		Distance = 2000,
-		LegendaryOnly = true,
-		RareOnly = true,
-		GoodOnly = true,
-		BadOnly = true
-	},
-	SafeESP = {
-		Enabled = false,
-		Distance = 2000,
-		BigOnly = true,
-		SmallOnly = true
-	},
-	RegisterESP = {
-		Enabled = false,
-		Distance = 2000
-	},
-	ESPColor = Color3.fromRGB(255, 255, 255),
-	ToolColor = Color3.fromRGB(255, 255, 255)
-}
-local L_4_ = {}
-local L_5_ = L_1_:CreateWindow({
-	Name = "mopsHub - Arsenal",
-	LoadingTitle = "mopsHub - Arsenal",
-	LoadingSubtitle = "by ShyFlooo",
-	ConfigurationSaving = {
-		Enabled = true,
-		FolderName = "mopsHubConfig",
-		FileName = "mopshub_arsenal"
-	},
-	KeySystem = true,
-	KeySettings = {
-		Title = "mopsHub - Arsenal",
-		Subtitle = "Key System",
-		Note = "Key here (copied): discord.gg/g4EGAwjUAK",
-		FileName = "SiriusKey",
-		SaveKey = true,
-		GrabKeyFromSite = false,
-		Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+local s,e = pcall(function()
+    if not game.PlaceId == 286090429 then return end
+    repeat
+		task.wait()
+	until game:IsLoaded()
+    if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+	getgenv().__mpho_1__loaded__ = true
+
+    getgenv = getgenv
+
+    --MODULES
+	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+    local ESPFramework = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
+	local Notify = AkaliNotif.Notify;
+	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
+    local standard_firerate_values = {}
+    local Client = getsenv(game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client)
+	local Player = game:GetService("Players").LocalPlayer
+	local settings = {
+		autoLoadConfigs = nil,
 	}
-})
-local L_6_ = L_5_:CreateTab("Weapon")
-local L_7_ = L_5_:CreateTab("Visual")
-local L_8_ = L_5_:CreateTab("Character")
-function updateespvalues()
-	L_2_.Color = L_3_.ESPColor
-	L_2_.ToolColor = L_3_.ToolColor
-	L_2_.Tracers = L_3_.PlayerESP.TracersOn
-	L_2_.Names = L_3_.PlayerESP.NamesOn
-	L_2_.Health = L_3_.PlayerESP.HealthOn
-	L_2_.Distance = L_3_.PlayerESP.DistanceOn
-	L_2_.Tool = L_3_.PlayerESP.ToolOn
-	L_2_.Boxes = L_3_.PlayerESP.BoxesOn
-	L_2_.FaceCamera = L_3_.PlayerESP.FaceCamOn
-	L_2_:Toggle(L_3_.PlayerESP.Enabled)
-end
-L_7_:CreateSection("ESP")
-local L_9_ = L_7_:CreateToggle({
-	Name = "ESP",
-	CurrentValue = false,
-	Flag = "_esp",
-	Callback = function(L_26_arg1)
-		L_3_.PlayerESP.Enabled = L_26_arg1
-		updateespvalues()
-	end
-})
-L_7_:CreateSection("ESP Settings")
-local L_10_ = L_7_:CreateToggle({
-	Name = "Boxes",
-	CurrentValue = false,
-	Flag = "_espboxes",
-	Callback = function(L_27_arg1)
-		L_3_.PlayerESP.BoxesOn = L_27_arg1
-		updateespvalues()
-	end
-})
-local L_11_ = L_7_:CreateToggle({
-	Name = "Tracers",
-	CurrentValue = false,
-	Flag = "_esptracers",
-	Callback = function(L_28_arg1)
-		L_3_.PlayerESP.TracersOn = L_28_arg1
-		updateespvalues()
-	end
-})
-local L_12_ = L_7_:CreateToggle({
-	Name = "Names",
-	CurrentValue = false,
-	Flag = "_espnames",
-	Callback = function(L_29_arg1)
-		L_3_.PlayerESP.NamesOn = L_29_arg1
-		updateespvalues()
-	end
-})
-local L_13_ = L_7_:CreateToggle({
-	Name = "Distance",
-	CurrentValue = false,
-	Flag = "_espdistance",
-	Callback = function(L_30_arg1)
-		L_3_.PlayerESP.DistanceOn = L_30_arg1
-		updateespvalues()
-	end
-})
-getgenv().silentaim = false
-local L_14_ = L_6_:CreateToggle({
-	Name = "Silent Aimbot",
-	CurrentValue = false,
-	Flag = "_silentaimbot",
-	Callback = function(L_31_arg1)
-		getgenv().slientaim = L_31_arg1
-		local L_32_ = workspace.CurrentCamera
-		local L_33_ = game.GetService(game, "Players")
-		local L_34_ = L_33_.LocalPlayer
-		local L_35_ = L_34_:GetMouse()
-		function ClosestPlayer()
-			local L_39_, L_40_ = math.huge
-			for L_41_forvar1, L_42_forvar2 in pairs(L_33_.GetPlayers(L_33_)) do
-				if L_42_forvar2 == L_34_ then
-					continue
+    local ESPSettings = {
+        PlayerESP = {
+            Enabled = getgenv()._esp,
+            TracersOn = getgenv()._esptracers,
+            BoxesOn = getgenv()._espboxes,
+            NamesOn = getgenv()._espnames,
+            DistanceOn = getgenv()._espdistance,
+            AttachShift = getgenv()._esptracerattachshift,
+            HealthOn = false,
+            ToolOn = false,
+            TeamMates = getgenv()._espteamcheck,
+            FaceCamOn = false,
+            Distance = 2000,
+        },
+        ScrapESP = {
+            Enabled = false,
+            Distance = 2000,
+            LegendaryOnly = true,
+            RareOnly = true,
+            GoodOnly = true,
+            BadOnly = true
+        },
+        SafeESP = {
+            Enabled = false,
+            Distance = 2000,
+            BigOnly = true,
+            SmallOnly = true
+        },
+        RegisterESP = {
+            Enabled = false,
+            Distance = 2000
+        },
+        ESPColor = Color3.fromRGB(255, 255, 255),
+        ToolColor = Color3.fromRGB(255, 255, 255)
+    }
+
+    local Players = game:GetService("Players")
+    local Player = Players.LocalPlayer
+    local Mouse = Player:GetMouse()
+    local RunService = game:GetService("RunService")
+
+    --STUFF THAT NEEDS TO RUN AT EXECUTE
+	if isfile("/mopsHub/settings_arsenal.mhs") then
+		local s,e = pcall(function()
+			local file_settings = readfile("/mopsHub/settings_arsenal.mhs")
+			local parsedSettings = {}
+			local s,e = pcall(function()
+				parsedSettings = game:GetService("HttpService"):JSONDecode(file_settings)
+			end)
+			if s then
+				for _,v in pairs(parsedSettings) do
+					settings[_] = v
 				end
-				if L_42_forvar2.Team == L_34_ then
-					continue
-				end
-				if not L_42_forvar2.Character then
-					continue
-				end
-				local L_43_ = L_42_forvar2.Character.FindFirstChild(L_42_forvar2.Character, getgenv()._hitpart or "LowerTorso")
-				if not L_43_ then
-					continue
-				end
-				local L_44_, L_45_ = L_32_.WorldToScreenPoint(L_32_, L_43_.Position)
-				if not L_45_ then
-					continue
-				end
-				local L_46_, L_47_ = Vector2.new(L_35_.X, L_35_.Y), Vector2.new(L_44_.X, L_44_.Y)
-				local L_48_ = (L_47_ - L_46_).Magnitude
-				if L_48_ < L_39_ then
-					L_39_ = L_48_
-					L_40_ = L_42_forvar2
-				end
+			else
+				warn("[mopsHub Error]: Unable to parse local saved settings json.\nError:\n\n> ".. e)
 			end
-			return L_40_
+		end)
+		if not s and e then
+			print(e)
 		end
-		local L_36_ = getrawmetatable(game)
-		local L_37_ = L_36_.__namecall
-		local L_38_ = L_36_.__index
-		setreadonly(L_36_, false)
-		L_36_.__namecall = newcclosure(function(L_49_arg1, ...)
-			local L_50_, L_51_ = {
-				...
-			}, getnamecallmethod()
-			if getgenv().slientaim and L_51_ == "FindPartOnRayWithIgnoreList" and not checkcaller() then
-				local L_52_ = ClosestPlayer()
-				if L_52_ and L_52_.Character and L_52_.Character.FindFirstChild(L_52_.Character, getgenv()._hitpart or "LowerTorso") then
-					L_50_[1] = Ray.new(L_32_.CFrame.Position, (L_52_.Character.Head.Position - L_32_.CFrame.Position).Unit * 1000)
-					return L_37_(L_49_arg1, unpack(L_50_))
-				end
-			end
-			return L_37_(L_49_arg1, ...)
-		end)
-		L_36_.__index = newcclosure(function(L_53_arg1, L_54_arg2)
-			if L_54_arg2 == "Clips" then
-				return workspace.Map
-			end
-			return L_38_(L_53_arg1, L_54_arg2)
-		end)
-		setreadonly(L_36_, true)
+	else
+		autoLoadConfigs = true
+		writefile("/mopsHub/settings_arsenal.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+		print("[mopsHub Debug]: Created local config file.")
 	end
-})
-getgenv()._hitpart = getgenv()._hitpart or "LowerTorso"
-local L_15_ = L_6_:CreateDropdown({
-	Name = "Hit Part",
-	Options = {
-		"Head",
-		"LowerTorso"
-	},
-	CurrentOption = getgenv()._hitpart,
-	Flag = "_hitpart",
-	Callback = function(L_55_arg1)
-		getgenv()._hitpart = L_55_arg1
-	end
-})
-getgenv().wallbang = false
-local L_16_ = L_6_:CreateToggle({
-	Name = "Wallbang",
-	CurrentValue = false,
-	Flag = "_wallbang",
-	Callback = function(L_56_arg1)
-		getgenv().wallbang = L_56_arg1
-		local L_57_ = getrawmetatable(game)
-		local L_58_ = L_57_.__namecall
-		setreadonly(L_57_, false)
-		L_57_.__namecall = newcclosure(function(L_59_arg1, ...)
-			local L_60_ = {
-				...
-			}
-			NamecallMethod = getnamecallmethod()
-			if getgenv().wallbang and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" then
-				table.insert(L_60_[2], workspace.Map)
-			end
-			return L_58_(L_59_arg1, ...)
-		end)
-		loadstring(game:HttpGet("https://pastebin.com/raw/mNgwcGpj", true))()
-		setreadonly(L_57_, true)
-	end
-})
-getgenv().wspeed = 16
-local L_17_ = L_8_:CreateSlider({
-	Name = "Walkspeed",
-	Range = {
-		16,
-		350
-	},
-	Increment = 1,
-	Suffix = "",
-	CurrentValue = getgenv().wspeed,
-	Flag = "_walkspeed",
-	Callback = function(L_61_arg1)
-		getgenv().wspeed = L_61_arg1
-	end
-})
-local L_18_ = getrawmetatable(game)
-setreadonly(L_18_, false)
-local L_19_ = L_18_.__index
-L_18_.__index = newcclosure(function(L_62_arg1, L_63_arg2)
-	if L_63_arg2 == "WalkSpeed" then
-		return getgenv().wspeed
-	end
-	return L_19_(L_62_arg1, L_63_arg2)
-end)
-getgenv().infjump = false
-getgenv().infjumpcd = 2
-local L_20_ = L_8_:CreateToggle({
-	Name = "Infinite Jump",
-	CurrentValue = false,
-	Flag = "_infjump",
-	Callback = function(L_64_arg1)
-		getgenv().infjump = L_64_arg1
-		local L_65_ = game:GetService('Players').LocalPlayer
-		local L_66_ = L_65_:GetMouse()
-		L_66_.KeyDown:connect(function(L_67_arg1)
-			if getgenv().infjump then
-				if L_67_arg1:byte() == 32 then
-					humanoid = game:GetService('Players').LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
-					humanoid:ChangeState('Jumping')
-					task.wait(getgenv().infjumpcd)
-					humanoid:ChangeState('Seated')
-				end
-			end
-		end)
-	end
-})
-L_6_:CreateSection("Gun Mods (some mods only work after a respawn)")
-getgenv().infammo = false
-local L_21_ = L_6_:CreateToggle({
-	Name = "Infinite Ammo",
-	CurrentValue = false,
-	Flag = "_infammo",
-	Callback = function(L_68_arg1)
-		getgenv().infammo = L_68_arg1
-		local L_69_ = {
-			[1] = game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount.Value,
-			[2] = game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount2.Value
+
+    --ENV
+    getgenv().ESPFramework = ESPFramework
+    getgenv()._esptracerattachshift = 1
+	getgenv()._WINDOW = {
+		Tabs = {},
+	}
+
+	--WINDOW CONFIG
+	local _TABS = {
+		"Weapon",
+		"Visual",
+		"Character",
+		"Misc",
+		"Settings",
+		"Credits"
+	}
+
+    --IMPORTANT FUNCS
+    
+
+    local _FUNCTIONS = {
+        ["Weapon"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Aimbot ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Silent Aimbot",
+					Flag = "_slientaimbot",
+					Callback = function(Value)
+						getgenv()._slientaimbot = Value
+                        local L_32_ = workspace.CurrentCamera
+                        local L_33_ = game.GetService(game, "Players")
+                        local L_34_ = L_33_.LocalPlayer
+                        local L_35_ = L_34_:GetMouse()
+                        local L_36_ = getrawmetatable(game)
+                        local L_37_ = L_36_.__namecall
+                        local L_38_ = L_36_.__index
+                        function ClosestPlayer()
+                            local L_39_, L_40_ = math.huge
+                            for L_41_forvar1, L_42_forvar2 in pairs(L_33_.GetPlayers(L_33_)) do
+                                if L_42_forvar2 == L_34_ then
+                                    continue
+                                end
+                                if L_42_forvar2.Team == L_34_ then
+                                    continue
+                                end
+                                if not L_42_forvar2.Character then
+                                    continue
+                                end
+                                local L_43_ = L_42_forvar2.Character.FindFirstChild(L_42_forvar2.Character, "Head")
+                                if not L_43_ then
+                                    continue
+                                end
+                                local L_44_, L_45_ = L_32_.WorldToScreenPoint(L_32_, L_43_.Position)
+                                if not L_45_ then
+                                    continue
+                                end
+                                local L_46_, L_47_ = Vector2.new(L_35_.X, L_35_.Y), Vector2.new(L_44_.X, L_44_.Y)
+                                local L_48_ = (L_47_ - L_46_).Magnitude
+                                if L_48_ < L_39_ and L_48_ < getgenv()._fov then
+                                    L_39_ = L_48_
+                                    L_40_ = L_42_forvar2
+                                end
+                            end
+                            return L_40_
+                        end
+                        setreadonly(L_36_, false)
+                        L_36_.__namecall = newcclosure(function(L_49_arg1, ...)
+                            local L_50_, L_51_ = {
+                                ...
+                            }, getnamecallmethod()
+                            if getgenv()._slientaimbot and L_51_ == "FindPartOnRayWithIgnoreList" and not checkcaller() then
+                                local L_52_ = ClosestPlayer()
+                                if L_52_ and L_52_.Character and L_52_.Character.FindFirstChild(L_52_.Character, "Head") then
+                                    L_50_[1] = Ray.new(L_32_.CFrame.Position, (L_52_.Character.Head.Position - L_32_.CFrame.Position).Unit * 1000)
+                                    return L_37_(L_49_arg1, unpack(L_50_))
+                                end
+                            end
+                            return L_37_(L_49_arg1, ...)
+                        end)
+                        L_36_.__index = newcclosure(function(L_53_arg1, L_54_arg2)
+                            if L_54_arg2 == "Clips" then
+                                return workspace.Map
+                            end
+                            return L_38_(L_53_arg1, L_54_arg2)
+                        end)
+                        setreadonly(L_36_, true)
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Wallbang",
+					Flag = "_wallbang",
+					Callback = function(Value)
+						getgenv()._wallbang = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateDropdown",
+				_envState = "Random",
+				Args = {
+					Name = "Hit Part",
+					Flag = "_silentaimhitpart",
+					Options = {"Head","LowerTorso","Random"},
+					CurrentOption = "Random",
+					Callback = function(Value)
+						getgenv()._silentaimhitpart = Value
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                _envState = 100,
+                Args = {
+                    Name = "FOV",
+                    Flag = "_fov",
+                    CurrentValue = 100,
+                    Range = {10, 750},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._fov = Value
+                    end
+                }
+            },
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Show FOV",
+					Flag = "_showfov",
+					Callback = function(Value)
+						getgenv()._showfov = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateSection",
+				Args = "━ Kill Aura ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Kill Aura",
+					Flag = "_killaura",
+					Callback = function(Value)
+						getgenv()._killaura = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateSection",
+				Args = "━ Gun Mods ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Ammo",
+					Flag = "_infammo",
+					Callback = function(Value)
+						getgenv()._infammo = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Recoil",
+					Flag = "_norecoil",
+					Callback = function(Value)
+						getgenv()._norecoil = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "No Spread",
+					Flag = "_nospread",
+					Callback = function(Value)
+						getgenv()._nospread = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Rapid Fire",
+					Flag = "_rapidfire",
+					Callback = function(Value)
+						getgenv()._rapidfire = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Automatic",
+					Flag = "_automatic",
+					Callback = function(Value)
+						getgenv()._automatic = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Rainbow Gun",
+					Flag = "_rainbowgun",
+					Callback = function(Value)
+						getgenv()._rainbowgun = Value
+					end,
+				}
+			},
+        },
+        ["Visual"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ ESP ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "ESP",
+					Flag = "_esp",
+					Callback = function(Value)
+						getgenv()._esp = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Boxes",
+					Flag = "_espboxes",
+					Callback = function(Value)
+						getgenv()._espboxes = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Tracers",
+					Flag = "_esptracers",
+					Callback = function(Value)
+						getgenv()._esptracers = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateDropdown",
+				_envState = "Bottom",
+				Args = {
+					Name = "Tracers Orientation",
+					Flag = "_tracersorientation",
+					Options = {"Bottom","Middle","Top"},
+					CurrentOption = "Bottom",
+					Callback = function(Value)
+                        local v = 0
+
+                        if Value == "Bottom" then
+                            v = 1
+                        elseif Value == "Middle" then
+                            v = 2
+                        elseif Value == "Top" then
+                            v = 1000
+                        end
+						getgenv()._esptracerattachshift = v or 0
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Names",
+					Flag = "_espnames",
+					Callback = function(Value)
+						getgenv()._espnames = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Distance",
+					Flag = "_espdistance",
+					Callback = function(Value)
+						getgenv()._espdistance = Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+            {
+				Function = "CreateToggle",
+				_envState = true,
+				Args = {
+					Name = "Team Check",
+					Flag = "_espteamcheck",
+					Callback = function(Value)
+						getgenv()._espteamcheck = not Value
+                        getgenv().updateespvalues()
+					end,
+				}
+			},
+        },
+        ["Character"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Walkspeed Changer ━",
+			},
+            {
+                Function = "CreateSlider",
+                _envState = 16,
+                Args = {
+                    Name = "Walkspeed",
+                    Flag = "_walkspeed",
+                    CurrentValue = 16,
+                    Range = {16, 250},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._walkspeed = Value
+                    end
+                }
+            },
+            {
+				Function = "CreateSection",
+				Args = "━ God Mode ━",
+			},
+            {
+                Function = "CreateButton",
+                Args = {
+                    Name = "Godmode",
+                    Callback = function()
+                        pcall(function()
+                            game.Players.LocalPlayer.Character.LowerTorso.Root:Destroy()
+                        end)
+                    end
+                }
+            },
+            {
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "Notes:",
+                    Content = "Your character will be invisible.\n! This cannot be undone! !"
+                }
+            },
+            {
+				Function = "CreateSection",
+				Args = "━ Anti Aim ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Anti Aim",
+					Flag = "_antiaim",
+					Callback = function(Value)
+						getgenv()._antiaim = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateDropdown",
+				_envState =  "Look Up",
+				Args = {
+					Name = "Anti Aim Method",
+					Flag = "_antiaimmethod",
+					Options = {"Look Up","Look Down","Torso In Legs"},
+					CurrentOption = "Look Up",
+					Callback = function(Value)
+						getgenv()._antiaimmethod = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateSection",
+				Args = "━ Infinite Jump ━"
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infjump = Value
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                Args = {
+                    Name = "Infinite Jump Height",
+                    Flag = "_infjumpheight",
+                    CurrentValue = 30,
+                    Range = {0, 150},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._infjumpheight = Value
+                    end
+                }
+            }
+        },
+        ["Misc"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Chat Spammer ━"
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Chat Spammer",
+					Flag = "_chatspammer",
+					Callback = function(Value)
+						getgenv()._chatspammer = Value
+					end,
+				}
+			},
+            {
+				Function = "CreateInput",
+				_envState =  "mopsHub is best",
+				Args = {
+					Name = "Spam Message",
+                    PlaceholderText = "Spam Message",
+					Flag = "_chatspammsg",
+                    RemoveTextAfterFocusLost = false,
+					Callback = function(Value)
+						getgenv()._chatspammsg = Value
+					end,
+				}
+			},
+            {
+                Function = "CreateSection",
+                Args = "━ Instant Respawn ━ "
+            },
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Instant Respawn",
+					Flag = "_autorespawn",
+					Callback = function(Value)
+						getgenv()._autorespawn = Value
+					end,
+				}
+			},
+        },
+        ["Settings"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Script Settings ━"
+			},
+			{
+				Function = "CreateToggle",
+				Args = {
+					Name = "Auto Load configs",
+					CurrentValue = settings.autoLoadConfigs,
+					Callback = function (Value)
+						settings.autoLoadConfigs = Value
+						writefile("/mopsHub/settings_arsenal.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+					end
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "This means, your recently used settings will automatically load when you execute the script."}
+			},
 		}
-		while getgenv().infammo do
-			task.wait()
-			game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount.Value = 999
-			game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount2.Value = 999
-			if not getgenv().infammo then
-				break
+    }
+
+    local _CREDITS = {
+		["Special Thanks"] = {
+			{"Unknown sources",""},
+		},
+		["Developers"] = {
+			{"ShyFlooo","Programmer"},
+		},
+	}
+
+    --Functions | Source: some self made, some from unknown people but edited for my script
+
+    getgenv().updateespvalues = function()
+        ESPFramework.Color = ESPSettings.ESPColor
+        ESPFramework.ToolColor = ESPSettings.ToolColor
+        ESPFramework.Tracers = getgenv()._esptracers
+        ESPFramework.Names = getgenv()._espnames
+        ESPFramework.Health = ESPSettings.PlayerESP.HealthOn
+        ESPFramework.Distance = getgenv()._espdistance
+        ESPFramework.Tool = ESPSettings.PlayerESP.ToolOn
+        ESPFramework.Boxes = getgenv()._espboxes
+        ESPFramework.FaceCamera = ESPSettings.PlayerESP.FaceCamOn
+        ESPFramework.TeamMates = getgenv()._espteamcheck
+        ESPFramework.AttachShift = getgenv()._esptracerattachshift
+        ESPFramework:Toggle(getgenv()._esp)
+    end; getgenv().updateespvalues()
+
+    local function KillPlayer(Player)
+        if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then
+            return
+        end;
+        local BitBuffer = require(game:GetService("ReplicatedStorage").Modules.BitBuffer)()
+        BitBuffer.writeString(game:GetService("Players").LocalPlayer.NRPBS.EquippedTool.Value)
+        BitBuffer.writeUnsigned(2, 1)
+        BitBuffer.writeUnsigned(2, 0)
+        BitBuffer.writeInt8(1 + 0)
+        BitBuffer.writeFloat16(50)
+        BitBuffer.writeInt8(1)
+        BitBuffer.writeUnsigned(1 + 0, 0)
+        BitBuffer.writeUnsigned(1, 0)
+        BitBuffer.writeVector3(Player.Character.HumanoidRootPart.Position)
+        BitBuffer.writeVector3(Player.Character.HumanoidRootPart.Position)
+        return game.ReplicatedStorage.Events["" .. "\226\128\139HitPart"]:FireServer(Player.Character.HumanoidRootPart, BitBuffer.dumpString(), "swaggg")
+    end; local function TeamCheck(arg1, player)
+        local character = game.Players.GetPlayerFromCharacter(game.Players, player)
+        if player.FindFirstChild(player, "Bot") then
+            return false
+        end;
+        if game.ReplicatedStorage.wkspc.BF.Value == true and character ~= arg1 then
+            return true
+        end;
+        if (not character or character ~= arg1) and not arg1.FindFirstChild(arg1, "IsJugg") and (not character or not character.FindFirstChild(character, "IsJugg") or arg1.FindFirstChild(arg1, "IsJugg") ~= nil) and ((game.ReplicatedStorage.wkspc.BR.Value ~= true or not character or character.DesignColor.Value == arg1.DesignColor.Value) and arg1.FriendlyFire.Value ~= true and character ~= nil) and (not character or character.Status.Team.Value == arg1.Status.Team.Value) then
+            return true
+        end;
+        return false
+    end; local function ClosestPlayer()
+        local L_115_, L_116_ = math.huge;
+        for L_117_forvar0, L_118_forvar1 in pairs(game:GetService("Players").GetPlayers(game:GetService("Players"))) do
+            if L_118_forvar1.Character and L_118_forvar1 ~= game.Players.LocalPlayer and not TeamCheck(game.Players.LocalPlayer, L_118_forvar1.Character) then
+                local L_119_ = L_118_forvar1.Character.FindFirstChild(L_118_forvar1.Character, "Head")
+                if L_119_ then
+                    local L_120_, L_121_ = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, L_119_.Position)
+                    if L_121_ then
+                        local L_122_, L_123_ = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(L_120_.X, L_120_.Y)
+                        local L_124_ = (L_123_ - L_122_).Magnitude;
+                        if L_124_ < L_115_ and L_124_ <= getgenv()._fov then
+                            L_115_ = L_124_;
+                            L_116_ = L_118_forvar1
+                        end
+                    end
+                end
+            end
+        end;
+        return L_116_
+    end; local function getHitPart()
+        if getgenv()._silentaimhitpart == "Head" then
+            return "Head"
+        end;
+        if getgenv()._silentaimhitpart == "LowerTorso" then
+            return "LowerTorso"
+        end;
+        if getgenv()._silentaimhitpart == "Random" then
+            if math.random(1, 4 + 0) == 1 then
+                return "Head"
+            else
+                return "LowerTorso"
+            end
+        end
+    end
+
+    --CREATE WINDOW
+	local Window = Rayfield:CreateWindow({
+		Name = "mopsHub - Arsenal",
+		LoadingTitle = "mopsHub - Arsenal",
+		LoadingSubtitle = "by ShyFlooo",
+		ConfigurationSaving = {
+			Enabled = true,
+			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
+			FileName = "mopshub_arsenal"
+		}, 
+		KeySystem = true, -- Set this to true to use our key system
+		KeySettings = {
+			Title = "mopsHub - Arsenal",
+			Subtitle = "Key System",
+			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			FileName = "MOPSHUBKEY",
+			SaveKey = true,
+			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+			Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+		}
+	})
+
+	--SETUP WINDOW
+	for index, name in pairs(_TABS) do
+		local w = Window:CreateTab(name)
+		getgenv()._WINDOW.Tabs[name] = w
+	end
+    getgenv()._WINDOW.Tabs["Credits"]:CreateSection("━ Credits ━")
+	for index, value in pairs(_CREDITS) do
+		local content = ""
+		for i,data in pairs(value) do
+			if #data[2] > 0 then
+				content = content.."\n"..data[1].." - ".. data[2]
+			else
+				content = content.."\n"..data[1]
 			end
 		end
-		game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount.Value = L_69_[1]
-		game:GetService("Players").LocalPlayer.PlayerGui.GUI.Client.Variables.ammocount2.Value = L_69_[2]
+		getgenv()._WINDOW.Tabs["Credits"]:CreateParagraph({Title = index, Content = content})
 	end
-})
-local L_22_ = L_6_:CreateToggle({
-	Name = "No Recoil",
-	CurrentValue = false,
-	Flag = "_norecoil",
-	Callback = function(L_70_arg1)
-		for L_71_forvar1, L_72_forvar2 in pairs(game.ReplicatedStorage.Weapons:GetDescendants()) do
-			if L_72_forvar2.Name == "RecoilControl" then
-				L_72_forvar2.Value = 0
+
+	for index, funcs in pairs(_FUNCTIONS) do
+		print("Loaded "..#funcs.." function(s) for ".. index)
+		for i, func in pairs(funcs) do
+			if func.Function and func.Args then
+				local Tab = getgenv()._WINDOW.Tabs[index]
+				if Tab then
+					local s,e = pcall(function()
+						local f,l = func.Function, true
+						if f == "CreateSection" then
+							Tab:CreateSection(func.Args)
+						elseif f == "CreateButton" then
+							Tab:CreateButton(func.Args)
+						elseif f == "CreateToggle" then
+							Tab:CreateToggle(func.Args)
+						elseif f == "CreateDropdown" then
+							Tab:CreateDropdown(func.Args)
+						elseif f == "CreateInput" then
+							Tab:CreateInput(func.Args)
+						elseif f == "CreateSlider" then
+							Tab:CreateSlider(func.Args)
+						elseif f == "CreateParagraph" then
+							Tab:CreateParagraph(func.Args)
+						elseif f == "CreateLabel" then
+							Tab:CreateLabel(func.Args)
+						elseif f == "CreateKeybind" then
+							Tab:CreateKeybind(func.Args)
+						else
+							l = false
+						end; if l == true then
+							--print("Created function "..tostring(func.Args.Flag or func.Args or "unknown").. " for ".. index.. " ["..string.gsub(func.Function, "Create", "").. "]")
+						else
+							print("Unable to create "..tostring(func.Function).. " function for ".. index .. " ["..i.."]")
+						end
+		
+						if func.Args.Flag then
+							--print("Creating env ".. tostring(func.Args.Flag) .. " with the value ".. tostring(func._envState))
+							getgenv()[func.Args.Flag] = func._envState
+						end
+					end)
+					if not s and e then
+						print("[mopsHub UI Loader Error]: > "..e)
+					end
+				end
 			end
 		end
 	end
-})
-local L_23_ = L_6_:CreateToggle({
-	Name = "No Spread",
-	CurrentValue = false,
-	Flag = "_nospread",
-	Callback = function(L_73_arg1)
-		for L_74_forvar1, L_75_forvar2 in pairs(game.ReplicatedStorage.Weapons:GetDescendants()) do
-			if L_75_forvar2.Name == "MaxSpread" or L_75_forvar2.Name == "Spread" then
-				L_75_forvar2.Value = 0
-			end
+
+	--> MAIN
+
+    -- Wallbang | Source: self made
+
+    local L_57_ = getrawmetatable(game)
+    local L_58_ = L_57_.__namecall
+    setreadonly(L_57_, false)
+    L_57_.__namecall = newcclosure(function(L_59_arg1, ...)
+        local L_60_ = {
+            ...
+        }
+        nm = getnamecallmethod()
+        if getgenv()._wallbang and tostring(nm) == "FindPartOnRayWithIgnoreList" then
+            table.insert(L_60_[2], workspace.Map)
+        end
+        return L_58_(L_59_arg1, ...)
+    end)
+    loadstring(game:HttpGet("https://pastebin.com/raw/mNgwcGpj", true))()
+    setreadonly(L_57_, true)
+
+    --Anti Aim | Source: self made
+
+    local old;
+    old = hookmetamethod(game, "__namecall", function(a, ...)
+        Args = {
+            ...
+        }
+        if getnamecallmethod() == "FireServer" and tostring(a) == "ControlTurn" then
+            if getgenv()._antiaim then
+                if getgenv()._antiaimmethod == "Look Up" then
+                    Args[1 + 0] = 1.3962564026167
+                end;
+                if getgenv()._antiaimmethod == "Look Down" then
+                    Args[1] = - 1.5962564026167
+                end;
+                if getgenv()._antiaimmethod == "Torso In Legs" then
+                    Args[1] = - 6.1
+                end;
+                if getgenv()._antiaimmethod == "__test__aam" then
+                    Args[1] = getgenv().__test__aam_t
+                end;
+                return old(a, unpack(Args))
+            end
+        end;
+        return old(a, ...)
+    end)
+
+    --FOV
+    local FOVCircle
+    if Drawing then
+        FOVCircle = Drawing.new("Circle")
+        FOVCircle.Thickness = 2
+        FOVCircle.NumSides = 50
+        FOVCircle.Filled = false
+        FOVCircle.Transparency = 0.6
+        FOVCircle.Radius = getgenv()._fov;
+        FOVCircle.Color = Color3.new(0, 0.764705, 1)
+    else
+        warn("[mopsHub Loader Error]: Missing function Drawing. Your executor might be too bad and doesn't support it! (Show FOV disabled)")
+    end
+
+    --Walkspeed Changer | Source: self made
+
+    local L_18_ = getrawmetatable(game)
+    setreadonly(L_18_, false)
+    local L_19_ = L_18_.__index
+    L_18_.__index = newcclosure(function(L_62_arg1, L_63_arg2)
+        if L_63_arg2 == "WalkSpeed" then
+            return getgenv()._walkspeed
+        end
+        return L_19_(L_62_arg1, L_63_arg2)
+    end)
+
+    --Infinite Jump | Source: idk
+
+	local function Action(Object, Function) if Object ~= nil then Function(Object); end end
+
+	game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+			if not getgenv()._infjump then return end
+			Action(game:GetService('Players').LocalPlayer.Character.Humanoid, function(self)
+				if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+					Action(self.Parent.HumanoidRootPart, function(self)
+						self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+					end)
+				end
+			end)
 		end
-	end
-})
-getgenv()._firerate = false
-local L_24_ = L_6_:CreateToggle({
-	Name = "Fire Rate",
-	CurrentValue = false,
-	Flag = "_firerate",
-	Callback = function(L_76_arg1)
-		getgenv()._firerate = L_76_arg1
-		for L_77_forvar1, L_78_forvar2 in pairs(game.ReplicatedStorage.Weapons:GetDescendants()) do
-			if L_78_forvar2.Name == "FireRate" then
-				L_78_forvar2.Value = 0.05
+	end)
+
+    --Gun Mods | Source: self made
+
+    for _, v in pairs(game:GetService("ReplicatedStorage").Weapons:GetChildren()) do
+        if v.ClassName == "Folder" then
+            local __ = table.insert(standard_firerate_values, v.Name)
+            standard_firerate_values[v.Name] = v.FireRate.Value
+        end
+    end;
+
+    RunService.Stepped:Connect(function()
+        if Drawing and FOVCircle ~= nil then
+            FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+            FOVCircle.Radius = getgenv()._fov;
+            FOVCircle.Visible = getgenv()._showfov;
+        end
+        if getgenv()._rainbowgun then
+            for _, v in pairs(game.Workspace.Camera.Arms:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.Color = Color3.fromHSV(tick() % 5 / 5, 1 + 0, 1)
+					v.Transparency = 0.5
+					v.Material = "ForceField"
+				end
 			end
-		end
+        end
+    end)
+
+    task.spawn(function()
+        while task.wait() do
+            if getgenv()._norecoil then
+                getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).recoil = 0
+            end
+            if getgenv()._nospread then
+                getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).currentspread = {
+                    ["Value"] = 0
+                }
+            end
+            if getgenv()._rapidfire then
+                for _, v in pairs(game:GetService("ReplicatedStorage").Weapons:GetChildren()) do
+                    if v:FindFirstChild("FireRate") then
+                        v:FindFirstChild("FireRate").Value = 0.01001
+                    end
+                end
+            else
+                for _, v in pairs(game:GetService("ReplicatedStorage").Weapons:GetChildren()) do
+                    if v:FindFirstChild("FireRate") then
+                        v:FindFirstChild("FireRate").Value = standard_firerate_values[v.Name]
+                    end
+                end
+            end
+            if getgenv()._infammo then
+                if require(Player.PlayerGui.GUI.Client.Functions.Weapons).getprimaryammo() then
+                    if require(Player.PlayerGui.GUI.Client.Functions.Weapons).getprimaryammo() == 0 then
+                        getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).ammocount.Value = 6
+                    else
+                        getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).ammocount.Value = require(Player.PlayerGui.GUI.Client.Functions.Weapons).getprimaryammo()
+                    end
+                end
+            end
+            if getgenv()._automatic then
+                getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).mode = "automatic"
+            end
+            if getgenv()._chatspammer then
+                game:GetService("ReplicatedStorage").Events.PlayerChatted:FireServer("Hah!", getgenv()._chatspammsg, false, nil, true, true)
+            end
+            if getgenv()._autorespawn then
+                Client.reviveme = true
+            end
+        end
+    end)
+
+    --Kill Aura | Source Code: kinda self made
+
+    task.spawn(function()
+        while task.wait() do
+            if getgenv()._killaura and Player.PlayerGui.GUI.Timer.Sub.Visible == false then
+                pcall(function()
+                    for _, v in pairs(game.Players:GetPlayers()) do
+                        if v and v ~= Player and v.Character and v.Character:FindFirstChild("Head") then
+                            local Magnitude = (Player.Character.PrimaryPart.Position - v.Character.PrimaryPart.Position).Magnitude;
+                            local CurrentWeapon = game.ReplicatedStorage.Weapons:FindFirstChild(Player.NRPBS.EquippedTool.Value)
+                            if CurrentWeapon:FindFirstChild("Projectile") and workspace:FindFirstChild("Map") then
+                                game:GetService("ReplicatedStorage").Events.CreateProjectile:FireServer("Rocket", 5 + 6295, Vector3.new(), CFrame.new(), 50, 50, 1, 35, CurrentWeapon.Name, Vector3.new(), false, nil, {
+                                    [1] = game:GetService("Workspace").Map.Clips,
+                                    [2] = game:GetService("Workspace").Debris,
+                                    [3] = Player.Character,
+                                    [4 + 0] = game:GetService("Workspace")["Ray_Ignore"],
+                                    [5] = game:GetService("Workspace").Map.Spawns
+                                }, nil, {
+                                    [1 + 0] = v.Character
+                                }, v.Character.Head, v.Character.Head.Position)
+                                game:GetService("ReplicatedStorage").Events.ReplicateProjectile:FireServer({
+                                    [1] = "Baseball",
+                                    [2] = 5 + 275,
+                                    [3] = v.Character.Head.Position,
+                                    [4] = v.Character.Head.CFrame,
+                                    [5] = 45,
+                                    [6] = 0,
+                                    [7] = 0,
+                                    [8] = 0 + 0,
+                                    [5 + 4] = "Snowball",
+                                    [10] = Vector3.new(-20.611129760742, 20.049995422363, 18.381494522095),
+                                    [11] = false,
+                                    [5 + 8] = {
+                                        [1] = game:GetService("Workspace").Map.Clips,
+                                        [2] = game:GetService("Workspace").Debris,
+                                        [3] = Player.Character,
+                                        [4] = game:GetService("Workspace")["Ray_Ignore"],
+                                        [5] = game:GetService("Workspace").Map.Spawns,
+                                        [6] = game:GetService("Workspace").Map.Ignore
+                                    },
+                                    [14] = 1 + 0
+                                })
+                            elseif not CurrentWeapon:FindFirstChild("Projectile") then
+                                if Magnitude <= 12 then
+                                    KillPlayer(v)
+                                end
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end)
+
+    if settings.autoLoadConfigs then
+		Rayfield:LoadConfiguration()
 	end
-})
-getgenv()._fastreload = false
-local L_25_ = L_6_:CreateToggle({
-	Name = "Fast Reload",
-	CurrentValue = false,
-	Flag = "_firerate",
-	Callback = function(L_79_arg1)
-		getgenv()._fastreload = L_79_arg1
-		for L_80_forvar1, L_81_forvar2 in pairs(game.ReplicatedStorage.Weapons:GetDescendants()) do
-			if L_81_forvar2.Name == "ReloadTime" then
-				L_81_forvar2.Value = 1
-			end
-		end
-	end
-})
+end)
+if not s and e then
+    print("[mopsHub Error]:"..e)
+end
