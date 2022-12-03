@@ -40,7 +40,7 @@ getgenv().gameid = game.PlaceId
 for id, scriptstr in pairs(games) do
     if tonumber(id) == getgenv().gameid then
         found = true
-        print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script from %s\n\n", getgenv().gameid,scriptstr))
+        print(string.format("\n\n[mopsHub Loader]: Found script for gameid [%s]\n\n> Loading script from [lol i leaked my script sources here but not amymore]\n\n", getgenv().gameid,scriptstr))
         local _s, _e = pcall(function() 
             loadstring(game:HttpGet(scriptstr))()
         end)
