@@ -3,7 +3,7 @@ local s,e = pcall(function()
     repeat
 		task.wait()
 	until game:IsLoaded()
-    --if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+    if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
 	getgenv().__mpho_1__loaded__ = true
 
     getgenv = getgenv
@@ -15,6 +15,8 @@ local s,e = pcall(function()
 	local Notify = AkaliNotif.Notify;
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local Player = game:GetService("Players").LocalPlayer
+	local GunSettings = game:GetService("ReplicatedStorage"):WaitForChild("GunSettings",30)
+	local GunSettingsBackup = {}
 	local game_client = {}
 	local settings = {
 		autoLoadConfigs = nil,
@@ -55,6 +57,23 @@ local s,e = pcall(function()
         ToolColor = Color3.fromRGB(255, 255, 255)
     }
 
+	local Positions = {
+		["Security Department"] = CFrame.new(-587,40,-59),
+		["Intelligece Agency"] = CFrame.new(-636,41,191),
+		["Shooting Range"] = CFrame.new(-394,44,5),
+		["05 Spawn"] = CFrame.new(-458,46,200),
+		["CDC Viewing Area"] = CFrame.new(65,65,461),
+		["Class-D Cells"] = CFrame.new(129,40,562),
+		["Control Room"] = CFrame.new(100,34,198),
+		["Sector 3"] = CFrame.new(604,40,161),
+		["Sector 2"] = CFrame.new(-106,46,-116),
+		["Sector 1"] = CFrame.new(-363,41,79),
+		["Medical Sector"] = CFrame.new(112,48,-166),
+		["Transformer Room"] = CFrame.new(-34,32,-190),
+
+	}
+	local TeleportDropdownOptions = {}
+
     local Players = game:GetService("Players")
     local Mouse = Player:GetMouse()
     local RunService = game:GetService("RunService")
@@ -84,6 +103,11 @@ local s,e = pcall(function()
 		print("[mopsHub Debug]: Created local config file.")
 	end
 
+	for name,pos in pairs(Positions) do
+		table.insert(TeleportDropdownOptions, name)
+	end
+
+	--ENV
 	getgenv().ESPFramework = ESPFramework
     getgenv()._esptracerattachshift = 1
     getgenv()._WINDOW = {
@@ -95,6 +119,7 @@ local s,e = pcall(function()
 		"Weapon",
 		"Visual",
 		"Character",
+		"Teleport",
 		"Credits"
 	}
 
@@ -113,7 +138,27 @@ local s,e = pcall(function()
 					Callback = function(Value)
 						getgenv()._infammo = Value
                         if Value == true then
-                            --game_client:infammo()
+							game_client:removeWeaponIdentifiers()
+							for _,v in pairs(GunSettings:GetChildren()) do
+								if v:IsA("ModuleScript") then
+									local module = v
+									if require(module).Clip and require(module).Ammo then
+										game_client:editGunSetting(module, "Ammo", 9999)
+										game_client:editGunSetting(module, "Clip", 9999)
+									end
+								end
+							end
+						else
+							game_client:removeWeaponIdentifiers()
+							for _,v in pairs(GunSettings:GetChildren()) do
+								if v:IsA("ModuleScript") then
+									local module = v
+									if require(module).Clip and require(module).Ammo then
+										game_client:editGunSetting(module, "Ammo", GunSettingsBackup[v.Name].Ammo)
+										game_client:editGunSetting(module, "Clip", GunSettingsBackup[v.Name].Clip)
+									end
+								end
+							end
                         end
 					end,
 				}
@@ -121,8 +166,49 @@ local s,e = pcall(function()
 			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Note:",Content = "Infinite Ammo & more stuff will be added very very soon!!!!!!!!!!!!!!!!!"}
+				Args = {Title = "Notes:",Content = "You might have to reload your weapon once to apply!\nYou can't turn it off because its bugged right now."}
 			},
+			{
+				Function = "CreateInput",
+				Args = {
+					Name = "Aim FOV",
+                    PlaceholderText = "Aim FOV",
+					Flag = "_aimfov",
+                    RemoveTextAfterFocusLost = false,
+					Callback = function(Value)
+                        game_client:removeWeaponIdentifiers()
+						for _,v in pairs(GunSettings:GetChildren()) do
+							if v:IsA("ModuleScript") then
+								local module = v
+								if require(module).AimFOV then
+									game_client:editGunSetting(module, "AimFOV", tonumber(Value))
+									--game_client:editGunSetting(module, "ReloadAnimTime", 0)
+								end
+							end
+						end
+					end,
+				}
+			},
+			--[[{
+				Function = "CreateInput",
+				Args = {
+					Name = "Test",
+                    PlaceholderText = "Test",
+					Flag = "_aimfov",
+                    RemoveTextAfterFocusLost = false,
+					Callback = function(Value)
+                        game_client:removeWeaponIdentifiers()
+						for _,v in pairs(GunSettings:GetChildren()) do
+							if v:IsA("ModuleScript") then
+								local module = v
+								if require(module).Damage then
+									game_client:editGunSetting(module, "Weight", Value)
+								end
+							end
+						end
+					end,
+				}
+			},]]
 		},
 		["Visual"] = {
             {
@@ -252,15 +338,15 @@ local s,e = pcall(function()
 		["Character"] = {
 			{
 				Function = "CreateSection",
-				Args = "━ Walkspeed Changer ━",
+				Args = "━ Humanoid Modifications ━",
 			},
             {
                 Function = "CreateSlider",
-                _envState = Player.Character.Humanoid.WalkSpeed,
+                _envState = 16,
                 Args = {
                     Name = "Walkspeed",
                     Flag = "_walkspeed",
-                    CurrentValue = Player.Character.Humanoid.WalkSpeed,
+                    CurrentValue = 16,
                     Range = {0, 200},
 					Increment = 1,
 					Suffix = "",
@@ -269,6 +355,86 @@ local s,e = pcall(function()
                     end
                 }
             },
+            --[[{
+                Function = "CreateSlider",
+                _envState = 50,
+                Args = {
+                    Name = "JumpPower",
+                    Flag = "_jumppower",
+                    CurrentValue = 50,
+                    Range = {0, 200},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._jumppower = Value
+                    end
+                }
+            },]]
+			{
+				Function = "CreateSection",
+				Args = "━ Infinite Jump ━"
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infjump = Value
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                Args = {
+                    Name = "Infinite Jump Height",
+                    Flag = "_infjumpheight",
+                    CurrentValue = 30,
+                    Range = {0, 60},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._infjumpheight = Value
+                    end
+                }
+            },
+			{
+				Function = "CreateSection",
+				Args = "━ Other ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Disable Jump Cooldown",
+					Flag = "_nojumpcd",
+					Callback = function(Value)
+						getgenv()._nojumpcd = Value
+					end,
+				}
+			},
+		},
+		["Teleport"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Teleports ━"
+			},
+			{
+				Function = "CreateDropdown",
+				Args = {
+					Name = "Teleport to",
+					Options = TeleportDropdownOptions,
+					CurrentOption = "select",
+					Callback = function(Value)
+						if Positions[Value] then
+							game_client:teleportPlayer(Positions[Value])
+						else
+							warn("[mopsHub Error]: Unable to find position for ".. Value)
+						end
+					end,
+				}
+			},
 		}
     }
 
@@ -372,7 +538,23 @@ local s,e = pcall(function()
         if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
         local h = Player.Character.HumanoidRootPart
         game:GetService("TweenService"):Create(h, TweenInfo.new(1), {CFrame = cframe}):Play()
-    end;
+    end; function game_client:removeWeaponIdentifiers()
+		Player.Character.Humanoid:UnequipTools()
+		task.wait(0.1)
+		for _,v in pairs(Player.Backpack:GetChildren()) do
+			if v:IsA("Tool") and v:FindFirstChild("identifier")then
+				v:FindFirstChild("identifier"):Destroy()
+			end
+		end
+	end; function game_client:editGunSetting(module, index, value)
+		module = require(module)
+		if module then
+			if module[index] and typeof(module[index]) == typeof(value) then
+				module[index] = value
+			end
+		end
+		print(module[index])
+	end;
 
 	getgenv().updateespvalues = function()
         ESPFramework.Color = ESPSettings.ESPColor
@@ -391,23 +573,99 @@ local s,e = pcall(function()
 
 	--> MAIN
 
-	--Walkspeed Hook to bypass the poop walkspeed detection | Source: self made, well its just a simple hook
+	--Save Standard Gun Settings
 
-	local gmt = getrawmetatable(game)
-	setreadonly(gmt, false)
-	local oldindex = gmt.__index
-	gmt.__index = newcclosure(function(self,b)
-		if b == "WalkSpeed" then
-			return 14
+	for _,v in pairs(GunSettings:GetChildren()) do
+		if v:IsA("ModuleScript") then
+			local m = require(v)
+			table.insert(GunSettingsBackup, v.Name)
+			GunSettingsBackup[v.Name] = m
 		end
-		return oldindex(self,b)
+	end
+
+	--Infinite Jump | Source: idk
+
+	local function Action(Object, Function) if Object ~= nil then Function(Object); end end
+
+	game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+			if not getgenv()._infjump then return end
+			Action(game:GetService('Players').LocalPlayer.Character.Humanoid, function(self)
+				if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+					Action(self.Parent.HumanoidRootPart, function(self)
+						self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+					end)
+				end
+			end)
+		end
 	end)
+
+	--Walkspeed Hook to bypass the poop detection | Source: self made, well its just a simple hook
+
+	task.spawn(function()
+		local gmt = getrawmetatable(game)
+		setreadonly(gmt, false)
+		local oldindex = gmt.__index
+		gmt.__index = newcclosure(function(self,b)
+			if b == "WalkSpeed" then
+				return 16
+			end
+			return oldindex(self,b)
+		end)
+	end)
+
+	--JumpPower Hook to bypass the poop detection | Source: self made, well its just a simple hook
+
+	task.spawn(function()
+		local gmt = getrawmetatable(game)
+		setreadonly(gmt, false)
+		local oldindex = gmt.__index
+		gmt.__index = newcclosure(function(self,b)
+			if b == "JumpPower" then
+				return 50
+			end
+			return oldindex(self,b)
+		end)
+	end)
+
+	--> No Jump Cooldown
 
 	task.spawn(function()
 		while task.wait() do
 			pcall(function()
-				Player.Character.Humanoid.WalkSpeed = getgenv()._walkspeed
+				if getgenv()._nojumpcd then
+					Player.Character.Humanoid.JumpPower = 50
+				end
 			end)
+		end
+	end)
+
+	--> WalkSpeed & JumpPower Changer
+
+	task.spawn(function()
+		while task.wait() do
+			pcall(function()
+				if not game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftShift) then
+					Player.Character.Humanoid.WalkSpeed = getgenv()._walkspeed
+				else
+					Player.Character.Humanoid.WalkSpeed = getgenv()._walkspeed + 10
+				end
+			end)
+		end
+	end)
+
+	task.spawn(function()
+		local mt = getrawmetatable(game)
+		setreadonly(mt,false)
+		local oldindex = mt.__index
+
+		mt.__index = function (a,b)
+			if tostring(a) == "CurrentAmmo" or tostring(a) == "Ammo" then
+				if tostring(b) == "Value" and getgenv()._infammo then
+					return 5000
+				end
+			end
+			return oldindex(a,b)
 		end
 	end)
 end)
