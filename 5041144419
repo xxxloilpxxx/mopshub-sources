@@ -3,7 +3,7 @@ local s,e = pcall(function()
     repeat
 		task.wait()
 	until game:IsLoaded()
-    if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+    --if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
 	getgenv().__mpho_1__loaded__ = true
 
     getgenv = getgenv
@@ -70,7 +70,27 @@ local s,e = pcall(function()
 		["Sector 1"] = CFrame.new(-363,41,79),
 		["Medical Sector"] = CFrame.new(112,48,-166),
 		["Transformer Room"] = CFrame.new(-34,32,-190),
-
+		["Chaos Spawn"] = CFrame.new(-14,88,295),
+	}
+	local giveGunPositions1 = {
+		CFrame.new(-11,38,-181),
+		CFrame.new(-11,38,-199),
+		CFrame.new(-8,89,-199),
+		CFrame.new(-2,89,-201),
+		CFrame.new(-2,88,54),
+		CFrame.new(-22,88,53),
+		CFrame.new(-22,88,132),
+		CFrame.new(-22,88,206),
+	}
+	local giveGunPositions2 = {
+		CFrame.new(-22,88,206),
+		CFrame.new(-22,88,132),
+		CFrame.new(-22,88,53),
+		CFrame.new(-2,88,54),
+		CFrame.new(-2,89,-201),
+		CFrame.new(-8,89,-199),
+		CFrame.new(-11,38,-199),
+		CFrame.new(-11,38,-181),
 	}
 	local TeleportDropdownOptions = {}
 
@@ -209,6 +229,35 @@ local s,e = pcall(function()
 					end,
 				}
 			},]]
+			{
+                Function = "CreateSection",
+                Args = "━ Other ━",
+            },
+			{
+				Function = "CreateButton",
+				Args = {
+					Name = "Give SCAR-H",
+					Callback = function()
+						Rayfield:Notify({
+							Title = "Give Scar-H",
+							Content = "! Do not move during this or you might break it !",
+							Duration = 10,
+							Image = 4483362458,
+							Actions = {
+								Agree = {
+									Name = "Ok",
+								},
+							},
+						})
+						game_client:giveGun()
+					end,
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Notes:",Content = "! Do not move during this or you might break it !\nThis may not work always at the first try!"}
+			},
 		},
 		["Visual"] = {
             {
@@ -534,11 +583,15 @@ local s,e = pcall(function()
 	end
 
 	--> FUNCTIONS
-	function game_client:teleportPlayer(cframe)
-        if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
-        local h = Player.Character.HumanoidRootPart
-        game:GetService("TweenService"):Create(h, TweenInfo.new(1), {CFrame = cframe}):Play()
-    end; function game_client:removeWeaponIdentifiers()
+	function game_client:teleportPlayer(cframe, yield)
+		if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
+		local h = Player.Character.HumanoidRootPart
+		local t = game:GetService("TweenService"):Create(h, TweenInfo.new(1), {CFrame = cframe})
+		t:Play()
+		if yield then
+			t.Completed:Wait()
+		end
+	end; function game_client:removeWeaponIdentifiers()
 		Player.Character.Humanoid:UnequipTools()
 		task.wait(0.1)
 		for _,v in pairs(Player.Backpack:GetChildren()) do
@@ -554,7 +607,45 @@ local s,e = pcall(function()
 			end
 		end
 		print(module[index])
-	end;
+	end; function game_client:giveGun()
+		local oldpos = Player.Character.HumanoidRootPart.CFrame
+		local hum = Player.Character.Humanoid
+		local br = false
+		keypress(0x57)
+		keypress(0x41)
+		keypress(0x53)
+		keypress(0x44)
+		for _,v in pairs(giveGunPositions1) do
+			game_client:teleportPlayer(v,true)
+			task.wait()
+			hum.Died:Connect(function()
+				br=true
+			end)
+			if br then break end
+		end
+		if hum == nil or Player.Character == nil or br then
+			return
+		end
+		task.wait(1)
+		keypress(0x57)
+		keypress(0x41)
+		keypress(0x53)
+		keypress(0x44)
+		hum:MoveTo(Vector3.new(-24,88,233))
+		task.wait(1)
+		for _,v in pairs(giveGunPositions2) do
+			game_client:teleportPlayer(v,true)
+			task.wait()
+			hum.Died:Connect(function()
+				br=true
+			end)
+			if br then break end
+		end
+		if hum == nil or Player.Character == nil or br then
+			return
+		end
+		game_client:teleportPlayer(oldpos)
+	end
 
 	getgenv().updateespvalues = function()
         ESPFramework.Color = ESPSettings.ESPColor
