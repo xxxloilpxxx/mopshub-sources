@@ -3,7 +3,7 @@ local s,e = pcall(function()
     repeat
 		task.wait()
 	until game:IsLoaded()
-    if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+    --if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
 	getgenv().__mpho_1__loaded__ = true
 
     getgenv = getgenv
@@ -289,6 +289,13 @@ local s,e = pcall(function()
 					end,
 				}
 			},
+            {
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "Notes:",
+                    Content = "! Sprint once to apply the speed hack !"
+                }
+            },
         },
     }
 
