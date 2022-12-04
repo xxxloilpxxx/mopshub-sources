@@ -256,7 +256,7 @@ local s,e = pcall(function()
 			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Notes:",Content = "! Do not move during this or you might break it !\nThis may not work always at the first try!"}
+				Args = {Title = "Notes:",Content = "! Do not move during this or you might break it !\nThis may not work always at the first try!\nThis is in BETA and might be buggy."}
 			},
 		},
 		["Visual"] = {
