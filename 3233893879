@@ -119,11 +119,6 @@ local s,e = pcall(function()
 				}
 			},
 			{
-				Function = "CreateParagraph",
-				_envState = false,
-				Args = {Title = "Note:",Content = "FOV comming soon!"}
-			},
-			{
 				Function = "CreateDropdown",
 				_envState = "Random",
 				Args = {
