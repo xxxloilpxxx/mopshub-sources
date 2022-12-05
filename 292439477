@@ -3,19 +3,40 @@
 local s,e = pcall(function()
     if not (game.PlaceId == 292439477) then return end
 
-    getgenv = getgenv
-
 	repeat
 		task.wait()
 	until game:IsLoaded()
 	getgenv().__mpho_1__loaded__ = true
+    local game_client = {}
+    
+    --Get Client Stuff
+    print("e")
+
+    --[[local loaded_modules = getloadedmodules()
+    for i = 1, #loaded_modules do
+        local v = loaded_modules[i]
+        if v.Name == "physics" then
+            print(v,typeof(v))
+            game_client.physics = v
+        elseif v.Name == "ReplicationInterface" then
+            print(v,typeof(v))
+            game_client.replication_interface = v
+        elseif v.Name == "particle" then
+            print(v,typeof(v))
+            game_client.particle = v
+        end
+    end
+    
+    game_client.particle = require(game_client.particle)
+    game_client.replication_interface = require(game_client.replication_interface)
+    game_client.physics = require(game_client.physics)
+    game_client.solve = debug.getupvalue(game_client.physics.timehit, 2);]]
 
     --MODULES
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 	local Notify = AkaliNotif.Notify;
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
-	local game_client = {}
 	local Player = game:GetService("Players").LocalPlayer
 	local settings = {
 		autoLoadConfigs = nil,
@@ -55,6 +76,40 @@ local s,e = pcall(function()
 	getgenv()._hteamcolor = false
 	getgenv()._hitbox = "Head"
 
+    --ESP
+    local plrs = game:GetService("Players")
+    local lp   = plrs.LocalPlayer
+    local ws   = game:GetService("Workspace")
+    local function disableesp()
+         for _,v in pairs(game.CoreGui:GetChildren()) do
+             if v:IsA("Highlight") then
+                 v:Destroy()
+             end
+         end
+     end
+     
+     local function isEnemy(character)
+        if character.Parent.Name == tostring(lp.TeamColor) then
+            return false
+        else
+            return true
+        end
+     end
+     
+     local function createChams(player)
+        local newChams = Instance.new("Highlight")
+        newChams.Adornee = player
+        newChams.Parent = game.CoreGui
+     end
+     
+     local function enableesp()
+        for i,v in pairs(ws.Players:GetDescendants()) do
+            if isEnemy(v) and v.Name == "Player" then
+                createChams(v)
+            end
+        end
+     end
+
     --WINDOW CONFIG
 	local _TABS = {
 		"Visual",
@@ -65,6 +120,121 @@ local s,e = pcall(function()
 	}
     local _FUNCTIONS = {
         ["Visual"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ ESP ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "ESP",
+					Flag = "_esp",
+					Callback = function(Value)
+                        getgenv()._esp = Value
+						if Value == true then
+                            enableesp()
+                        else
+                            disableesp()
+                        end
+						--getgenv().esp.enabled = Value
+						--getgenv().esp.text.enabled = Value
+						--getgenv().esp.highlight_target.enabled = Value
+					end,
+				}
+			},
+			--[[{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Boxes",
+					Flag = "_espboxes",
+					Callback = function(Value)
+						getgenv().esp.misc_layout.box.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Health",
+					Flag = "_esphealth",
+					Callback = function(Value)
+						getgenv().esp.text_layout.health.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Health Bar",
+					Flag = "_esphealthbar",
+					Callback = function(Value)
+						getgenv().esp.misc_layout.health.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Names",
+					Flag = "_espnames",
+					Callback = function(Value)
+						getgenv().esp.text_layout.name.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Distance",
+					Flag = "_espdistance",
+					Callback = function(Value)
+						getgenv().esp.text_layout.distance.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Tool",
+					Flag = "_esptool",
+					Callback = function(Value)
+						getgenv().esp.text_layout.tool.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Highlight",
+					Flag = "_esphighlight",
+					Callback = function(Value)
+						getgenv().esp.misc_layout.highlight.enabled = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 8,
+				Args = {
+					Name = "Font Size",
+					Flag = "_espfontsize",
+					Range = {1, 30},
+					Increment = 1,
+					Suffix = "",
+					CurrentValue = 13,
+					Callback = function(Value)
+						getgenv().esp.fontsize = Value
+					end,
+				}
+			},]]
             {
 				Function = "CreateSection",
 				Args = "━ Hitbox Extender ━"
@@ -206,7 +376,7 @@ local s,e = pcall(function()
 					CurrentValue = settings.autoLoadConfigs,
 					Callback = function (Value)
 						settings.autoLoadConfigs = Value
-						writefile("/mopsHub/settings.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+						writefile("/mopsHub/settings_phantomforces.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
 					end
 				}
 			},
@@ -324,8 +494,6 @@ local s,e = pcall(function()
 	end
 
 	--> MAIN
-
-    --Get Client Stuff
 
     --Functions
     function game_client:inGame()
@@ -499,12 +667,133 @@ local s,e = pcall(function()
 		end
     end)
 
+    --[[Silent Aim | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
+
+    -- variables
+    local players = game:GetService("Players");
+    local replicated = game:GetService("ReplicatedFirst");
+    local localplayer = players.LocalPlayer;
+    local camera = workspace.CurrentCamera;
+
+
+    local visibleCheck = false
+    local targetedPart = "Head"
+    local headChance = 1
+    local fov = 180
+
+    -- functions
+    local function isVisible(position, ignore)
+        return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
+    end
+
+    local function getClosest(dir, origin, ignore)
+        local _angle = fov or 180;
+        local _position, _entry;
+
+        game_client.replication_interface.operateOnAllEntries(function(player, entry)
+            local tpObject = entry and entry._thirdPersonObject;
+            local character = tpObject and tpObject._character;
+            if character and player.Team ~= localplayer.Team then
+                local position = character[targetedPart == "Random" and
+                    (math.random() < (headChance or 0.5) and "Head" or "Torso") or
+                    (targetedPart or "Head")].Position;
+
+                if not (visibleCheck and not isVisible(position, ignore)) then
+                    local dot = dir.Unit:Dot((position - origin).Unit);
+                    local angle = 180 - (dot + 1) * 90;
+                    if angle < _angle then
+                        _angle = angle;
+                        _position = position;
+                        _entry = entry;
+                    end
+                end
+            end
+        end);
+
+        return _position, _entry;
+    end
+
+    local function trajectory(dir, velocity, accel, speed)
+        local t1, t2, t3, t4 = game_client.solve(
+            accel:Dot(accel) * 0.25,
+            accel:Dot(velocity),
+            accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
+            dir:Dot(velocity) * 2,
+            dir:Dot(dir));
+
+        local time = (t1>0 and t1) or (t2>0 and t2) or (t3>0 and t3) or t4;
+        local bullet = 0.5*accel*time + dir/time + velocity;
+        return bullet, time;
+    end
+
+    -- hooks
+    local old;
+    old = hookfunction(game_client.particle.new, function(args)
+        if debug.info(2, "n") == "fireRound" then
+            local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
+            if position and entry then
+                local index = table.find(debug.getstack(2), args.velocity);
+
+                args.velocity = trajectory(
+                    position - args.visualorigin,
+                    entry._velspring._p0,
+                    -args.acceleration,
+                    args.velocity.Magnitude);
+
+                debug.setstack(2, index, args.velocity);
+            end
+        end
+        return old(args);
+    end);]]
+
+    --Old ESP | Source: self made
+     
+     task.spawn(function()
+        ws.Players["Bright orange"].ChildAdded:connect(function(child)
+            if not getgenv()._esp then return end
+            task.wait(1)
+            if isEnemy(child) == true then
+                local newChams = Instance.new("Highlight")
+                newChams.Parent = child
+            end
+        end)
+     end)
+     
+     task.spawn(function()
+        ws.Players["Bright blue"].ChildAdded:connect(function(child)
+            if not getgenv()._esp then return end
+            task.wait(1)
+            if isEnemy(child) == true then
+                local newChams = Instance.new("Highlight")
+                newChams.Parent = child
+            end
+        end)
+     end)
+     
+     task.spawn(function()
+        ws.Ignore.DeadBody.ChildAdded:connect(function(child)
+            if child:FindFirstChildOfClass("Highlight") then
+                child:FindFirstChildOfClass("Highlight"):Destroy()
+            end
+        end)
+     end)
+     
+     task.spawn(function()
+        while task.wait() do
+            if getgenv()._esp then
+                for i,v in next, workspace.Ignore.DeadBody:GetChildren() do
+                    v:Destroy()
+                end
+            end
+        end
+     end)
+
     Notify({
         Title="<font color='#0000ff'>Info</font>",
         Description = "Due the recent update, most of the scripts features got patched. You can now only use the functions that aren't patched! (other features will be added back, when i fixed them)",
         Duration = 15,
     })
- 
+
     if settings.autoLoadConfigs then
         Rayfield:LoadConfiguration()
     end
