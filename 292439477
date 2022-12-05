@@ -1,0 +1,511 @@
+--mopsHub Phantom Forces | 2022
+
+local s,e = pcall(function()
+    if not (game.PlaceId == 292439477) then return end
+
+    getgenv = getgenv
+
+	repeat
+		task.wait()
+	until game:IsLoaded()
+	getgenv().__mpho_1__loaded__ = true
+
+    --MODULES
+	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+	local Notify = AkaliNotif.Notify;
+	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
+	local game_client = {}
+	local Player = game:GetService("Players").LocalPlayer
+	local settings = {
+		autoLoadConfigs = nil,
+	}
+
+    --STUFF THAT NEEDS TO RUN AT EXECUTE
+	if isfile("/mopsHub/settings_phantomforces.mhs") then
+		local s,e = pcall(function()
+			local file_settings = readfile("/mopsHub/settings_phantomforces.mhs")
+			local parsedSettings = {}
+			local s,e = pcall(function()
+				parsedSettings = game:GetService("HttpService"):JSONDecode(file_settings)
+			end)
+			if s then
+				for _,v in pairs(parsedSettings) do
+					settings[_] = v
+				end
+			else
+				warn("[mopsHub Error]: Unable to parse local saved settings json.\nError:\n\n> ".. e)
+			end
+		end)
+		if not s and e then
+			print(e)
+		end
+	else
+		settings.autoLoadConfigs = true
+		writefile("/mopsHub/settings_phantomforces.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+		print("[mopsHub Debug]: Created local config file.")
+	end
+
+    --ENV
+	getgenv()._WINDOW = {
+		Tabs = {},
+	}
+    getgenv()._hextsize = 5
+	getgenv()._hexttransparency = 0.5
+	getgenv()._hteamcolor = false
+	getgenv()._hitbox = "Head"
+
+    --WINDOW CONFIG
+	local _TABS = {
+		"Visual",
+		"Character",
+		"Misc",
+		"Settings",
+		"Credits"
+	}
+    local _FUNCTIONS = {
+        ["Visual"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Hitbox Extender ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Hitbox Extender",
+					Flag = "_hitboxext",
+					Callback = function(Value)
+						getgenv()._hitboxext = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateDropdown",
+				_envState = "Head",
+				Args = {
+					Name = "Hitbox",
+					Flag = "_hitbox",
+					Options = {"Head","Torso"},
+					CurrentOption = getgenv()._hitbox or "Head",
+					Callback = function(Value)
+						getgenv()._hitbox = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 8,
+				Args = {
+					Name = "Hitbox Size",
+					Flag = "_hextsize",
+					Range = {1, 8},
+					Increment = 0.1,
+					Suffix = "",
+					CurrentValue = getgenv()._hextsize,
+					Callback = function(Value)
+						getgenv()._hextsize = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 0.5,
+				Args = {
+					Name = "Hitbox Transparency",
+					Flag = "_hexttransparency",
+					Range = {0, 1},
+					Increment = 0.1,
+					Suffix = "",
+					CurrentValue = 0.5,
+					Callback = function(Value)
+						getgenv()._hexttransparency = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "Sadly the size can't be bigger than 8 due the anticheat."}
+			},
+        },
+        ["Character"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Infinite Jump ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infinitejump = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 50,
+				Args = {
+					Name = "Infinite Jump Height",
+					Flag = "_infjumpheight",
+					Range = {0, 100},
+					Increment = 1,
+					Suffix = "",
+					CurrentValue = 50,
+					Callback = function(Value)
+						getgenv()._infjumpheight = Value
+					end,
+				}
+			},
+        },
+        ["Misc"] = {
+            {
+				Function = "CreateSection",
+				Args = "━ Automatic Actions ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Auto Respawn",
+					Flag = "_autorespawn",
+					Callback = function (Value)
+						getgenv()._autorespawn = Value
+					end
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Join new server on votekick",
+					Flag = "_votekickrejoin",
+					Callback = function (Value)
+						getgenv()._votekickrejoin = Value
+					end
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "Its recommended to put the script in your auto execute folder of your executor, so the script can auto load after a join."}
+			},
+        },
+        ["Settings"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Script Settings ━"
+			},
+			{
+				Function = "CreateToggle",
+				Args = {
+					Name = "Auto Load configs",
+					CurrentValue = settings.autoLoadConfigs,
+					Callback = function (Value)
+						settings.autoLoadConfigs = Value
+						writefile("/mopsHub/settings.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+					end
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "This means, your recently used settings will automatically load when you execute the script."}
+			},
+		}
+    }
+
+    local _CREDITS = {
+		["Special Thanks"] = {
+			{"@yukihooked",""},
+			{"@mickeydev",""},
+			{"@LURKLURKLURKLURKLURKLURKLURKLURK",""}
+		},
+		["Developers"] = {
+			{"ShyFlooo","Programmer"},
+		},
+	}
+
+    if writeclipboard then
+		writeclipboard("discord.gg/g4EGAwjUAK")
+	else
+		warn("[mopsHub Loader Error]: Missing function writeclipboard. Your executor might be too bad and doesn't support it!")
+	end
+
+	--CREATE WINDOW
+	local Window = Rayfield:CreateWindow({
+		Name = "mopsHub - Phantom Forces [TEMP]",
+		LoadingTitle = "mopsHub - Phantom Forces [TEMP]",
+		LoadingSubtitle = "by ShyFlooo",
+		ConfigurationSaving = {
+			Enabled = true,
+			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
+			FileName = "mopshub_phantomforces"
+		}, 
+		KeySystem = true, -- Set this to true to use our key system
+		KeySettings = {
+			Title = "mopsHub - Phantom Forces [TEMP]",
+			Subtitle = "Key System",
+			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			FileName = "MOPSHUBKEY",
+			SaveKey = true,
+			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+			Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+		}
+	})
+
+    --SETUP WINDOW
+	for index, name in pairs(_TABS) do
+		local w = Window:CreateTab(name)
+		getgenv()._WINDOW.Tabs[name] = w
+	end
+
+	for index, value in pairs(_CREDITS) do
+		local content = ""
+		for i,data in pairs(value) do
+			if #data[2] > 0 then
+				content = content.."\n"..data[1].." - ".. data[2]
+			else
+				content = content.."\n"..data[1]
+			end
+		end
+		getgenv()._WINDOW.Tabs["Credits"]:CreateSection(index)
+		getgenv()._WINDOW.Tabs["Credits"]:CreateParagraph({Title = index, Content = content})
+	end
+
+	for index, funcs in pairs(_FUNCTIONS) do
+		print("Loaded "..#funcs.." function(s) for ".. index)
+		for i, func in pairs(funcs) do
+			if func.Function and func.Args then
+				local Tab = getgenv()._WINDOW.Tabs[index]
+				if Tab then
+					local s,e = pcall(function()
+						local f,l = func.Function, true
+						if f == "CreateSection" then
+							Tab:CreateSection(func.Args)
+						elseif f == "CreateButton" then
+							Tab:CreateButton(func.Args)
+						elseif f == "CreateToggle" then
+							Tab:CreateToggle(func.Args)
+						elseif f == "CreateDropdown" then
+							Tab:CreateDropdown(func.Args)
+						elseif f == "CreateInput" then
+							Tab:CreateInput(func.Args)
+						elseif f == "CreateSlider" then
+							Tab:CreateSlider(func.Args)
+						elseif f == "CreateParagraph" then
+							Tab:CreateParagraph(func.Args)
+						elseif f == "CreateLabel" then
+							Tab:CreateLabel(func.Args)
+						elseif f == "CreateKeybind" then
+							Tab:CreateKeybind(func.Args)
+						else
+							l = false
+						end; if l == true then
+							--print("Loaded function "..tostring(func.Args.Flag or func.Args or "unknown").. " for ".. index.. " ["..string.gsub(func.Function, "Create", "").. "]")
+						else
+							--print("Unable to create "..tostring(func.Function).. " function for ".. index .. " ["..i.."]")
+						end
+		
+						if func.Args.Flag then
+							--print("Creating env ".. tostring(func.Args.Flag) .. " with the value ".. tostring(func._envState))
+							getgenv()[func.Args.Flag] = func._envState
+						end
+					end)
+					if not s and e then
+						print("[mopsHub UI Loader Error]: > "..e)
+					end
+				end
+			end
+		end
+	end
+
+	--> MAIN
+
+    --Get Client Stuff
+
+    --Functions
+    function game_client:inGame()
+		local HudScreenGui = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("HudScreenGui")
+		if HudScreenGui.Enabled then return true end
+		return false
+	end; function game_client:inMenu()
+		local MenuScreenGui = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("MenuScreenGui")
+		if MenuScreenGui.Enabled then return true end
+		return false
+	end;
+
+    local function getServers()
+		local url = "https://games.roblox.com/v1/games/292439477/servers/0?sortOrder=Desc&limit=100&excludeFullGames=true"
+		local servers = nil
+
+		local r = Request({
+			["Url"] = url,
+			["Method"] = "GET",
+			["Headers"] = {
+				["Content-Type"] = "application/json"
+			},
+		})
+
+		if r.StatusCode ~= 200 or not r.Success then
+			return warn("[mopsHub Error]: Unable to get servers.")
+		else
+			servers = r.Body
+		end
+		return game:GetService("HttpService"):JSONDecode(servers)
+	end
+
+	local Rejoin = coroutine.create(function()
+		local Success, ErrorMessage = pcall(function()
+			game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
+		end)
+	
+		if ErrorMessage and not Success then
+			warn(ErrorMessage)
+		end
+	end)
+
+    --Hitbox Extender | Source: self made
+
+	local hsize = 1
+	local htrans = 0
+	game:GetService("RunService").Stepped:Connect(function()
+		if getgenv()._hitboxext then
+			hsize = getgenv()._hextsize
+			htrans = getgenv()._hexttransparency
+		else
+			hsize = 1
+			htrans = 0
+		end
+		for i,v in next, workspace.Players:GetDescendants() do
+			if v:FindFirstChild("Head") and v:FindFirstChild("Torso") and not v:FindFirstChildWhichIsA("MeshPart") then
+				if getgenv()._hitbox == "Head" then
+					sethiddenproperty(v.Torso, "Massless", false)
+					v.Torso.Size = Vector3.new(1,1,1)
+					v.Torso.Mesh.Scale = Vector3.new(1,1,1)
+					v.Torso.BrickColor = BrickColor.new("Cashmere")
+					v.Torso.Transparency = 0
+				elseif getgenv()._hitbox == "Torso" then
+					sethiddenproperty(v.Head, "Massless", false)
+					v.Head.Size = Vector3.new(1,1,1)
+					v.Head.Mesh.Scale = Vector3.new(1,1,1)
+					v.Head.BrickColor = BrickColor.new("Cashmere")
+					v.Head.Transparency = 0
+				end
+				local s,e = pcall(function()
+					sethiddenproperty(v[getgenv()._hitbox], "Massless", true)
+					v[getgenv()._hitbox].CanCollide = false
+					v[getgenv()._hitbox].Transparency = htrans
+	
+					if getgenv()._hitbox == "Torso" then
+						v[getgenv()._hitbox].Shirt.Transparency = htrans
+						v[getgenv()._hitbox].Pant.Transparency = htrans
+					else
+						v.Torso.Shirt.Transparency = 0
+						v.Torso.Pant.Transparency = 0
+					end
+	
+					if v[getgenv()._hitbox].Size ~= Vector3.new(hsize,hsize,hsize) and v[getgenv()._hitbox].Mesh.Scale ~= Vector3.new(hsize,hsize,hsize) then
+						v[getgenv()._hitbox].Size = Vector3.new(hsize,hsize,hsize)
+						v[getgenv()._hitbox].Mesh.Scale = Vector3.new(hsize,hsize,hsize)
+					end
+					if getgenv()._hitboxext then
+						if getgenv()._hteamcolor and v[getgenv()._hitbox].Parent.Parent.Name == "Bright blue" then
+							v[getgenv()._hitbox].BrickColor = BrickColor.new("Bright blue")
+						else
+							v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
+						end
+						if getgenv()._hteamcolor and v[getgenv()._hitbox].Parent.Parent.Name == "Bright orange" then
+							v[getgenv()._hitbox].BrickColor = BrickColor.new("Bright orange")
+						else
+							v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
+						end
+					else
+						v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
+					end
+					
+				end)
+				if not s and e then
+					warn(e)
+				end
+			end
+		end
+	end)
+
+    --Infinite Jump | Source: idk
+
+	function Action(Object, Function) if Object ~= nil then Function(Object); end end
+
+	game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+			if not getgenv()._infinitejump then return end
+			Action(game:GetService('Players').LocalPlayer.Character.Humanoid, function(self)
+				if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+					Action(self.Parent.HumanoidRootPart, function(self)
+						self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+					end)
+				end
+			end)
+		end
+	end)
+
+    -- Auto Respawn & Join new server on Votekick & Gun Mods | Source: self made
+
+	local MenuScreenGui = Player.PlayerGui:FindFirstChild("MenuScreenGui")
+	local DisplayVoteKick = Player.PlayerGui:FindFirstChild("ChatScreenGui").Main.DisplayVoteKick
+
+	function spawnplr()
+		if not keypress then
+			return warn("[mopsHub Loader Error]: Missing function keypress. Your executor might be too bad and doesn't support it!")
+		end
+		keypress(0x20)
+		task.wait()
+		keyrelease(0x20)
+	end
+    getgenv().__autorespawn_check_enabled_ = false
+	game:GetService("RunService").Stepped:Connect(function()
+		--Auto Respawn
+		if getgenv()._autorespawn == true then
+			task.wait(0.5)
+			if game_client:inMenu() then
+                if not getgenv().__autorespawn_check_enabled_ then
+                    getgenv().__autorespawn_check_enabled_ = true
+                    repeat
+                        task.wait()
+                        spawnplr()
+                    until MenuScreenGui.Enabled == false
+                    getgenv().__autorespawn_check_enabled_ = false
+                end
+			end
+		end
+		
+		--Join new server on votekick
+		if getgenv()._votekickrejoin == true then
+			if DisplayVoteKick.Visible == true then
+				local str = DisplayVoteKick.TextTitle.Text
+				if string.find(str, Player.Name) then
+					local servers = getServers()
+					if servers then
+						local _server = math.random(1,#servers.data)
+						local _serverid = servers.data[_server].id
+						task.wait(2)
+						game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, _serverid)
+					end
+				end
+			end
+		end
+    end)
+
+    Notify({
+        Title="<font color='#0000ff'>Info</font>",
+        Description = "Due the recent update, most of the scripts features got patched. You can now only use the functions that aren't patched! (other features will be added back, when i fixed them)",
+        Duration = 15,
+    })
+ 
+    if settings.autoLoadConfigs then
+        Rayfield:LoadConfiguration()
+    end
+end)
