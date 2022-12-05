@@ -338,7 +338,7 @@ local s,e = pcall(function()
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "8ETVb2UtkTaiwfymcLyxPzRfRoxDfyadJ"
+			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
 		}
 	})
 
