@@ -1,7 +1,7 @@
 --mopsHub Phantom Forces | 2022
 local s,e = pcall(function()
 	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-	if not game.PlaceId == 292439477 then return end
+	if not(game.PlaceId == 292439477) then return end
 	getgenv = getgenv
 
 	repeat
@@ -12,6 +12,7 @@ local s,e = pcall(function()
 	--MODULES
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+	local __esp_
 	local Notify = AkaliNotif.Notify;
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local game_client = {}
@@ -22,9 +23,9 @@ local s,e = pcall(function()
 	local fake_rep_object = nil
 
 	--STUFF THAT NEEDS TO RUN AT EXECUTE
-	if isfile("/mopsHub/settings.mhs") then
+	if isfile("/mopsHub/settings_phantomforces.mhs") then
 		local s,e = pcall(function()
-			local file_settings = readfile("/mopsHub/settings.mhs")
+			local file_settings = readfile("/mopsHub/settings_phantomforces.mhs")
 			local parsedSettings = {}
 			local s,e = pcall(function()
 				parsedSettings = game:GetService("HttpService"):JSONDecode(file_settings)
@@ -41,8 +42,8 @@ local s,e = pcall(function()
 			print(e)
 		end
 	else
-		autoLoadConfigs = true
-		writefile("/mopsHub/settings.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
+		settings.autoLoadConfigs = true
+		writefile("/mopsHub/settings_phantomforces.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
 		print("[mopsHub Debug]: Created local config file.")
 	end
 
@@ -105,7 +106,7 @@ local s,e = pcall(function()
 					Name = "Hit Part",
 					Flag = "targetedPart",
 					Options = {"Random","Head","Torso"},
-					CurrentOption = "Random",
+					CurrentOption = getgenv().targetedPart or "Random",
 					Callback = function(Value)
 						getgenv().targetedPart = Value
 					end,
@@ -122,7 +123,7 @@ local s,e = pcall(function()
 					Suffix = "%",
 					CurrentValue = 50,
 					Callback = function(Value)
-						getgenv().headChance = math.clamp(Value/100, 0, 1)
+						getgenv().headChance = math.clamp(Value/100, 0, 100)
 					end,
 				}
 			},
@@ -272,7 +273,7 @@ local s,e = pcall(function()
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
-					Name = "Chams",
+					Name = "Highlight",
 					Flag = "_esphighlight",
 					Callback = function(Value)
 						getgenv().esp.misc_layout.highlight.enabled = Value
@@ -634,66 +635,59 @@ local s,e = pcall(function()
 	local players = {}
 	do
 		local garbage = getgc(true)
-		local loaded_modules = getloadedmodules()
 
 		for i = 1, #garbage do
-			local v = garbage[i]
-			if typeof(v) == "table" then
-				if rawget(v, "send") and rawget(v, "fetch") then 
-					game_client.network = v
-				elseif rawget(v, 'goingLoud') and rawget(v, 'isInSight') then 
-					game_client.spotting_interface = v
-				elseif rawget(v, 'setMinimapStyle') and rawget(v, 'setRelHeight') then 
-					game_client.radar_interface = v
-				elseif rawget(v, "getCharacterModel") and rawget(v, 'popCharacterModel') then 
-					game_client.third_person_object = v
-				elseif rawget(v, "getCharacterObject") then 
-					game_client.character_interface = v
-				elseif rawget(v, "isSprinting") and rawget(v, "getArmModels") then 
-					game_client.character_object = v
-				elseif rawget(v, "updateReplication") and rawget(v, "getThirdPersonObject") then 
-					game_client.replication_object = v
-				elseif rawget(v, "setHighMs") and rawget(v, "setLowMs") then 
-					game_client.replication_interface = v
-				elseif rawget(v, 'setSway') and rawget(v, "_applyLookDelta") then 
-					game_client.main_camera_object = v
-				elseif rawget(v, 'getActiveCamera') and rawget(v, "getCameraType") then 
-					game_client.camera_interface = v
-				elseif rawget(v, 'getFirerate') and rawget(v, "getFiremode") then 
-					game_client.firearm_object = v
-				elseif rawget(v, 'canMelee') and rawget(v, "_processMeleeStateChange") then 
-					game_client.melee_object = v
-				elseif rawget(v, 'canCancelThrow') and rawget(v, "canThrow") then 
-					game_client.grenade_object = v
-				elseif rawget(v, "vote") then 
-					game_client.votekick_interface = v
-				elseif rawget(v, "getActiveWeapon") then 
-					game_client.weapon_controller_object = v
-				elseif rawget(v, "getController") then 
-					game_client.weapon_controller_interface = v
-				elseif rawget(v, "updateVersion") and rawget(v, "inMenu") then 
-					game_client.chat_interface = v
-				elseif rawget(v, "trajectory") and rawget(v, "timehit") then
-					game_client.physics = v
-				elseif rawget(v, "slerp") and rawget(v, "toanglesyx") then 
-					game_client.vector = v
+			local s,e = pcall(function()
+				local v = garbage[i]
+				if typeof(v) == "table" then
+					if rawget(v, "send") and rawget(v, "fetch") then 
+						game_client.network = v
+					elseif rawget(v, 'goingLoud') and rawget(v, 'isInSight') then 
+						game_client.spotting_interface = v
+					elseif rawget(v, 'setMinimapStyle') and rawget(v, 'setRelHeight') then 
+						game_client.radar_interface = v
+					elseif rawget(v, "getCharacterModel") and rawget(v, 'popCharacterModel') then 
+						game_client.third_person_object = v
+					elseif rawget(v, "getCharacterObject") then 
+						game_client.character_interface = v
+					elseif rawget(v, "isSprinting") and rawget(v, "getArmModels") then 
+						game_client.character_object = v
+					elseif rawget(v, "updateReplication") and rawget(v, "getThirdPersonObject") then 
+						game_client.replication_object = v
+					elseif rawget(v, "setHighMs") and rawget(v, "setLowMs") then 
+						game_client.replication_interface = v
+					elseif rawget(v, 'setSway') and rawget(v, "_applyLookDelta") then
+						game_client.main_camera_object = v
+					elseif rawget(v, 'getActiveCamera') and rawget(v, "getCameraType") then 
+						game_client.camera_interface = v
+					elseif rawget(v, 'getFirerate') and rawget(v, "getFiremode") then 
+						game_client.firearm_object = v
+					elseif rawget(v, 'canMelee') and rawget(v, "_processMeleeStateChange") then 
+						game_client.melee_object = v
+					elseif rawget(v, 'canCancelThrow') and rawget(v, "canThrow") then 
+						game_client.grenade_object = v
+					elseif rawget(v, "vote") then 
+						game_client.votekick_interface = v
+					elseif rawget(v, "getActiveWeapon") then 
+						game_client.weapon_controller_object = v
+					elseif rawget(v, "getController") then 
+						game_client.weapon_controller_interface = v
+					elseif rawget(v, "updateVersion") and rawget(v, "inMenu") then 
+						game_client.chat_interface = v
+					elseif rawget(v, "trajectory") and rawget(v, "timehit") then
+						game_client.physics = v
+					elseif rawget(v, "slerp") and rawget(v, "toanglesyx") then 
+						game_client.vector = v
+					end
 				end
-			end
-		end
-
-		for i = 1, #loaded_modules do
-			local v = loaded_modules[i]
-			if v.Name == "PlayerSettingsInterface" then
-				game_client.player_settings = require(v)
-			elseif v.Name == "PublicSettings" then 
-				game_client.public_settings = require(v)
-			elseif v.Name == "particle" then 
-				game_client.particle = require(v)
-			elseif v.Name == "BulletCheck" then 
-				game_client.bullet_check = require(v)
-			end
+			end)
+			if not s then print("[mopsHub game_client_loader Error]: "..e) end
 		end
 	end;
+
+	for _,v in pairs(game_client) do
+		print(_,v)
+	end
 
 	local old_set_sway = game_client.main_camera_object.setSway
 	local old_shake = game_client.main_camera_object.shake
@@ -863,8 +857,10 @@ local s,e = pcall(function()
 
 	local function isVisible(position, ignore)
 		return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
-	end; local function getClosest(dir, origin, ignore)
-		local _angle = math.rad(fov or 180);
+	end;
+	
+	local function getClosest(dir, origin, ignore)
+		local _angle = math.rad(80);
 		local _position, _entry;
 
 		replication.operateOnAllEntries(function(player, entry)
@@ -920,8 +916,8 @@ local s,e = pcall(function()
 
 
 	--ESP | Source: https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua
-
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua"))()
+	print("_d")
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/pfesp.backup"))()
 
 	--Hitbox Extender | Source: self made
 
@@ -1083,6 +1079,7 @@ local s,e = pcall(function()
 			task.wait(0.5)
 			if game_client:inMenu() then
 				repeat
+					task.wait(0.5)
 					spawnplr()
 				until MenuScreenGui.Enabled == false
 			end
