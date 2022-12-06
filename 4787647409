@@ -8,17 +8,22 @@ local s,e = pcall(function()
 
     getgenv = getgenv
 
-    --MODULES
+    --MODULES & VARIABLES
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 	local Notify = AkaliNotif.Notify;
     local ESPFramework = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local Player = game:GetService("Players").LocalPlayer
+	local gunstatsbackup = game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP
 	local settings = {
 		autoLoadConfigs = nil,
 	}
     local game_client = {}
+
+	local flying,bv,bav,h,c,cam,nc,Clip,rstr
+	local p = game.Players.LocalPlayer
+	local buttons = {W = false, S = false, A = false, D = false, Moving = false}
 
     local ESPSettings = {
         PlayerESP = {
@@ -63,9 +68,11 @@ local s,e = pcall(function()
         ["Sector 1"] = CFrame.new(356, -25, -159),
         ["Sector 3"] = CFrame.new(465, -18, -1),
         ["Medical Lab"] = CFrame.new(253, -18, -73),
-        ["Missile Bunker"] = CFrame.new(556, -56, -53),
+        ["Missile Bunker Entrance"] = CFrame.new(556, -56, -53),
         ["Checkpoint Top"] = CFrame.new(420, -18, -55),
-        ["Checkpoint Water"] = CFrame.new(475, -78, -121)
+        ["Checkpoint Water"] = CFrame.new(475, -78, -121),
+		["The Bunker"] = CFrame.new(-395,-105,185),
+		["Weird Easter Egg"] = CFrame.new(410,-63,-324),
     }
     local TeleportDropdownOptions = {
         "Patient Housing",
@@ -76,11 +83,31 @@ local s,e = pcall(function()
         "Medical Lab",
         "Checkpoint Top",
         "Checkpoint Water",
-        "Missile Bunker"
+        "Missile Bunker Entrance",
+		"The Bunker",
+		"Weird Easter Egg",
     }
 
+	--> Get Client Stuff
+    function loadClientStuff()
+		local garbage = getgc(true)
+		local loaded_modules = getloadedmodules()
+		
+		for i = 1, #garbage do
+			local v = garbage[i]
+			if typeof(v) == "table" then
+				if rawget(v, "SetWalkspeed")  then
+					game_client.character = v
+				elseif rawget(v, "AddWeapon") then
+					game_client.main_weapon = v
+				elseif rawget(v, "RemoveCatagory") then
+					game_client.key_control = v
+				end
+			end
+		end
+	end; loadClientStuff()
+
     local Players = game:GetService("Players")
-    local Player = Players.LocalPlayer
     local Mouse = Player:GetMouse()
     local RunService = game:GetService("RunService")
 
@@ -118,6 +145,7 @@ local s,e = pcall(function()
 	local _TABS = {
 		"Weapon",
 		"Visual",
+		"Character",
 		"Teleport",
 		"Credits"
 	}
@@ -129,41 +157,334 @@ local s,e = pcall(function()
                 Args = "━ Gun Mods ━",
             },
             {
-				Function = "CreateToggle",
+				Function = "CreateButton",
 				_envState =  false,
 				Args = {
 					Name = "No Recoil",
 					Flag = "_norecoil",
 					Callback = function(Value)
+						local modulecheck = game_client:checkModules()
+						if not modulecheck then
+							return Rayfield:Notify({
+								Title = "Weapon module not found",
+								Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+								Duration = 5,
+								Actions = {
+									Ignore = {
+										Name = "OK",
+									}
+								}
+							})
+						end
 						getgenv()._norecoil = Value
-                        if Value == true then
-                            game_client:enableNoRecoil()
-                        else
-                            game_client:disableNoRecoil()
-                        end
+                        --if Value == true then
+                            game_client:modifyGunData("CamRecoilMin", Vector3.new(0,0,0), true)
+							game_client:modifyGunData("CamRecoilMax", Vector3.new(0,0,0), true)
+                        --[[else
+                            local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:modifyGunData("CamRecoilMin", module.CamRecoilMin, true)
+										game_client:modifyGunData("CamRecoilMax", module.CamRecoilMax, true)
+									end
+								end
+							end
+                        end]]
 					end,
 				}
 			},
             {
-				Function = "CreateToggle",
+				Function = "CreateButton",
 				_envState =  false,
 				Args = {
 					Name = "No Spread",
 					Flag = "_nospread",
 					Callback = function(Value)
+						local modulecheck = game_client:checkModules()
+						if not modulecheck then
+							return Rayfield:Notify({
+								Title = "Weapon module not found",
+								Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+								Duration = 5,
+								Actions = {
+									Ignore = {
+										Name = "OK",
+									}
+								}
+							})
+						end
 						getgenv()._nospread = Value
-                        if Value == true then
-                            game_client:enableNoSpread()
-                        else
-                            game_client:disableNoSpread()
-                        end
+                        --if Value == true then
+							local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								game_client.key_control.RemoveCatagory(nil, v.Tool.Name, true)
+							end
+                            game_client:modifyGunData("AccuracyMin", Vector3.new(-0,-0,0), true)
+							game_client:modifyGunData("AccuracyMax", Vector3.new(0,0,0), true)
+                        --[[else
+                            local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:modifyGunData("AccuracyMin", module.AccuracyMin, true)
+										game_client:modifyGunData("AccuracyMax", module.AccuracyMax, true)
+										game_client.key_control.RemoveCatagory(nil, v.Tool.Name, true)
+										game_client:resetGuns()
+									end
+								end
+							end
+                        end]]
+					end,
+				}
+			},
+			{
+				Function = "CreateButton",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Ammo",
+					Flag = "_infammo",
+					Callback = function(Value)
+						local modulecheck = game_client:checkModules()
+						if not modulecheck then
+							return Rayfield:Notify({
+								Title = "Weapon module not found",
+								Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+								Duration = 5,
+								Actions = {
+									Ignore = {
+										Name = "OK",
+									}
+								}
+							})
+						end
+						getgenv()._infammo = Value
+                        --if Value == true then
+                            game_client:modifyGunData("clipsize", 9999999999)
+                            game_client:modifyGunData("ClipSize", 9999999999, true)
+							game_client:modifyGunData("ammo", 9999999999)
+                        --[[else
+							local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:modifyGunData("clipsize", module.ClipSize)
+										game_client:modifyGunData("ammo", module.ClipSize)
+										game_client:modifyGunData("ClipSize", module.ClipSize, true)
+									end
+								end
+							end
+                        end]]
 					end,
 				}
 			},
             {
+				Function = "CreateButton",
+				_envState =  false,
+				Args = {
+					Name = "Automatic",
+					Flag = "_automatic",
+					Callback = function(Value)
+						local modulecheck = game_client:checkModules()
+						if not modulecheck then
+							return Rayfield:Notify({
+								Title = "Weapon module not found",
+								Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+								Duration = 5,
+								Actions = {
+									Ignore = {
+										Name = "OK",
+									}
+								}
+							})
+						end
+						getgenv()._automatic = Value
+                        --if Value == true then
+							local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								game_client.key_control.RemoveCatagory(nil, v.Tool.Name, true)
+							end
+
+                            game_client:modifyGunData("FireMode", "Auto", true)
+                            game_client:modifyGunData("firemode", "Auto")
+                        --[[else
+							local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:modifyGunData("FireMode", module.FireMode, true)
+										game_client:modifyGunData("firemode", "Auto")
+										game_client.key_control.RemoveCatagory(nil, v.Tool.Name, true)
+										game_client:resetGuns()
+									end
+								end
+							end
+                        end]]
+					end,
+				}
+			},
+			{
+				Function = "CreateButton",
+				_envState =  false,
+				Args = {
+					Name = "Rapidfire",
+					Flag = "_rapidfire",
+					Callback = function(Value)
+						local modulecheck = game_client:checkModules()
+						if not modulecheck then
+							return Rayfield:Notify({
+								Title = "Weapon module not found",
+								Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+								Duration = 5,
+								Actions = {
+									Ignore = {
+										Name = "OK",
+									}
+								}
+							})
+						end
+						getgenv()._rapidfire = Value
+                        --if Value == true then
+                            game_client:modifyGunData("firedelay", 0.05)
+							game_client:modifyGunData("FireDelay", 0.05, true)
+                        --[[else
+							local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:modifyGunData("firedelay", module.FireDelay)
+										game_client:modifyGunData("FireDelay", module.FireDelay, true)
+									end
+								end
+							end
+                        end]]
+					end,
+				}
+			},
+			{
+				Function = "CreateInput",
+				Args = {
+					Name = "Bullets per shot",
+					PlaceholderText = "Bullets",
+					RemoveTextAfterFocusLost = true,
+					Callback = function(Text)
+						if tonumber(Text) then
+							Text = tonumber(Text)
+							game_client:modifyGunData("numbullets", tonumber(Text))
+							game_client:modifyGunData("numBullets", tonumber(Text), true)
+						else
+							return Rayfield:Notify({
+								Title = "Input invalid",
+								Content = "Input must be a a number.",
+								Duration = 2.5,
+							})
+						end
+					end,
+				}
+			},
+			{
 				Function = "CreateParagraph",
-				_envState = false,
-				Args = {Title = "Note:",Content = "! Change your team once to apply No Spread !"}
+				Args = {
+					Title = "Note:",
+					Content = "! It's not recommended to set it higher than ~50 because your game might crash !"
+				}
+			},
+			{
+				Function = "CreateLabel",
+				Args = "________________________________________________________________________"
+			},
+			{
+				Function = "CreateButton",
+				Args = {
+					Name = "Apply gun mods",
+					Callback = function()
+						local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										game_client:resetGuns()
+									end
+								end
+							end
+					end,
+				}
+			},
+			{
+				Function = "CreateButton",
+				Args = {
+					Name = "Disable all gun mods",
+					Callback = function()
+						local currentWeapons = {}
+							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+								table.insert(currentWeapons, weapon)
+							end
+
+							for _,v in pairs(currentWeapons) do
+								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+									if module then
+										pcall(function()
+											game_client:modifyGunData("FireDelay", module.FireDelay, true)
+											game_client:modifyGunData("FireMode", module.FireMode, true)
+											game_client:modifyGunData("ClipSize", module.ClipSize, true)
+											game_client:modifyGunData("AccuracyMin", module.AccuracyMin, true)
+											game_client:modifyGunData("AccuracyMax", module.AccuracyMax, true)
+											game_client:modifyGunData("CamRecoilMin", module.CamRecoilMin, true)
+											game_client:modifyGunData("CamRecoilMax", module.CamRecoilMax, true)
+											game_client:modifyGunData("HeadshotDamage", module.HeadshotDamage, true)
+											game_client:modifyGunData("Damage", module.Damage, true)
+											game_client:modifyGunData("numBullets", module.numBullets, true)
+											game_client:resetGuns()
+										end)
+									end
+								end
+							end
+					end,
+				}
+			},
+			{
+				Function = "CreateParagraph",
+				Args = {
+					Title = "Note:",
+					Content = "After applying the gun mods, equip and unequip your weapon once.\n\nA proper toggle feature for the gun mods might come soon."
+				}
 			},
         },
         ["Visual"] = {
@@ -309,7 +630,98 @@ local s,e = pcall(function()
 					end,
 				}
 			},
-        }
+        },
+		["Character"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Fly ━",
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Fly",
+					Flag = "_fly",
+					Callback = function(Value)
+						getgenv()._fly = Value
+						if Value == true then
+							game_client:fly()
+						else
+							game_client:unfly()
+						end
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                _envState = 50,
+                Args = {
+                    Name = "Fly Speed",
+                    Flag = "_flyspeed",
+                    CurrentValue = 50,
+                    Range = {0, 200},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._flyspeed = Value
+                    end
+                }
+            },
+			{
+				Function = "CreateSection",
+				Args = "━ NoClip ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "NoClip",
+					Flag = "_noclip",
+					Callback = function(Value)
+						getgenv()._noclip = Value
+						if Value == true then
+							game_client:noclip()
+						else
+							game_client:clip()
+						end
+					end,
+				}
+			},
+            {
+				Function = "CreateSection",
+				Args = "━ Infinite Jump ━"
+			},
+            {
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infjump = Value
+					end,
+				}
+			},
+            {
+                Function = "CreateSlider",
+                Args = {
+                    Name = "Infinite Jump Height",
+                    Flag = "_infjumpheight",
+                    CurrentValue = 30,
+                    Range = {0, 60},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._infjumpheight = Value
+                    end
+                }
+            },
+			{
+				Function = "CreateSection",
+				Args = "━ Other ━"
+			},
+			
+        },
     }
 
     local _CREDITS = {
@@ -406,80 +818,128 @@ local s,e = pcall(function()
 			end
 		end
 	end
-
-    --> Get Client Stuff
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-    local garbage = getgc(true)
-    local loaded_modules = getloadedmodules()
-    
-    for i = 1, #garbage do
-        local v = garbage[i]
-        if typeof(v) == "table" then
-            if rawget(v, "SetWalkspeed")  then
-                game_client.character = v
-            end
-        end
-    end
-    
-    for i = 1, #loaded_modules do
-        local v = loaded_modules[i]
-    end
     
     --> Functions
-    function game_client:enableNoRecoil()
-        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
-            pcall(function()
-                local module = require(v)
-                if module.CamRecoilMin then
-                    module.CamRecoilMin = Vector3.new(0, 0, 0)
-                end
-                if module.CamRecoilMax then
-                    module.CamRecoilMax = Vector3.new(0, 0, 0)
-                end
-            end)
-        end
-    end; function game_client:enableNoSpread()
-        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
-            pcall(function()
-                local module = require(v)
-                if module.AccuracyMin then
-                    module.AccuracyMin = Vector3.new(-0, -0, 0)
-                end
-                if module.AccuracyMax then
-                    module.AccuracyMax = Vector3.new(0, 0, 0)
-                end
-            end)
-        end
-    end; function game_client:disableNoRecoil()
-        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
-            pcall(function()
-                local module = require(v)
-                if module.CamRecoilMin then
-                    module.CamRecoilMin = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMin
-                end
-                if module.CamRecoilMax then
-                    module.CamRecoilMax = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMax
-                end
-            end)
-        end
-    end; function game_client:disableNoSpread()
-        for _,v in pairs(game:GetService("ReplicatedStorage").Assets.WeaponModules:GetChildren()) do
-            pcall(function()
-                local module = require(v)
-                if module.AccuracyMin then
-                    module.AccuracyMin = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).AccuracyMin
-                end
-                if module.AccuracyMax then
-                    module.AccuracyMax = require(game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP[v.Name]).CamRecoilMax
-                end
-            end)
-        end
-    end; function game_client:teleportPlayer(cframe)
-        if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
-        local h = Player.Character.HumanoidRootPart
-        game:GetService("TweenService"):Create(h, TweenInfo.new(1), {CFrame = cframe}):Play()
-    end;
+	local function randomString()
+		local length = math.random(10,20)
+		local array = {}
+		for i = 1, length do
+			array[i] = string.char(math.random(32, 126))
+		end
+		return table.concat(array)
+	end; function game_client:modifyGunData(data, value, modulevalue)
+		if not game_client.main_weapon then
+			loadClientStuff()
+		end
+		if not game_client.main_weapon then
+			return
+		end
+		local currentWeapons = {}
+		for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+			table.insert(currentWeapons, weapon)
+		end
+		
+		for _,weaponData in pairs(currentWeapons) do
+			local s,e = pcall(function()
+				if not modulevalue and weaponData[data] and typeof(weaponData[data]) == typeof(value) then
+					weaponData[data] = value
+				elseif modulevalue and game:GetService("ReplicatedStorage").Assets.WeaponModules:FindFirstChild(weaponData.Tool.Name) then
+					local module = require(game:GetService("ReplicatedStorage").Assets.WeaponModules:FindFirstChild(weaponData.Tool.Name))
+					if module[data] and typeof(module[data]) == typeof(value) then
+						module[data] = value
+					end
+				end
+			end)
+			if not s and e then print("[mopsHub Error - Gun Data Modification]: "..e) end
+		end
+	end; function game_client:teleportPlayer(cframe, yield)
+		if not Player.Character and not Player.Character.HumanoidRootPart and not typeof(cframe) == "CFrame" then return end
+		local hrp = Player.Character.HumanoidRootPart
+		local t = game:GetService("TweenService"):Create(hrp, TweenInfo.new(1), {CFrame = cframe})
+		t:Play()
+		if yield then
+			t.Completed:Wait()
+		end
+	end; function game_client:disableLocalAnticheat()
+		if getgenv().__mh_anticheat_disabled__ then return end
+		getgenv().__mh_anticheat_disabled__ = true
+		local BlockedRemotes = {"Memer"}
+		
+		local Events = {FireServer = true}
+		local gameMeta = getrawmetatable(game)
+		local psuedoEnv = {
+			["__index"] = gameMeta.__index,
+			["__namecall"] = gameMeta.__namecall;
+		}
+		setreadonly(gameMeta, false)
+		gameMeta.__index, gameMeta.__namecall = newcclosure(function(self, index, ...)
+			if Events[index] then
+				for i,v in pairs(BlockedRemotes) do
+					if v == self.Name and not checkcaller() then return nil end
+				end
+			end
+			return psuedoEnv.__index(self, index, ...)
+		end)
+		setreadonly(gameMeta, true)
+	end; function game_client:fly()
+		if not p.Character or not p.Character.Head or flying then return end
+		c = p.Character
+		h = c.Humanoid
+		h.PlatformStand = true
+		cam = workspace:WaitForChild('Camera')
+		bv = Instance.new("BodyVelocity")
+		bav = Instance.new("BodyAngularVelocity")
+		bv.Velocity, bv.MaxForce, bv.P = Vector3.new(0, 0, 0), Vector3.new(10000, 10000, 10000), 1000
+		bav.AngularVelocity, bav.MaxTorque, bav.P = Vector3.new(0, 0, 0), Vector3.new(10000, 10000, 10000), 1000
+		bv.Parent = c.Head
+		bav.Parent = c.Head
+		flying = true
+		h.Died:Connect(function() flying = false end)
+	end; function game_client:unfly()
+		if not p.Character or not flying then return end
+		h.PlatformStand = false
+		bv:Destroy()
+		bav:Destroy()
+		flying = false
+	end; function game_client:noclip()
+		Clip = false
+		local function ncl()
+			if Clip == false and Player.Character ~= nil then
+				for _, child in pairs(Player.Character:GetDescendants()) do
+					if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= rstr then
+						child.CanCollide = false
+					end
+				end
+			end
+		end
+		nc = RunService.Stepped:Connect(ncl)
+	end; function game_client:clip()
+		if nc then
+			nc:Disconnect()
+		end
+	end; function game_client:resetGuns()
+		if not game_client.main_weapon then
+			loadClientStuff()
+		end
+		pcall(function()
+			game_client.main_weapon.Reset()
+		end)
+	end; function game_client:checkModules()
+		if game_client.main_weapon then
+			return true
+		else
+			loadClientStuff()
+			if not game_client.main_weapon then
+				return false
+			else
+				return true
+			end
+		end
+	end
 
+	getgenv().game_client = game_client
+
+	rstr = randomString()
     getgenv().updateespvalues = function()
         ESPFramework.Color = ESPSettings.ESPColor
         ESPFramework.ToolColor = ESPSettings.ToolColor
@@ -493,7 +953,73 @@ local s,e = pcall(function()
         ESPFramework.TeamMates = getgenv()._espteamcheck
         ESPFramework.AttachShift = getgenv()._esptracerattachshift
         ESPFramework:Toggle(getgenv()._esp)
-    end; getgenv().updateespvalues()
+    end; getgenv().updateespvalues(); game_client:disableLocalAnticheat()
+
+	--> MAIN
+
+    --Infinite Jump | Source: idk
+
+	local function Action(Object, Function) if Object ~= nil then Function(Object); end end
+
+	game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+			if not getgenv()._infjump then return end
+			Action(game:GetService('Players').LocalPlayer.Character.Humanoid, function(self)
+				if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+					Action(self.Parent.HumanoidRootPart, function(self)
+						self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+					end)
+				end
+			end)
+		end
+	end)
+
+	--Fly | Source: idk
+
+	game:GetService("UserInputService").InputBegan:connect(function (input, GPE)
+		if GPE then return end
+		for i, e in pairs(buttons) do
+			if i ~= "Moving" and input.KeyCode == Enum.KeyCode[i] then
+				buttons[i] = true
+				buttons.Moving = true
+			end
+		end
+	end)
+
+	game:GetService("UserInputService").InputEnded:connect(function (input, GPE)
+		if GPE then return end
+		local a = false
+		for i, e in pairs(buttons) do
+			if i ~= "Moving" then
+				if input.KeyCode == Enum.KeyCode[i] then
+					buttons[i] = false
+				end
+				if buttons[i] then a = true end
+			end
+		end
+		buttons.Moving = a
+	end)
+	
+	local setVec = function (vec)
+		return vec * (getgenv()._flyspeed / vec.Magnitude)
+	end
+	
+	game:GetService("RunService").Heartbeat:connect(function (step) -- The actual fly function, called every frame
+		if flying and c and c.PrimaryPart then
+			local p = c.PrimaryPart.Position
+			local cf = cam.CFrame
+			local ax, ay, az = cf:toEulerAnglesXYZ()
+			c:SetPrimaryPartCFrame(CFrame.new(p.X, p.Y, p.Z) * CFrame.Angles(ax, ay, az))
+			if buttons.Moving then
+				local t = Vector3.new()
+				if buttons.W then t = t + (setVec(cf.lookVector)) end
+				if buttons.S then t = t - (setVec(cf.lookVector)) end
+				if buttons.A then t = t - (setVec(cf.rightVector)) end
+				if buttons.D then t = t + (setVec(cf.rightVector)) end
+				c:TranslateBy(t * step)
+			end
+		end
+	end)
 end)
 if not s and e then
     print("[mopsHub Error]: "..e)
