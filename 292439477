@@ -136,7 +136,7 @@ local s,e = pcall(function()
 		warn("Phantom Forces Patch not executed. Be sure you place it in your auto execute folder.\n\nPatch Script: ".. "discord.gg/g4EGAwjUAK")
 		return Notify({
 			Title = "<font color='#ff0000'>PATCHED</font>",
-			Description = "Sadly the script is patched again aka the patch for the actor module thing.<br /><br />Keep updated on our discord server: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
+			Description = "Sadly the script is patched again aka the patch for the actor module thing.<br /><br />Updates on our discord server: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
 			Duration = 60,
 		})
 		--[[return Notify({
