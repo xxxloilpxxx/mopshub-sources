@@ -690,9 +690,9 @@ local s,e = pcall(function()
 		KeySettings = {
 			Title = "mopsHub - Phantom Forces [DEV BUILD]",
 			Subtitle = "Key System",
-			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			Note = "only devs or testers can get a key",
 			FileName = "MOPSHUBKEY_DEV",
-			SaveKey = true,
+			SaveKey = false,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
 			Key = "mopshubdevbuild_pf_f2iyRkdExzyVLJRc"
 		}
