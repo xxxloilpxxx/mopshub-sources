@@ -684,14 +684,14 @@ local s,e = pcall(function()
 		ConfigurationSaving = {
 			Enabled = true,
 			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
-			FileName = "mopshub_phantomforces"
+			FileName = "mopshub_phantomforces_dev"
 		}, 
 		KeySystem = true, -- Set this to true to use our key system
 		KeySettings = {
 			Title = "mopsHub - Phantom Forces [DEV BUILD]",
 			Subtitle = "Key System",
 			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
-			FileName = "MOPSHUBKEY",
+			FileName = "MOPSHUBKEY_DEV",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
 			Key = "mopshubdevbuild_pf_f2iyRkdExzyVLJRc"
