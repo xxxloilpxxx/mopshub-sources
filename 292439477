@@ -135,10 +135,15 @@ local s,e = pcall(function()
 		end
 		warn("Phantom Forces Patch not executed. Be sure you place it in your auto execute folder.\n\nPatch Script: ".. "discord.gg/g4EGAwjUAK")
 		return Notify({
+			Title = "<font color='#ff0000'>PATCHED</font>",
+			Description = "Sadly the script is patched again aka the patch for the actor module thing.<br /><br />Keep updated on our discord server: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
+			Duration = 60,
+		})
+		--[[return Notify({
 			Title = "<font color='#ff0000'>Patch not installed</font>",
 			Description = "You must place a patch script in your auto execute folder to use this script.<br /><br />You can find it on our discord server: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)<br /><br />no other fix than this right now sorry",
 			Duration = 60,
-		})
+		})]]
 	end
 
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
