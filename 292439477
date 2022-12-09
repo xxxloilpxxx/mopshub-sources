@@ -1,24 +1,27 @@
---mopsHub Phantom Forces [PATCHED] | 2022
+--mopsHub Phantom Forces [MAIN] | 2022
 local s,e = pcall(function()
 	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-	if not game.PlaceId == 292439477 then return end
 	getgenv = getgenv
 
 	repeat
 		task.wait()
 	until game:IsLoaded()
 	getgenv().__mpho_1__loaded__ = true
-
+	
 	--MODULES
 	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 	local Notify = AkaliNotif.Notify;
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local game_client = {}
-	local Player = game:GetService("Players").LocalPlayer
+	local _players = {}
+	local Players = game:GetService("Players")
+	local Player = Players.LocalPlayer
 	local settings = {
 		autoLoadConfigs = nil,
 	}
 	local fake_rep_object = nil
+	local Blacklisted = {"Flame", "SightMark", "SightMark2A", "Tip", "Trigger"}
+	local camera = workspace.CurrentCamera;
 
 	--STUFF THAT NEEDS TO RUN AT EXECUTE
 	if isfile("/mopsHub/settings_phantomforces.mhs") then
@@ -61,7 +64,6 @@ local s,e = pcall(function()
 
 	--CHECK GAME CLIENT PATCH
 	--Get Client Stuff
-	local players = {}
 	do
 		local garbage = getgc(true)
 		local loaded_modules = getloadedmodules()
@@ -182,6 +184,17 @@ local s,e = pcall(function()
 				}
 			},
 			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Hit Randomization",
+					Flag = "randomization",
+					Callback = function(Value)
+						getgenv().randomization = Value
+					end,
+				}
+			},
+			{
 				Function = "CreateDropdown",
 				_envState = "Random",
 				Args = {
@@ -212,9 +225,9 @@ local s,e = pcall(function()
 			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Note:",Content = "Currently the Head Hit Chance only works, if Hit Part is 'Random'."}
+				Args = {Title = "Note:",Content = "Head Hit Chance only works, if Hit Part is set to 'Random'."}
 			},
-			--[[{
+			{
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
@@ -224,22 +237,22 @@ local s,e = pcall(function()
 						getgenv()._drawfov = Value
 					end,
 				}
-			},]]
-			--[[{
+			},
+			{
 				Function = "CreateSlider",
 				_envState = 50,
 				Args = {
 					Name = "FOV",
 					Flag = "fov",
-					Range = {0, 180},
+					Range = {0, 360},
 					Increment = 1,
-					Suffix = "degrees",
+					Suffix = "",
 					CurrentValue = 80,
 					Callback = function(Value)
 						getgenv().fov = Value
 					end,
 				}
-			},]]
+			},
 			{
 				Function = "CreateSection",
 				Args = "━ Gun Mods ━",
@@ -355,7 +368,7 @@ local s,e = pcall(function()
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
-					Name = "Highlight",
+					Name = "Chams",
 					Flag = "_esphighlight",
 					Callback = function(Value)
 						getgenv().esp.misc_layout.highlight.enabled = Value
@@ -393,7 +406,7 @@ local s,e = pcall(function()
 				Function = "CreateSection",
 				Args = "━ Hitbox Extender ━"
 			},
-			{
+			--[[{
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
@@ -447,7 +460,7 @@ local s,e = pcall(function()
 					end,
 				}
 			},
-			--[[{
+			{
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
@@ -461,16 +474,48 @@ local s,e = pcall(function()
 			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Note:",Content = "Sadly the size can't be bigger than 8 due the anticheat."}
+				Args = {Title = "Note:",Content = "Currently patched. :("}
 			},
 			{
 				Function = "CreateSection",
 				Args = "━ Gun Customization ━"
 			},
 			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Rainbow Gun & Arms",
+					Flag = "_rbgaa",
+					Callback = function(Value)
+						getgenv()._rbgaa = Value
+
+						for _,O in pairs(camera:GetDescendants()) do
+							if O:IsA("BasePart") and not table.find(Blacklisted, O.Name) then
+								task.spawn(function()
+									local oldc = O.Color
+									local oldt = O.Transparency
+									local oldm = O.Material
+									while getgenv()._rbgaa do task.wait()
+										O.Color = Color3.fromHSV((tick() % 5 / 5), 1, 1)
+										O.Transparency = 0.8
+										O.Material = Enum.Material.ForceField
+										if not getgenv()._rbgaa then
+											O.Color = oldc
+											O.Transparency = oldt
+											O.Material = oldm or Enum.Material.SmoothPlastic
+											break
+										end
+									end
+								end)
+							end
+						end
+					end,
+				}
+			},
+			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "",Content = "Soon."}
+				Args = {Title = "Note:",Content = "Sometimes you need to respawn once to disable Rainbow Gun & Arms completely."}
 			},
 		},
 		["Character"] = {
@@ -637,11 +682,11 @@ local s,e = pcall(function()
 		KeySettings = {
 			Title = "mopsHub - Phantom Forces",
 			Subtitle = "Key System",
-			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
+			Note = "only devs or testers can get a key",
 			FileName = "MOPSHUBKEY",
-			SaveKey = true,
+			SaveKey = false,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
+			Key = ""
 		}
 	})
 
@@ -733,15 +778,6 @@ local s,e = pcall(function()
 		else
 			return true
 		end
-	end; function game_client:getAllEnemies()
-		local enemies = {}
-		for _,v in pairs(game_client.replication_interface.getAllBodyParts()) do
-			if v.Parent.Name == "Player" and isEnemy(v) and v.Name == "Head" then
-				table.insert(enemies, v.Parent)
-			end
-		end
-
-		return enemies
 	end; function game_client:setHeadSize(character, headSize)
 		sethiddenproperty(character.Head, "Massless", true)
 		character.Head.CanCollide = false
@@ -751,11 +787,11 @@ local s,e = pcall(function()
 		end
 	end; function game_client:addPlayer(plr)
 		if plr then
-			players[plr] = plr
+			_players[plr] = plr
 		end
 	end; function game_client:removePlayer(plr)
-		if rawget(players, plr) then
-			players[plr] = nil
+		if rawget(_players, plr) then
+			_players[plr] = nil
 		end
 	end; function game_client:giveAlotAmmo()
 		--DETECTED
@@ -783,7 +819,7 @@ local s,e = pcall(function()
 	end; function game_client:get_health(plr)
 		local player = game_client.replication_interface.getEntry(plr)
 		if player then 
-			return player._healthstate.health0, player._healthstate.maxhealth 
+			return player._healthstate.health0, player._healthstate.maxhealth
 		end
 	end; function game_client:check_status(plr)
 		local player = game_client.replication_interface.getEntry(plr)
@@ -870,35 +906,52 @@ local s,e = pcall(function()
 	end)
 
 	--Silent Aim | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
-	local players = game:GetService("Players");
-	local localplayer = players.LocalPlayer;
-	local camera = workspace.CurrentCamera;
-	local shared = getrenv().shared;
-	local physics = shared.require("physics");
-	local particle = shared.require("particle");
-	local replication = shared.require("ReplicationInterface");
-	local solve = debug.getupvalue(physics.timehit, 2);
+
+	-- modules
+	local particle, replication, solve;
+	for _, v in next, getgc(true) do
+		if particle and replication and solve then
+			break;
+		elseif type(v) == "table" then
+			if rawget(v, "new") and rawget(v, "step") and rawget(v, "reset") then
+				particle = v;
+			elseif rawget(v, "getPlayerFromBodyPart") then
+				replication = v;
+			elseif rawget(v, "timehit") then
+				solve = debug.getupvalue(v.timehit, 2);
+			end
+		end
+	end
 
 	local function isVisible(position, ignore)
 		return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
 	end;
+
+	local function calculateHitChance()
+		return (math.random() < getgenv().hitChance/100)
+	end
 	
 	local function getClosest(dir, origin, ignore)
-		local _angle = math.rad(fov or 180);
+		local _angle = getgenv().fov or 180;
 		local _position, _entry;
-
+	
 		replication.operateOnAllEntries(function(player, entry)
 			local tpObject = entry and entry._thirdPersonObject;
 			local character = tpObject and tpObject._character;
-			if character and player.Team ~= localplayer.Team then
-				local position = character[getgenv().targetedPart == "Random" and
+			if character and player.Team ~= Player.Team then
+				local part = character[getgenv().targetedPart == "Random" and
 					(math.random() < (getgenv().headChance or 0.5) and "Head" or "Torso") or
-					(getgenv().targetedPart or "Head")].Position;
+					(getgenv().targetedPart or "Head")];
+	
+				local position = part.Position + (getgenv().randomization and part.Size * 0.5 * (math.random() * 2 - 1) or Vector3.zero);
+				local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
 
-				if not (getgenv().visibleCheck and not isVisible(position, ignore)) and getgenv()._slientaimbot then
-					local product = dir.Unit:Dot((position - origin).Unit);
-					local angle = math.acos(product);
-					if angle < _angle then
+				if not (getgenv().visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and getgenv()._slientaimbot then
+					local dot = dir.Unit:Dot((position - origin).Unit);
+					local angle = 180 - (dot + 1) * 90;
+					local c1, c2 = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(screenPos.X, screenPos.Y)
+					local magnitude = (c2-c1).Magnitude
+					if magnitude < _angle then
 						_angle = angle;
 						_position = position;
 						_entry = entry;
@@ -906,7 +959,7 @@ local s,e = pcall(function()
 				end
 			end
 		end);
-
+	
 		return _position, _entry;
 	end; local function trajectory(dir, velocity, accel, speed)
 		local t1, t2, t3, t4 = solve(
@@ -943,9 +996,9 @@ local s,e = pcall(function()
 
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua"))()
 
-	--Hitbox Extender | Source: self made
+	--Hitbox Extender | Source: self made - PATCHED
 
-	local hsize = 1
+	--[[local hsize = 1
 	local htrans = 0
 	game:GetService("RunService").Stepped:Connect(function()
 		if getgenv()._hitboxext then
@@ -1008,7 +1061,7 @@ local s,e = pcall(function()
 				end
 			end
 		end
-	end)
+	end)]]
 
 	--Set Walkspeed | Source: self made
 
@@ -1097,6 +1150,42 @@ local s,e = pcall(function()
 		keyrelease(0x20)
 	end
 
+	--FOV Circle Object
+	local FOVCircle
+    if Drawing then
+        FOVCircle = Drawing.new("Circle")
+        FOVCircle.Thickness = 2
+        FOVCircle.NumSides = 50
+        FOVCircle.Filled = false
+        FOVCircle.Transparency = 0.6
+        FOVCircle.Radius = getgenv().fov;
+        FOVCircle.Color = Color3.new(0, 1, 0.298039)
+    else
+        warn("[mopsHub Loader Error]: Missing function Drawing. Your executor might be too bad and doesn't support it! (Draw FOV disabled)")
+    end
+
+	--Rainbow Gun / Arms | Source: self made
+	workspace.CurrentCamera.DescendantAdded:Connect(function(O)
+		if O:IsA("BasePart") and not table.find(Blacklisted, O.Name) then
+			task.spawn(function()
+				local oldc = O.Color
+				local oldt = O.Transparency
+				local oldm = O.Material
+				while getgenv()._rbgaa do task.wait()
+					O.Color = Color3.fromHSV((tick() % 5 / 5), 1, 1)
+					O.Transparency = 0.8
+					O.Material = Enum.Material.ForceField
+					if not getgenv()._rbgaa then
+						O.Color = oldc
+						O.Transparency = oldt
+						O.Material = oldm or Enum.Material.SmoothPlastic
+						break
+					end
+				end
+			end)
+		end
+	end)
+
 	game:GetService("RunService").Stepped:Connect(function()
 		--Auto Respawn
 		if getgenv()._autorespawn == true then
@@ -1128,7 +1217,22 @@ local s,e = pcall(function()
 				end
 			end
 		end
-		
+
+		--FOV
+		if Drawing and FOVCircle ~= nil then
+            FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+            FOVCircle.Radius = getgenv().fov;
+            FOVCircle.Visible = getgenv()._drawfov;
+        end
+        if getgenv()._rainbowgun then
+            for _, v in pairs(game.Workspace.Camera.Arms:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.Color = Color3.fromHSV(tick() % 5 / 5, 1 + 0, 1)
+					v.Transparency = 0.5
+					v.Material = "ForceField"
+				end
+			end
+        end
 		--Other
 		if game_client:inMenu() then
 			game_client.main_camera_object.setSway = function(self, amount)
@@ -1171,6 +1275,8 @@ local s,e = pcall(function()
 		end
 	end)
 
+	getgenv().game_client = game_client
+	
 	if settings.autoLoadConfigs then
 		Rayfield:LoadConfiguration()
 	end
