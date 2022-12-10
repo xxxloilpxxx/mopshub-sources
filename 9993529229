@@ -305,8 +305,8 @@ local s,e = pcall(function()
 
     --CREATE WINDOW
 	local Window = Rayfield:CreateWindow({
-		Name = "mopsHub - Counter Blox: Remastered [DEV]",
-		LoadingTitle = "mopsHub - Counter Blox: Remastered [DEV]",
+		Name = "mopsHub - Counter Blox: Remastered/Reimagined",
+		LoadingTitle = "mopsHub - Counter Blox: Remastered/Reimagined",
 		LoadingSubtitle = "by ShyFlooo",
 		ConfigurationSaving = {
 			Enabled = true,
@@ -315,7 +315,7 @@ local s,e = pcall(function()
 		}, 
 		KeySystem = false, -- Set this to true to use our key system
 		KeySettings = {
-			Title = "mopsHub - Counter Blox: Remastered [DEV]",
+			Title = "mopsHub - Counter Blox: Remastered/Reimagined",
 			Subtitle = "Key System",
 			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
 			FileName = "MOPSHUBKEY",
