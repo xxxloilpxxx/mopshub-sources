@@ -1,4 +1,4 @@
---mopsHub Phantom Forces [MAIN] | 2022
+--mopsHub Phantom Forces [DEV] | 2022
 local s,e = pcall(function()
 	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 	getgenv = getgenv
@@ -844,6 +844,8 @@ local s,e = pcall(function()
 							Tab:CreateLabel(func.Args)
 						elseif f == "CreateKeybind" then
 							Tab:CreateKeybind(func.Args)
+                        elseif f == "CreateColorPicker" then
+                            Tab:CreateColorPicker(func.Args)
 						else
 							l = false
 						end; if l == true then
