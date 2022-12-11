@@ -684,7 +684,7 @@ local s,e = pcall(function()
 			Subtitle = "Key System",
 			Note = "only devs or testers can get a key",
 			FileName = "MOPSHUBKEY_DEV",
-			SaveKey = false,
+			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
 			Key = "mopshubdevbuild_pf_f2iyRkdExzyVLJRc"
 		}
