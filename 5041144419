@@ -171,9 +171,21 @@ local s,e = pcall(function()
 				}
 			},
 			{
+				Function = "CreateButton",
+				_envState = false,
+				Args = {
+					Name = "Rapid Fire",
+					Flag = "_rapidfire",
+					Callback = function(Value)
+                        getgenv()._rapidfire = Value
+						game_client:enableRapidfire()
+					end,
+				}
+			},
+			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Notes:",Content = "Sadly the infinite ammo method not working anymore. I'll add it back when i found a new method! (rapid fire comming soon too)"}
+				Args = {Title = "Notes:",Content = "Sadly the infinite ammo method not working anymore."}
 			},
 			--[[{
 				Function = "CreateInput",
@@ -611,6 +623,37 @@ local s,e = pcall(function()
 			return
 		end
 		game_client:teleportPlayer(oldpos)
+	end; function game_client:enableRapidfire()
+		local g = getgc(true)
+		local t = {}
+		local p = game:GetService("Players").LocalPlayer
+		for _, v in pairs(g) do
+			if typeof(v) == "table" then
+				if rawget(v, "Ammo") and rawget(v, "CurrentAmmo") then
+					table.insert(t,v)
+				end
+			end
+		end; for _,v in pairs(t) do
+			v.TBS = 0
+		end
+		p.Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+		for _,v in pairs(p.Backpack:GetChildren()) do
+			if v:IsA("Tool") and v:FindFirstChild("identifier") then
+				v:FindFirstChild("identifier"):Destroy()
+			end
+		end; for _, v in pairs(game:GetService("ReplicatedStorage").GunSettings:GetChildren()) do
+			if v:IsA("ModuleScript") then
+				local m = require(v)
+				if m.TBS then
+					m.TBS = 0
+				end
+			end
+		end; p.Backpack.ChildAdded:Connect(function(v)
+			p.Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+			if v:IsA("Tool") and v:FindFirstChild("identifier") then
+				v:FindFirstChild("identifier"):Destroy()
+			end
+		end)
 	end
 	getgenv().updateespvalues = function()
         ESPFramework.Color = ESPSettings.ESPColor
