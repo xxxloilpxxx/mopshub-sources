@@ -150,45 +150,6 @@ local s,e = pcall(function()
                 Args = "━ Gun Mods ━",
             },
 			{
-				Function = "CreateToggle",
-				_envState =  false,
-				Args = {
-					Name = "Infinite Ammo",
-					Flag = "_infammo",
-					Callback = function(Value)
-						getgenv()._infammo = Value
-                        if Value == true then
-							game_client:removeWeaponIdentifiers()
-							for _,v in pairs(GunSettings:GetChildren()) do
-								if v:IsA("ModuleScript") then
-									local module = v
-									if require(module).Clip and require(module).Ammo then
-										game_client:editGunSetting(module, "Ammo", 9999)
-										game_client:editGunSetting(module, "Clip", 9999)
-									end
-								end
-							end
-						else
-							game_client:removeWeaponIdentifiers()
-							for _,v in pairs(GunSettings:GetChildren()) do
-								if v:IsA("ModuleScript") then
-									local module = v
-									if require(module).Clip and require(module).Ammo then
-										game_client:editGunSetting(module, "Ammo", GunSettingsBackup[v.Name].Ammo)
-										game_client:editGunSetting(module, "Clip", GunSettingsBackup[v.Name].Clip)
-									end
-								end
-							end
-                        end
-					end,
-				}
-			},
-			{
-				Function = "CreateParagraph",
-				_envState = false,
-				Args = {Title = "Notes:",Content = "You might have to reload your weapon once to apply!\nYou can't turn it off because its bugged right now."}
-			},
-			{
 				Function = "CreateInput",
 				Args = {
 					Name = "Aim FOV",
@@ -208,6 +169,11 @@ local s,e = pcall(function()
 						end
 					end,
 				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Notes:",Content = "Sadly the infinite ammo method not working anymore. I'll add it back when i found a new method! (rapid fire comming soon too)"}
 			},
 			--[[{
 				Function = "CreateInput",
@@ -233,7 +199,7 @@ local s,e = pcall(function()
                 Function = "CreateSection",
                 Args = "━ Other ━",
             },
-			{
+			--[[{
 				Function = "CreateButton",
 				Args = {
 					Name = "Give SCAR-H",
@@ -252,11 +218,11 @@ local s,e = pcall(function()
 						game_client:giveGun()
 					end,
 				}
-			},
+			},]]
 			{
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Notes:",Content = "! Do not move during this or you might break it !\nThis may not work always at the first try!\nThis is in BETA and might be buggy."}
+				Args = {Title = "Notes:",Content = "'Give SCAR-H' is temporarily removed."}
 			},
 		},
 		["Visual"] = {
@@ -513,7 +479,7 @@ local s,e = pcall(function()
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
+			Key = ""
 		}
 	})
 
@@ -646,7 +612,6 @@ local s,e = pcall(function()
 		end
 		game_client:teleportPlayer(oldpos)
 	end
-
 	getgenv().updateespvalues = function()
         ESPFramework.Color = ESPSettings.ESPColor
         ESPFramework.ToolColor = ESPSettings.ToolColor
@@ -745,20 +710,7 @@ local s,e = pcall(function()
 		end
 	end)
 
-	task.spawn(function()
-		local mt = getrawmetatable(game)
-		setreadonly(mt,false)
-		local oldindex = mt.__index
-
-		mt.__index = function (a,b)
-			if tostring(a) == "CurrentAmmo" or tostring(a) == "Ammo" then
-				if tostring(b) == "Value" and getgenv()._infammo then
-					return 5000
-				end
-			end
-			return oldindex(a,b)
-		end
-	end)
+	getgenv().game_client = game_client
 end)
 if not s and e then
     print("[mopsHub Error]: "..e)
