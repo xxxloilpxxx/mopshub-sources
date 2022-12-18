@@ -36,7 +36,7 @@ for id, scriptstr in pairs(games) do
                 Notify({Title="<font color='#00ff00'>Script loaded!</font>",Description="Enjoy!"})
             end
         else
-            Notify({Title="<font color='#ff0000'>Script patched</font>",Description="Sadly, the Phantom forces script is patched! We are working on it."})
+            Notify({Title="<font color='#ff0000'>Script patched</font>",Description="This script is currently patched! We are working on it."})
         end
     end
 end
