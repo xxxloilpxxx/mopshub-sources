@@ -158,7 +158,7 @@ local s,e = pcall(function()
             {
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Notes:",Content = "Toggling an option might cause a short lag spike.\nTo disable it you need to respawn once."}
+				Args = {Title = "Notes:",Content = "Toggling an option might cause a short lag spike.\nTo disable a gun mod you need to respawn once."}
 			},
         },
         ["Visual"] = {
