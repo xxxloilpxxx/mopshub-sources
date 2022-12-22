@@ -1,5 +1,5 @@
 local s,e = pcall(function()
-    if not game.PlaceId == 4787647409 then return end
+    if not (game.PlaceId == 4787647409) then return end
     repeat
 		task.wait()
 	until game:IsLoaded()
@@ -20,6 +20,7 @@ local s,e = pcall(function()
 		autoLoadConfigs = nil,
 	}
     local game_client = {}
+	local gungarbageforbypassthebadexploitfixlol = {}
 
 	local flying,bv,bav,h,c,cam,nc,Clip,rstr
 	local p = game.Players.LocalPlayer
@@ -106,6 +107,15 @@ local s,e = pcall(function()
 			end
 		end
 	end; loadClientStuff()
+
+	--> Get gun garbage for bypass gun mods fixi hartmann
+	function loadGunGarbageForPoopBypassOfTheGunModsExploitPatchBySoftware()
+		for _, v in pairs(getgc(true)) do
+			if typeof(v) == "table" and rawget(v, "FireDelay") then
+				table.insert(gungarbageforbypassthebadexploitfixlol, v)
+			end
+		end
+	end
 
     local Players = game:GetService("Players")
     local Mouse = Player:GetMouse()
@@ -394,7 +404,7 @@ local s,e = pcall(function()
 					end,
 				}
 			},
-			{
+			--[[{
 				Function = "CreateInput",
 				Args = {
 					Name = "Bullets per shot",
@@ -414,12 +424,13 @@ local s,e = pcall(function()
 						end
 					end,
 				}
-			},
+			},]]
 			{
 				Function = "CreateParagraph",
 				Args = {
 					Title = "Note:",
-					Content = "! It's not recommended to set it higher than ~50 because your game might crash !"
+					--Content = "'! It's not recommended to set it higher than ~50 because your game might crash !'"
+					Content = "Bullets per shot is temporarily removed.",
 				}
 			},
 			{
@@ -839,11 +850,31 @@ local s,e = pcall(function()
 			table.insert(currentWeapons, weapon)
 		end
 		
-		for _,weaponData in pairs(currentWeapons) do
+		for _, weaponData in pairs(currentWeapons) do
 			local s,e = pcall(function()
 				if not modulevalue and weaponData[data] and typeof(weaponData[data]) == typeof(value) then
 					weaponData[data] = value
 				elseif modulevalue and game:GetService("ReplicatedStorage").Assets.WeaponModules:FindFirstChild(weaponData.Tool.Name) then
+					if #gungarbageforbypassthebadexploitfixlol < 1 then
+						loadGunGarbageForPoopBypassOfTheGunModsExploitPatchBySoftware()
+					end
+					if #gungarbageforbypassthebadexploitfixlol < 1 then
+						return Rayfield:Notify({
+							Title = "Weapon module not found",
+							Content = "Weapon module can't be found in menu. Spawn to use this feature!",
+							Duration = 5,
+							Actions = {
+								Ignore = {
+									Name = "OK",
+								}
+							}
+						})
+					end
+					for _, v in pairs(gungarbageforbypassthebadexploitfixlol) do
+						if v[data] and typeof(v[data]) == typeof(value) then
+							v[data] = value
+						end
+					end
 					local module = require(game:GetService("ReplicatedStorage").Assets.WeaponModules:FindFirstChild(weaponData.Tool.Name))
 					if module[data] and typeof(module[data]) == typeof(value) then
 						module[data] = value
