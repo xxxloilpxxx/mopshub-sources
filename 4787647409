@@ -15,7 +15,7 @@ local s,e = pcall(function()
     local ESPFramework = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local Player = game:GetService("Players").LocalPlayer
-	local gunstatsbackup = game:GetService("ReplicatedStorage").Assets.WeaponModulesBACKUP
+	local gunstatsbackup = nil
 	local settings = {
 		autoLoadConfigs = nil,
 	}
@@ -114,6 +114,13 @@ local s,e = pcall(function()
 			if typeof(v) == "table" and rawget(v, "FireDelay") then
 				table.insert(gungarbageforbypassthebadexploitfixlol, v)
 			end
+		end
+	end
+
+	--why so rude, ;( ?
+	for _,v in pairs(game:GetService("ReplicatedStorage").Assets:GetChildren()) do
+		if v.Name ~= "WeaponModules" and v:FindFirstChild("M9 Beretta") then
+			gunstatsbackup = v
 		end
 	end
 
