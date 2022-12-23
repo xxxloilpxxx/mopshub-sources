@@ -15,7 +15,7 @@ local s,e = pcall(function()
     local ESPFramework = loadstring(game:HttpGet("https://raw.githubusercontent.com/NougatBitz/Femware-Leak/main/ESP.lua", true))()
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local Player = game:GetService("Players").LocalPlayer
-	local gunstatsbackup = nil
+	local gunstatsbackup = {}
 	local settings = {
 		autoLoadConfigs = nil,
 	}
@@ -117,12 +117,11 @@ local s,e = pcall(function()
 		end
 	end
 
-	--why so rude, ;( ?
-	for _,v in pairs(game:GetService("ReplicatedStorage").Assets:GetChildren()) do
-		if v.Name ~= "WeaponModules" and v:FindFirstChild("M9 Beretta") then
-			gunstatsbackup = v
-		end
-	end
+	--making my own backup!!!!!!!!! bc u removed it very rude
+	local s,e = pcall(function()
+		gunstatsbackup = game:GetService("ReplicatedStorage").Assets.WeaponModules:Clone()
+	end)
+	if not s and not gunstatsbackup then warn("Unable to create backup ;-;") end
 
     local Players = game:GetService("Players")
     local Mouse = Player:GetMouse()
@@ -335,7 +334,6 @@ local s,e = pcall(function()
 							})
 						end
 						getgenv()._automatic = Value
-                        --if Value == true then
 							local currentWeapons = {}
 							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
 								table.insert(currentWeapons, weapon)
@@ -347,28 +345,10 @@ local s,e = pcall(function()
 
                             game_client:modifyGunData("FireMode", "Auto", true)
                             game_client:modifyGunData("firemode", "Auto")
-                        --[[else
-							local currentWeapons = {}
-							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
-								table.insert(currentWeapons, weapon)
-							end
-
-							for _,v in pairs(currentWeapons) do
-								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
-									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
-									if module then
-										game_client:modifyGunData("FireMode", module.FireMode, true)
-										game_client:modifyGunData("firemode", "Auto")
-										game_client.key_control.RemoveCatagory(nil, v.Tool.Name, true)
-										game_client:resetGuns()
-									end
-								end
-							end
-                        end]]
 					end,
 				}
 			},
-			{
+			--[[{
 				Function = "CreateButton",
 				_envState =  false,
 				Args = {
@@ -392,7 +372,7 @@ local s,e = pcall(function()
                         --if Value == true then
                             game_client:modifyGunData("firedelay", 0.05)
 							game_client:modifyGunData("FireDelay", 0.05, true)
-                        --[[else
+                        else
 							local currentWeapons = {}
 							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
 								table.insert(currentWeapons, weapon)
@@ -407,10 +387,10 @@ local s,e = pcall(function()
 									end
 								end
 							end
-                        end]]
+                        end
 					end,
 				}
-			},
+			},]]
 			--[[{
 				Function = "CreateInput",
 				Args = {
@@ -450,17 +430,17 @@ local s,e = pcall(function()
 					Name = "Apply gun mods",
 					Callback = function()
 						local currentWeapons = {}
-							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
-								table.insert(currentWeapons, weapon)
-							end
-							for _,v in pairs(currentWeapons) do
-								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
-									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
-									if module then
-										game_client:resetGuns()
-									end
-								end
-							end
+						for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
+							table.insert(currentWeapons, weapon)
+						end
+						for _,v in pairs(currentWeapons) do
+							--if gunstatsbackup:FindFirstChild(v.Tool.Name) then
+								--local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+								--if module then
+									game_client:resetGuns()
+								--end
+							--end
+						end
 					end,
 				}
 			},
@@ -473,10 +453,9 @@ local s,e = pcall(function()
 							for _,weapon in pairs(game_client.main_weapon.CurrentWeapons) do
 								table.insert(currentWeapons, weapon)
 							end
-
 							for _,v in pairs(currentWeapons) do
-								if gunstatsbackup:FindFirstChild(v.Tool.Name) then
-									local module = require(gunstatsbackup:FindFirstChild(v.Tool.Name))
+								if gunstatsbackup[v.Tool.Name] then
+									local module = require(gunstatsbackup[v.Tool.Name])
 									if module then
 										pcall(function()
 											game_client:modifyGunData("FireDelay", module.FireDelay, true)
@@ -899,26 +878,24 @@ local s,e = pcall(function()
 			t.Completed:Wait()
 		end
 	end; function game_client:disableLocalAnticheat()
-		if getgenv().__mh_anticheat_disabled__ then return end
-		getgenv().__mh_anticheat_disabled__ = true
-		local BlockedRemotes = {"Memer"}
+		if not getgenv().____noob_____________________ then
+			getgenv().____noob_____________________ = "noob"
+			RunService.Stepped:Connect(function()
+				local char = game.Players.LocalPlayer.Character
+				if not char then return end
+				local upt = char:FindFirstChild("UpperTorso")
+				if not upt then return end
 		
-		local Events = {FireServer = true}
-		local gameMeta = getrawmetatable(game)
-		local psuedoEnv = {
-			["__index"] = gameMeta.__index,
-			["__namecall"] = gameMeta.__namecall;
-		}
-		setreadonly(gameMeta, false)
-		gameMeta.__index, gameMeta.__namecall = newcclosure(function(self, index, ...)
-			if Events[index] then
-				for i,v in pairs(BlockedRemotes) do
-					if v == self.Name and not checkcaller() then return nil end
+				--fly
+				for _,v in pairs(getconnections(game.Players.LocalPlayer.Character.DescendantAdded)) do
+					v:Disable()
 				end
-			end
-			return psuedoEnv.__index(self, index, ...)
-		end)
-		setreadonly(gameMeta, true)
+				--noclip
+				for _,v in pairs(getconnections(upt:GetPropertyChangedSignal("CanCollide"))) do
+					v:Disable()
+				end
+			end)
+		end
 	end; function game_client:fly()
 		if not p.Character or not p.Character.Head or flying then return end
 		c = p.Character
