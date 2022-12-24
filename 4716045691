@@ -1,3 +1,4 @@
+local Workspace = game:GetService("Workspace")
 local s,e = pcall(function()
     if not (game.PlaceId == 4716045691) then return end
     repeat
@@ -103,6 +104,47 @@ local s,e = pcall(function()
 	}
     local _FUNCTIONS = {
         ["Weapon"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Aimbot ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Silent Aimbot",
+					Flag = "_slientaimbot",
+					Callback = function(Value)
+						getgenv()._slientaimbot = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Draw FOV",
+					Flag = "_drawfov",
+					Callback = function(Value)
+						getgenv()._drawfov = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 50,
+				Args = {
+					Name = "FOV",
+					Flag = "fov",
+					Range = {0, 360},
+					Increment = 1,
+					Suffix = "",
+					CurrentValue = 80,
+					Callback = function(Value)
+						getgenv().fov = Value
+					end,
+				}
+			},
             {
                 Function = "CreateSection",
                 Args = "━ Gun Mods ━",
@@ -158,7 +200,7 @@ local s,e = pcall(function()
             {
 				Function = "CreateParagraph",
 				_envState = false,
-				Args = {Title = "Notes:",Content = "Toggling an option might cause a short lag spike.\nTo disable a gun mod you need to respawn once."}
+				Args = {Title = "Notes:",Content = "Toggling an option might cause a short lag spike.\nTo disable it you need to respawn once."}
 			},
         },
         ["Visual"] = {
@@ -549,6 +591,7 @@ local s,e = pcall(function()
 
     RunService.RenderStepped:Connect(function()
         local gun = nil
+		if not Player.Character then return end
         for _,v in pairs(Player.Character:GetChildren()) do
             if v:FindFirstChild("config") then
                 gun = require(v:FindFirstChild("config"))
@@ -567,6 +610,75 @@ local s,e = pcall(function()
            if gun.SHOOT_MODE then gun.SHOOT_MODE = 2 end
         end
     end)
+
+	--Silent Aim
+
+	local function ClosestPlayerToCursor()
+		local MaxDistance, Closest = math.huge
+		for i,v in pairs(Players.GetPlayers(Players)) do
+			if v ~= Player and v.Character and v.TeamColor ~= Player.TeamColor then
+				local Head = v.Character.FindFirstChild(v.Character, "Head")
+				if Head then
+					local Pos, Vis = Workspace.CurrentCamera.WorldToScreenPoint(Workspace.CurrentCamera, Head.Position)
+					if Vis then
+						local A1, A2 = Vector2.new(Mouse.X, Mouse.Y), Vector2.new(Pos.X, Pos.Y)
+						local Dist = (A2 - A1).Magnitude
+						if Dist < getgenv().fov and Dist <= math.huge and getgenv()._slientaimbot then
+							MaxDistance = Dist
+							Closest = v
+						end
+					end
+				end
+			end
+		end
+		return Closest
+	end
+
+
+	local OldNameCall = nil
+	OldNameCall = hookmetamethod(game, "__namecall", function(self,...)
+		local Args = {...}
+		if getnamecallmethod() == "FindPartOnRayWithIgnoreList" and not checkcaller() then
+			local target = ClosestPlayerToCursor()
+			if target and target.Character and target.Character.FindFirstChild(target.Character, "HumanoidRootPart") then
+				Args[1] = Ray.new(Workspace.CurrentCamera.CFrame.Position, (target.Character.HumanoidRootPart.Position - Workspace.CurrentCamera.CFrame.Position).Unit * 1000)
+				return OldNameCall(self, unpack(Args))
+			end
+		end
+		return OldNameCall(self, ...)
+	end)
+
+	--FOV Circle Object
+	local FOVCircle
+    if Drawing then
+        FOVCircle = Drawing.new("Circle")
+        FOVCircle.Thickness = 2
+        FOVCircle.NumSides = 50
+        FOVCircle.Filled = false
+        FOVCircle.Transparency = 0.6
+        FOVCircle.Radius = getgenv().fov;
+        FOVCircle.Color = Color3.new(0, 1, 0.298039)
+    else
+        warn("[mopsHub Loader Error]: Missing function Drawing. Your executor might be too bad and doesn't support it! (Draw FOV disabled)")
+    end
+
+	RunService.Stepped:Connect(function()
+		--FOV
+		if Drawing and FOVCircle ~= nil then
+            FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+            FOVCircle.Radius = getgenv().fov;
+            FOVCircle.Visible = getgenv()._drawfov;
+        end
+        if getgenv()._rainbowgun then
+            for _, v in pairs(game.Workspace.Camera.Arms:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.Color = Color3.fromHSV(tick() % 5 / 5, 1 + 0, 1)
+					v.Transparency = 0.5
+					v.Material = "ForceField"
+				end
+			end
+        end
+	end)
 
     --Infinite Jump | Source: idk
 
