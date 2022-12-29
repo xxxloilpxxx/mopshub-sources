@@ -1,5 +1,5 @@
 local s,e = pcall(function()
-    if not game.PlaceId == 286090429 then return end
+    if not(game.PlaceId == 286090429) then return end
     repeat
 		task.wait()
 	until game:IsLoaded()
@@ -103,9 +103,6 @@ local s,e = pcall(function()
 		"Credits"
 	}
 
-    --IMPORTANT FUNCS
-    
-
     local _FUNCTIONS = {
         ["Weapon"] = {
             {
@@ -180,7 +177,7 @@ local s,e = pcall(function()
 					end,
 				}
 			},
-            {
+            --[[{
 				Function = "CreateToggle",
 				_envState =  false,
 				Args = {
@@ -201,11 +198,10 @@ local s,e = pcall(function()
                             end
                             return L_58_(L_59_arg1, ...)
                         end)
-                        loadstring(game:HttpGet("https://pastebin.com/raw/mNgwcGpj", true))()
                         setreadonly(L_57_, true)
 					end,
 				}
-			},
+			},]]
             {
 				Function = "CreateDropdown",
 				_envState = "LowerTorso",
@@ -495,7 +491,7 @@ local s,e = pcall(function()
 				Args = {
 					Name = "Anti Aim Method",
 					Flag = "_antiaimmethod",
-					Options = {"Look Up","Look Down"},
+					Options = {"Look Up","Look Down","Torso In Legs"},
 					CurrentOption = "Look Up",
 					Callback = function(Value)
 						getgenv()._antiaimmethod = Value
@@ -533,7 +529,7 @@ local s,e = pcall(function()
             }
         },
         ["Misc"] = {
-            {
+            --[[{
 				Function = "CreateSection",
 				Args = "━ Chat Spammer ━"
 			},
@@ -560,7 +556,7 @@ local s,e = pcall(function()
 						getgenv()._chatspammsg = Value
 					end,
 				}
-			},
+			},]]
             {
                 Function = "CreateSection",
                 Args = "━ Instant Respawn ━ "
@@ -635,10 +631,10 @@ local s,e = pcall(function()
         BitBuffer.writeString(game:GetService("Players").LocalPlayer.NRPBS.EquippedTool.Value)
         BitBuffer.writeUnsigned(2, 1)
         BitBuffer.writeUnsigned(2, 0)
-        BitBuffer.writeInt8(1 + 0)
+        BitBuffer.writeInt8(1)
         BitBuffer.writeFloat16(50)
         BitBuffer.writeInt8(1)
-        BitBuffer.writeUnsigned(1 + 0, 0)
+        BitBuffer.writeUnsigned(1, 0)
         BitBuffer.writeUnsigned(1, 0)
         BitBuffer.writeVector3(Player.Character.HumanoidRootPart.Position)
         BitBuffer.writeVector3(Player.Character.HumanoidRootPart.Position)
@@ -656,24 +652,24 @@ local s,e = pcall(function()
         end;
         return false
     end; local function ClosestPlayer()
-        local L_115_, L_116_ = math.huge;
-        for L_117_forvar0, L_118_forvar1 in pairs(game:GetService("Players").GetPlayers(game:GetService("Players"))) do
-            if L_118_forvar1.Character and L_118_forvar1 ~= game.Players.LocalPlayer and not TeamCheck(game.Players.LocalPlayer, L_118_forvar1.Character) then
-                local L_119_ = L_118_forvar1.Character.FindFirstChild(L_118_forvar1.Character, "Head")
-                if L_119_ then
-                    local L_120_, L_121_ = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, L_119_.Position)
-                    if L_121_ then
-                        local L_122_, L_123_ = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(L_120_.X, L_120_.Y)
-                        local L_124_ = (L_123_ - L_122_).Magnitude;
-                        if L_124_ < L_115_ and L_124_ <= getgenv()._fov then
-                            L_115_ = L_124_;
-                            L_116_ = L_118_forvar1
+        local maxDis, t = math.huge;
+        for _, v in pairs(game:GetService("Players").GetPlayers(game:GetService("Players"))) do
+            if v.Character and v ~= game.Players.LocalPlayer and not TeamCheck(game.Players.LocalPlayer, v.Character) then
+                local target = v.Character.FindFirstChild(v.Character, "Head")
+                if target then
+                    local screenpos, vis = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, target.Position)
+                    if vis then
+                        local c1, c2 = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(screenpos.X, screenpos.Y)
+                        local Magnitude = (c2 - c1).Magnitude;
+                        if Magnitude < maxDis and Magnitude <= getgenv()._fov then
+                            maxDis = Magnitude;
+                            t = v
                         end
                     end
                 end
             end
         end;
-        return L_116_
+        return t
     end; getgenv().getHitPart = function()
         if getgenv()._silentaimhitpart == "Head" then
             return "Head"
@@ -708,7 +704,7 @@ local s,e = pcall(function()
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
+			Key = ""
 		}
 	})
 
@@ -822,16 +818,16 @@ local s,e = pcall(function()
 
     --Walkspeed Changer | Source: self made
 
-    local L_18_ = getrawmetatable(game)
-    setreadonly(L_18_, false)
-    local L_19_ = L_18_.__index
-    L_18_.__index = newcclosure(function(L_62_arg1, L_63_arg2)
-        if L_63_arg2 == "WalkSpeed" then
+    local smt = getrawmetatable(game)
+    setreadonly(smt, false)
+    local wold = smt.__index
+    smt.__index = newcclosure(function(a, b)
+        if b == "WalkSpeed" then
             return getgenv()._walkspeed
         end
-        return L_19_(L_62_arg1, L_63_arg2)
+        return wold(a, b)
     end)
-
+    
     --Infinite Jump | Source: idk
 
 	local function Action(Object, Function) if Object ~= nil then Function(Object); end end
@@ -857,7 +853,7 @@ local s,e = pcall(function()
             standard_firerate_values[v.Name] = v.FireRate.Value
         end
     end;
-
+    
     RunService.Stepped:Connect(function()
         if Drawing and FOVCircle ~= nil then
             FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
@@ -910,9 +906,9 @@ local s,e = pcall(function()
             if getgenv()._automatic then
                 getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).mode = "automatic"
             end
-            if getgenv()._chatspammer then
+            --[[if getgenv()._chatspammer then
                 game:GetService("ReplicatedStorage").Events.PlayerChatted:FireServer("Hah!", getgenv()._chatspammsg, false, nil, true, true)
-            end
+            end]]
             if getgenv()._autorespawn then
                 Client.reviveme = true
             end
