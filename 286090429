@@ -849,22 +849,22 @@ local s,e = pcall(function()
         setreadonly(mt, true)
 
         local ping = 32
-    task.spawn(function()
-        while task.wait(0.1) do
-            ping = math.random(30, 70)
-        end
-    end)
-    task.spawn(function()
-        game:GetService("RunService").RenderStepped:connect(function()game.Players.LocalPlayer.Ping.Value = ping
+        task.spawn(function()
+            while task.wait(0.1) do
+                ping = math.random(30, 70)
+            end
         end)
-    end)
-    while task.wait() do
-        local args = {
-            [1] = 100,
-            [2] = "PingDeez"
-        }
-        game:GetService("ReplicatedStorage").Events.UpdatePing:FireServer(unpack(args))
-    end
+        task.spawn(function()
+            game:GetService("RunService").RenderStepped:connect(function()game.Players.LocalPlayer.Ping.Value = ping
+            end)
+        end)
+        while task.wait() do
+            local args = {
+                [1] = 100,
+                [2] = "PingDeez"
+            }
+            game:GetService("ReplicatedStorage").Events.UpdatePing:FireServer(unpack(args))
+        end
     end)
 
     --Gun Mods | Source: self made
@@ -878,7 +878,6 @@ local s,e = pcall(function()
     
     RunService.Stepped:Connect(function()
         if Drawing and FOVCircle ~= nil then
-            print("draw fov")
             FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
             FOVCircle.Radius = getgenv()._fov;
             FOVCircle.Visible = getgenv()._showfov;
@@ -897,11 +896,9 @@ local s,e = pcall(function()
     task.spawn(function()
         while task.wait() do
             if getgenv()._norecoil then
-                print("no recoil")
                 getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).recoil = 0
             end
             if getgenv()._nospread then
-                print("no spread")
                 getsenv(Player.PlayerGui.GUI.Client.Functions.Weapons).currentspread = {
                     ["Value"] = 0
                 }
