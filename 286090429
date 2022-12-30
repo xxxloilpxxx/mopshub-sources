@@ -177,7 +177,7 @@ local s,e = pcall(function()
 					end,
 				}
 			},
-            --[[{
+            {
 				Function = "CreateToggle",
 				_envState =  false,
 				Args = {
@@ -185,23 +185,9 @@ local s,e = pcall(function()
 					Flag = "_wallbang",
 					Callback = function(Value)
 						getgenv()._wallbang = Value
-                        local L_57_ = getrawmetatable(game)
-                        local L_58_ = L_57_.__namecall
-                        setreadonly(L_57_, false)
-                        L_57_.__namecall = newcclosure(function(L_59_arg1, ...)
-                            local L_60_ = {
-                                ...
-                            }
-                            NamecallMethod = getnamecallmethod()
-                            if getgenv()._wallbang and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" then
-                                table.insert(L_60_[2], workspace.Map)
-                            end
-                            return L_58_(L_59_arg1, ...)
-                        end)
-                        setreadonly(L_57_, true)
 					end,
 				}
-			},]]
+			},
             {
 				Function = "CreateDropdown",
 				_envState = "LowerTorso",
@@ -844,6 +830,41 @@ local s,e = pcall(function()
 			end)
 		end
 	end)
+
+    --Wallbang | Source: self made
+
+    task.spawn(function()
+        local mt = getrawmetatable(game)
+        local namecallold = mt.__namecall
+        local index = mt.__index
+        setreadonly(mt, false)
+        mt.__namecall = newcclosure(function(self, ...)
+            local Args = {...}
+            NamecallMethod = getnamecallmethod()
+            if tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" and getgenv()._wallbang then
+                table.insert(Args[2], workspace.Map)
+            end
+            return namecallold(self, ...)
+        end)
+        setreadonly(mt, true)
+    end)
+    local ping = 32
+    task.spawn(function()
+        while task.wait(0.1) do
+            ping = math.random(30, 70)
+        end
+    end)
+    task.spawn(function()
+        game:GetService("RunService").RenderStepped:connect(function()game.Players.LocalPlayer.Ping.Value = ping
+        end)
+    end)
+    while task.wait() do
+        local args = {
+            [1] = 100,
+            [2] = "PingDeez"
+        }
+        game:GetService("ReplicatedStorage").Events.UpdatePing:FireServer(unpack(args))
+    end
 
     --Gun Mods | Source: self made
 
