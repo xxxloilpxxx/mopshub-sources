@@ -22,6 +22,9 @@ local s,e = pcall(function()
     local RecoilUpdate = clonefunction(newcclosure(TS.Camera.Recoil.Update))
     local Control = getupvalue(TS.Timer.BindToHeartbeat, 1 + 0)["Control"]
     local Raycast = require(game:GetService("ReplicatedStorage").TS).Raycast;
+	local PlayerTable = getupvalue(require(game.ReplicatedStorage.TS).Characters.GetCharacter,1)
+	local RemoteFolder
+	local RemoteObjects={}
 	local settings = {
 		autoLoadConfigs = nil,
 	}
@@ -70,8 +73,6 @@ local s,e = pcall(function()
 		"Weapon",
 		"Visual",
 		"Character",
-		"Misc",
-		"Settings",
 		"Credits"
 	}
 
@@ -150,6 +151,24 @@ local s,e = pcall(function()
                 Function = "CreateSection",
                 Args = "━ Gun Mods ━",
             },
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Infinite Ammo",
+					Flag = "_infammo",
+					Callback = function(Value)
+						getgenv()._infammo = Value
+
+						if (Value == false) then
+							if game_client:isAlive() then
+								RemoteFolder.Item_Paintball:FireServer("Reload",PlayerTable[Player].Backpack.Equipped.Value)
+								PlayerTable[Player].Backpack.Equipped.Value.State.Ammo.Value = 5
+							end
+						end
+					end,
+				}
+			},
 			{
 				Function = "CreateToggle",
 				_envState =  false,
@@ -286,7 +305,7 @@ local s,e = pcall(function()
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
+			Key = ""
 		}
 	})
 
@@ -391,11 +410,19 @@ local s,e = pcall(function()
 			BodyVelocity.Velocity = InputToVelocity() * Config.Speed
 			Character.PrimaryPart.CanCollide = not getgenv()._noclip
 		end
+	end; function game_client:isAlive()
+		if PlayerTable[game.Players.LocalPlayer]then
+			if PlayerTable[game.Players.LocalPlayer].Parent==game.Workspace.Characters then
+				if PlayerTable[game.Players.LocalPlayer]:FindFirstChild("Root")then
+					return true
+				end
+			end
+		end
+		return false
 	end
-
 	--> MAIN
 
-	--Gun Mods | Source: self made
+	--Gun Mods | Source: self made (inf ammo made by The3Bakers#4565)
 
     Camera.Recoil.Update = function(a, b)
         if getgenv()._norecoil then
@@ -423,6 +450,33 @@ local s,e = pcall(function()
             return old(...)
         end)
     end)
+
+	task.spawn(function()
+		for _,v in pairs(game.ReplicatedStorage:GetChildren()) do
+			if v:IsA("Folder") then
+				for _,c in pairs(v:GetChildren()) do
+					if c:IsA("ModuleScript") then
+						for _,x in pairs(c:GetChildren()) do
+							if x:IsA("Folder") then
+								if x:FindFirstChild("Character") then
+									RemoteFolder=x
+									for _,z in pairs(x:GetChildren()) do
+										RemoteObjects[z.Name.."_"..z.ClassName] = z
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		game.RunService.RenderStepped:Connect(function()
+			if game_client:isAlive() and getgenv()._infammo then
+				RemoteFolder.Item_Paintball:FireServer("Reload",PlayerTable[Player].Backpack.Equipped.Value)
+				PlayerTable[Player].Backpack.Equipped.Value.State.Ammo.Value = 999
+			end
+		end)
+	end)
 
 	--Silent Aim | Source: self made
 
@@ -484,7 +538,7 @@ local s,e = pcall(function()
         return OldIndex(...)
     end)
 
-	--Wallbang | Source: self made
+	--Wallbang | Source: idk
 
 	task.spawn(function()
         while task.wait() do
@@ -499,7 +553,7 @@ local s,e = pcall(function()
         end
     end)
 
-	--FOV | Source: self made
+	--FOV
 
 	local FOVCircle = Drawing.new("Circle")
 	FOVCircle.Thickness = 2;
