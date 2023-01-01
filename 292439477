@@ -72,7 +72,7 @@ local s,e = pcall(function()
 		for i = 1, #garbage do
 			local v = garbage[i]
 			if typeof(v) == "table" then
-				if rawget(v, "send") and rawget(v, "fetch") then 
+				if rawget(v, "send") then 
 					game_client.network = v
 				elseif rawget(v, 'goingLoud') and rawget(v, 'isInSight') then 
 					game_client.spotting_interface = v
