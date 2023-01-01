@@ -60,6 +60,10 @@ local s,e = pcall(function()
     local Mouse = Player:GetMouse()
     local RunService = game:GetService("RunService")
 
+	local flying,bv,bav,h,c,cam,nc,Clip,rstr
+	local p = game.Players.LocalPlayer
+	local buttons = {W = false, S = false, A = false, D = false, Moving = false}
+
     --STUFF THAT NEEDS TO RUN AT EXECUTE
 	if isfile("/mopsHub/settings_bigpaintball.mhs") then
 		local s,e = pcall(function()
@@ -102,6 +106,65 @@ local s,e = pcall(function()
 
     local _FUNCTIONS = {
         ["Weapon"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Silent Aim  ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Silent Aimbot",
+					Flag = "_silentaimbot",
+					Callback = function(Value)
+						getgenv()._silentaimbot = Value
+					end,
+				}
+			},
+			{
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "Notes:",
+                    Content = "! Silent Aimbot will also wallbang. !"
+                }
+            },
+			--[[{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Wallbang",
+					Flag = "_wallbang",
+					Callback = function(Value)
+						getgenv()._wallbang = Value
+					end,
+				}
+			},]]
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Draw FOV",
+					Flag = "_drawfov",
+					Callback = function(Value)
+						getgenv()._drawfov = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 50,
+				Args = {
+					Name = "FOV",
+					Flag = "fov",
+					Range = {0, 360},
+					Increment = 1,
+					Suffix = "",
+					CurrentValue = 80,
+					Callback = function(Value)
+						getgenv().fov = Value
+					end,
+				}
+			},
             {
 				Function = "CreateSection",
 				Args = "━ Gun Mods ━",
@@ -170,6 +233,13 @@ local s,e = pcall(function()
 					end,
 				}
 			},
+			{
+                Function = "CreateParagraph",
+                Args = {
+                    Title = "Notes:",
+                    Content = "! Gun mods will apply after a respawn !"
+                }
+            },
         },
         ["Visual"] = {
             {
@@ -273,6 +343,45 @@ local s,e = pcall(function()
 			},
         },
         ["Character"] = {
+			{
+				Function = "CreateSection",
+				Args = "━ Infinite Jump ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Infinite Jump",
+					Flag = "_infjump",
+					Callback = function(Value)
+						getgenv()._infinitejump = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSection",
+				Args = "━ NoClip ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "NoClip",
+					Flag = "_noclip",
+					Callback = function(Value)
+						getgenv()._noclip = Value
+						if Value == true then
+							game_client:noclip()
+						else
+							game_client:clip()
+						end
+					end,
+				}
+			},
+			{
+				Function = "CreateSection",
+				Args = "━ Speed Hack ━"
+			},
             {
 				Function = "CreateToggle",
 				_envState =  false,
@@ -325,7 +434,7 @@ local s,e = pcall(function()
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "bUftwfaTxaoD8Pf2iExzyyRkdVLJRcmyT"
+			Key = ""
 		}
 	})
 
@@ -480,9 +589,159 @@ local s,e = pcall(function()
                 end
             end
         end
-    end
+    end; function game_client:fly()
+		if not p.Character or not p.Character.Head or flying then return end
+		c = p.Character
+		h = c.Humanoid
+		h.PlatformStand = true
+		cam = workspace:WaitForChild('Camera')
+		bv = Instance.new("BodyVelocity")
+		bav = Instance.new("BodyAngularVelocity")
+		bv.Velocity, bv.MaxForce, bv.P = Vector3.new(0, 0, 0), Vector3.new(10000, 10000, 10000), 1000
+		bav.AngularVelocity, bav.MaxTorque, bav.P = Vector3.new(0, 0, 0), Vector3.new(10000, 10000, 10000), 1000
+		bv.Parent = c.Head
+		bav.Parent = c.Head
+		flying = true
+		h.Died:Connect(function() flying = false end)
+	end; function game_client:unfly()
+		if not p.Character or not flying then return end
+		h.PlatformStand = false
+		bv:Destroy()
+		bav:Destroy()
+		flying = false
+	end; function game_client:noclip()
+		Clip = false
+		local function ncl()
+			if Clip == false and Player.Character ~= nil then
+				for _, child in pairs(Player.Character:GetDescendants()) do
+					if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= rstr then
+						child.CanCollide = false
+					end
+				end
+			end
+		end
+		nc = RunService.Stepped:Connect(ncl)
+	end; function game_client:clip()
+		if nc then
+			nc:Disconnect()
+		end
+	end;
 
 	--> MAIN
+
+	--Infinite Jump | Source: idk
+
+	function Action(Object, Function) if Object ~= nil then Function(Object); end end
+
+	game:GetService('UserInputService').InputBegan:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space then
+			if not getgenv()._infinitejump then return end
+			Action(game:GetService('Players').LocalPlayer.Character.Humanoid, function(self)
+				if self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall then
+					Action(self.Parent.HumanoidRootPart, function(self)
+						self.Velocity = Vector3.new(0, getgenv()._infjumpheight or 50, 0);
+					end)
+				end
+			end)
+		end
+	end)
+
+	--Silent Aimbot
+
+	local function indexExists(object, index)
+		local _, value = pcall(function() return object[index] end)
+		return value
+	end
+
+	local function get_character(player) return indexExists(player, 'Character') end
+
+	local function get_mouse_location() return game:GetService("UserInputService"):GetMouseLocation() end
+
+	local function is_alive(player) return player.Character and player.Character:FindFirstChild('Humanoid') and player.Character:FindFirstChild('Humanoid').Health > 0 end
+	local function is_team(player) return #game:GetService("Teams"):GetChildren() > 0 and player.Team == Player.Team end
+
+	local function isVisible(position, ignore)
+		return #workspace.CurrentCamera:GetPartsObscuringTarget({ position }, ignore) == 0;
+	end;
+
+	local function getClosestPlayerToCursor(fov)
+
+		local maxDistance = fov or math.huge
+
+		local closestPlayer = nil
+		local closestPlayerDistance = math.huge
+
+		for _, player in pairs(Players:GetPlayers()) do
+
+			if player ~= Player and not is_team(player) and get_character(player) and is_alive(player) then
+				local pos, on_screen = workspace.CurrentCamera.WorldToViewportPoint(workspace.CurrentCamera, get_character(player).Head.Position)
+
+				if not on_screen then continue end
+
+				local distance = (get_mouse_location() - Vector2.new(pos.X, pos.Y)).Magnitude
+				if distance <= maxDistance and distance < closestPlayerDistance then
+					closestPlayer = player
+					closestPlayerDistance = distance
+				end
+			end
+		end
+
+		return closestPlayer
+	end
+
+	local OldNamecall
+	OldNamecall = hookmetamethod(workspace, '__namecall', newcclosure(function(...)
+		local args = { ... }
+		local method = string.lower(getnamecallmethod())
+		local caller = getcallingscript()
+		if method == 'findpartonraywithwhitelist' and tostring(caller) == 'First Person Controller' and getgenv()._silentaimbot then
+			local HitPart = getgenv().target and getgenv().target.Character and getgenv().target.Character.Head or nil
+			if HitPart then
+				local Origin = HitPart.Position + Vector3.new(0, 5, 0)
+				local Direction = (HitPart.Position - Origin)
+				args[2] = Ray.new(Origin, Direction)
+				return OldNamecall(unpack(args))
+			else
+				return OldNamecall(...)
+			end
+		end
+		return OldNamecall(...)
+	end))
+
+	--FOV Circle Object
+	local FOVCircle
+    if Drawing then
+        FOVCircle = Drawing.new("Circle")
+        FOVCircle.Thickness = 2
+        FOVCircle.NumSides = 50
+        FOVCircle.Filled = false
+        FOVCircle.Transparency = 0.6
+        FOVCircle.Radius = getgenv().fov;
+        FOVCircle.Color = Color3.new(0, 1, 0.298039)
+    else
+        warn("[mopsHub Loader Error]: Missing function Drawing. Your executor might be too bad and doesn't support it! (Draw FOV disabled)")
+    end
+
+	RunService.Stepped:Connect(function()
+		--FOV
+		if Drawing and FOVCircle ~= nil then
+            FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+            FOVCircle.Radius = getgenv().fov;
+            FOVCircle.Visible = getgenv()._drawfov;
+        end
+        if getgenv()._rainbowgun then
+            for _, v in pairs(game.Workspace.Camera.Arms:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.Color = Color3.fromHSV(tick() % 5 / 5, 1 + 0, 1)
+					v.Transparency = 0.5
+					v.Material = "ForceField"
+				end
+			end
+        end
+
+		--Silent Aimbot Target
+		getgenv().target = getClosestPlayerToCursor(getgenv().fov)
+	end)
 end)
 if not s and e then
     print("[mopsHub Error]: "..e)
