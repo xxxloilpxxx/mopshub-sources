@@ -1,6 +1,5 @@
---mopsHub Phantom Forces [DEV] | 2022
+--mopsHub Phantom Forces [RELEASE] | 2023
 local s,e = pcall(function()
-	print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 	getgenv = getgenv
 
 	repeat
@@ -16,6 +15,8 @@ local s,e = pcall(function()
 	local _players = {}
 	local Players = game:GetService("Players")
 	local Player = Players.LocalPlayer
+	local RunService = game:GetService("RunService")
+	local UserInputService = game:GetService("UserInputService")
 	local settings = {
 		autoLoadConfigs = nil,
 	}
@@ -176,6 +177,17 @@ local s,e = pcall(function()
 				Function = "CreateToggle",
 				_envState =  false,
 				Args = {
+					Name = "Trigger Bot [in testing & buggy]",
+					Flag = "_triggerbot",
+					Callback = function(Value)
+						getgenv()._triggerbot = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
 					Name = "Visible Check",
 					Flag = "visibleCheck",
 					Callback = function(Value)
@@ -265,6 +277,39 @@ local s,e = pcall(function()
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
+					Name = "Automatic",
+					Flag = "_automatic",
+					Callback = function(Value)
+						getgenv()._automatic = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Instant Reload",
+					Flag = "_instreload",
+					Callback = function(Value)
+						getgenv()._instreload = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Instant Equip",
+					Flag = "_instequip",
+					Callback = function(Value)
+						getgenv()._instequip = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
 					Name = "No Sway",
 					Flag = "_nosway",
 					Callback = function(Value)
@@ -282,6 +327,11 @@ local s,e = pcall(function()
 						getgenv().camera.no_shake = Value
 					end,
 				}
+			},
+			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Note:",Content = "Some gun mods will only disable after a respawn\nThis will be fixed in future updates."}
 			},
 		},
 		["Visual"] = {
@@ -683,6 +733,10 @@ local s,e = pcall(function()
 				}
 			},
 			{
+				Function = "CreateSection",
+				Args = "━ Bunny Hop ━"
+			},
+			{
 				Function = "CreateToggle",
 				_envState = false,
 				Args = {
@@ -697,6 +751,21 @@ local s,e = pcall(function()
 				Function = "CreateParagraph",
 				_envState = false,
 				Args = {Title = "Notes:",Content = "Hold the spacebar to Bunny Hop!"}
+			},
+			{
+				Function = "CreateSection",
+				Args = "━ Other ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "No Fall Damage",
+					Flag = "_nofalldamage",
+					Callback = function(Value)
+						getgenv()._nofalldamage = Value
+					end,
+				}
 			},
 		},
 		["Misc"] = {
@@ -730,10 +799,6 @@ local s,e = pcall(function()
 				Function = "CreateParagraph",
 				_envState = false,
 				Args = {Title = "Note:",Content = "Its recommended to put the script in your auto execute folder of your executor, so the script can auto load after a join."}
-			},
-			{
-				Function = "CreateSection",
-				Args = "━ Other ━"
 			},
 		},
 		["Settings"] = {
@@ -1071,7 +1136,7 @@ end;
 				local position = part.Position + (part.Size * 0.5 * (math.random() * 2 - 1)) * getgenv().randomization;
 				local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
 
-				if not (getgenv().visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and getgenv()._slientaimbot then
+				if not (getgenv().visibleCheck and not isVisible(position, ignore) and not visible) --[[and not (getgenv().visibleCheck and not visible)]] and (getgenv()._slientaimbot or getgenv()._triggerbot) then
 					local dot = dir.Unit:Dot((position - origin).Unit);
 					local angle = 180 - (dot + 1) * 90;
 					local c1, c2 = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(screenPos.X, screenPos.Y)
@@ -1116,6 +1181,43 @@ end;
 		return old(args);
 	end);
 
+	--Rage Bot | Source: self made
+	
+	task.spawn(function()
+		local mouseisdown = false
+		local typing = false
+		local gunpendepths={None=0,["M14 BR"]=1.8,HK417=1.6,L22=0.9,["HECATE II"]=10,["M79 THUMPER"]=0.5,["AS VAL"]=1,MP1911=0.5,["GI M1"]=1,["TEC-9"]=0.5,GSP=0.1,["GLOCK 18"]=0.5,["GB-22"]=0.5,X95R=1,M16A3=1.2,["SCAR SSR"]=2.6,["STEYR SCOUT"]=3,K2=1,MG36=1.8,["AUTO 9"]=1,MP5SD=0.5,MAC10=0.5,UZI=0.7,["COLT MARS"]=1.5,["SAIGA-12U"]=0.4,["FAL PARA SHORTY"]=1.4,L115A3=3,MP40=1.1,["AN-94"]=1,["ARM PISTOL"]=0.9,BLOCKSON=0.5,MP5K=0.5,["MAKAROV PM"]=0.5,["L86 LSW"]=1.6,AK12=1,["BOXY BUSTER"]=0,["BEOWULF ECR"]=1.9,EXECUTIONER=1,["DRAGUNOV SVU"]=2.8,M16A4=1.2,M1903=5,["TOMMY GUN"]=0.5,["SCAR-H"]=1.5,G36K=1.1,AK74=1,JURY=1,["1858 CARBINE"]=0.5,["GLOCK 40"]=0.8,["BEOWULF TCR"]=3,["1858 NEW ARMY"]=0.5,M4=1,["NTW-20"]=20,HK51B=1,9,C8A2=0.8,MP7=1.5,AK47=1.4,MC51SD=1.5,KRINKOV=0.9,["GOLDEN ZIP 22"]=0.5,["KAC SRR"]=1,["TRG-42"]=3,["KRISS VECTOR"]=0.5,["RAMA 1130"]=0.5,["SR-3M"]=1,["SCAR PDW"]=0.9,["FAL 50.63 PARA"]=2,["E SHOTGUN"]=0.5,M1911=0.5,["AG-3"]=2,M231=1,K7=0.5,AKM=1.4,SKS=1.5,K1A=0.75,["GYROJET MARK I"]=0.5,["M14 DMR"]=2.4,["MICRO UZI"]=0.5,["PPSH-41"]=1,["REMINGTON 870"]=0.5,["VSS VINTOREZ"]=1.5,MK11=1.7,MSG90=2,["SL-8"]=1.3,M3A1=0.5,["GLOCK 17"]=0.5,["SASS 308"]=2,FT300=3,RPK74=1.6,["KS-23M"]=0.7,["AA-12"]=0.3,M7644=0.5,ALIEN=0.5,["TAR-21"]=1.2,["SCAR HAMR"]=1.4,MG3KWS=2,["GOLDEN HK51B"]=0.3,HK21=1.6,MG42=2.5,["AUG A3"]=1,["SA58 SPR"]=2,["BFG 50"]=10,["SAIGA-12"]=.5,AKU12=1,["FAL 50.00"]=2,FAMAS=1,["TYPE 88"]=.9,["REDHAWK 44"]=1,GRIZZLY=1.3,["COLT LMG"]=1.4,MP10=0.5,RAILGUN=200,["HENRY 45-70"]=2,["MP412 REX"]=.5,WA2000=2.8,["DEAGLE 44"]=1,["GLOCK 50"]=1,["GLOCK 21"]=0.7,HARDBALLER=1.2,M4A1=1,M9=0.5,["GOLDEN TOMMY GUN"]=0.5,["GOLDEN REDHAWK 45"]=0.5,["SCAR-L"]=1,["STG-44"]=1.6,P90=2,["DEAGLE 50"]=1.3,MP5=0.5,["AUG A3 PARA"]=0.5,["TOY M1911"]=0,["REMINGTON 700"]=3,["PP-2000"]=1,["MP5/10"]=0.8,AK12BR=2,["KG-99"]=0.5,UMP45=1.4,["ZIP 22"]=0.5,["GLOCK 1"]=0.5,C7A2=0.9,["SERBU SHOTGUN"]=0.6,["AUG A1"]=1,["COLT SMG 635"]=0.5,RPK12=1.6,["FIVE SEVEN"]=1.5,["DT11 PRO"]=.7,["GYROJET CARBINE"]=0.7,["OTs-126"]=1.2,M93R=0.5,DBV12=0.5,M45A1=0.5,["SAWED OFF"]=0.6,G36C=1,["SFG 50"]=10,["E GUN"]=0.5,SKORPION=0.5,OBREZ=2,RPK=1.8,["ROPOD SHOTTY"]=1.5,M41A=1,["GROZA-1"]=1.5,["GOLDEN SHORTY"]=0.1,["GROZA-4"]=1.5,M2011=0.5,["GLOCK 23"]=0.8,["KSG 12"]=0.4,["USAS-12"]=0.3,M60=3,["MOSIN NAGANT"]=4,["HONEY BADGER"]=1.3,["SPAS-12"]=0.6,["AM III"]=1.2,["STEVENS DB"]=0.5,["DRAGUNOV SVDS"]=3.2,["AUG HBAR"]=1.6,K14=3,["CAN CANNON"]=1.2,["AUG A2"]=1,AK103=1.4,AWS=2,INTERVENTION=6,["X95 SMG"]=0.7,["MATEBA 6"]=1,JUDGE=1,G36=1.3,["PP-19 BIZON"]=0.5,M107=10,G3=1.5,["GOLDEN DEAGLE 50"]=1.5,AK12C=1.2,L2A3=1.1,["GOLDEN DEAGLE 2"]=1.5,ASMI=0.5,["IZHEVSK PB"]=0.5,AK105=1,M3822=0.5,L85A2=1.2,["HOWA TYPE 20"]=1.4,HK416=1,M16A1=0.8,G11K2=2}
+		UserInputService.InputBegan:Connect(function(_,typing)
+			typing = typing
+		end); UserInputService.InputEnded:Connect(function(_,typing)
+			typing = typing
+		end)
+		RunService.RenderStepped:Connect(function()
+			if getgenv()._triggerbot and game_client:inGame() and game_client:getActiveWeapon() ~= nil then
+				replication.operateOnAllEntries(function(player, entry)
+					local tpObject = entry and entry._thirdPersonObject;
+					local character = tpObject and tpObject._character;
+
+					if character and player.Team ~= Player.Team then
+						local part = character[getgenv().targetedPart == "Random" and
+						(math.random() < (getgenv().headChance or 0.5) and "Head" or "Torso") or
+						(getgenv().targetedPart or "Head")];
+
+						local position = part.Position;
+						local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
+
+						if (isVisible(position, {game.Workspace.Terrain, game.Workspace.Ignore, game.Workspace.CurrentCamera, game.Workspace.Players}) and visible) and character and iswindowactive() then
+							coroutine.wrap(function()
+								game_client.firearm_object.shoot(game_client:getActiveWeapon(), true)
+								task.wait(0.1)
+								game_client.firearm_object.shoot(game_client:getActiveWeapon(), false)
+							end)()
+						end
+					end
+				end)
+			end
+		end)
+	end)
 
 	--ESP | Source: https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua
 
@@ -1218,6 +1320,19 @@ end;
 					end)
 				end
 			end)
+		end
+	end)
+
+	--No Fall Damage | Source: self made
+
+	task.spawn(function()
+		local Old = game_client.network.send
+		game_client.network.send = function(self,Name, ...)
+			local args = {...}
+			if Name == "falldamage" and getgenv()._nofalldamage then
+				return
+			end
+			return Old(self, Name, unpack(args))
 		end
 	end)
 
@@ -1358,7 +1473,8 @@ end;
 				end
 			end
         end
-		--Other
+		
+		--Gun Mods
 		if game_client:inMenu() then
 			game_client.main_camera_object.setSway = function(self, amount)
 				local sway = amount
@@ -1395,6 +1511,45 @@ end;
 					local shake = amount
 			
 					return old_shake(self, shake)
+				end
+			end
+
+			--Automatic Weapon
+			if getgenv()._automatic and game_client:getActiveWeapon() ~= nil then
+				for _,v in pairs(game_client:getCurrentWeaponRegistry()) do
+					pcall(function()
+						if(v._weaponData and v._weaponData.firemodes) then
+							v._weaponData.firemodes = { true }
+						end
+					end)
+				end
+			end
+
+			--Instant Equip
+			if getgenv()._instequip and game_client:getActiveWeapon() ~= nil then
+				for _,v in pairs(game_client:getCurrentWeaponRegistry()) do
+					pcall(function()
+						if(v._weaponData and v._weaponData.equipspeed) then
+							v._weaponData.equipspeed = tick()
+						end
+					end)
+				end
+			end
+
+			--Instant Reload
+			if getgenv()._instreload and game_client:getActiveWeapon() ~= nil then
+				for _,v in pairs(game_client:getCurrentWeaponRegistry()) do
+					pcall(function()
+						if(v._weaponData and v._weaponData.animations) then
+							for _,animation in pairs(v._weaponData.animations) do
+								if typeof(animation) == "table" then
+									if string.find(string.lower(_), "reload") then
+										animation.timescale = 0
+									end
+								end
+							end
+						end
+					end)
 				end
 			end
 		end
