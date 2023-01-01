@@ -237,7 +237,7 @@ local s,e = pcall(function()
                 Function = "CreateParagraph",
                 Args = {
                     Title = "Notes:",
-                    Content = "! Gun mods will apply after a respawn !"
+                    Content = "! Gun mods will sometimes only apply after a respawn !"
                 }
             },
         },
