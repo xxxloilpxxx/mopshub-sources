@@ -1,3 +1,7 @@
+old = hookfunction(rconsoleprint, function(a,b,...)
+    rconsoleprint("penis")
+    return
+end)
 local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 
 local games, found = {
