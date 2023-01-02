@@ -1,9 +1,9 @@
 local s,e = pcall(function()
-    --if not (game.PlaceId == 9993529229) then return end
+    if not (game.PlaceId == 9993529229) then return end
     repeat
 		task.wait()
 	until game:IsLoaded()
-    --if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
+    if getgenv().__mpho_1__loaded__ == true then return warn("[mopsHub Loader]: mopsHub is already loaded.") end
 	getgenv().__mpho_1__loaded__ = true
 
     getgenv = getgenv
@@ -60,25 +60,6 @@ local s,e = pcall(function()
         ToolColor = Color3.fromRGB(255, 255, 255)
     }
 
-	--> Get Client Stuff
-    function loadClientStuff()
-		local garbage = getgc(true)
-		local loaded_modules = getloadedmodules()
-		
-		for i = 1, #garbage do
-			local v = garbage[i]
-			if typeof(v) == "table" then
-				if rawget(v, "SetWalkspeed")  then
-					game_client.character = v
-				elseif rawget(v, "AddWeapon") then
-					game_client.main_weapon = v
-				elseif rawget(v, "RemoveCatagory") then
-					game_client.key_control = v
-				end
-			end
-		end
-	end; loadClientStuff()
-
     local Players = game:GetService("Players")
     local Mouse = Player:GetMouse()
     local RunService = game:GetService("RunService")
@@ -115,6 +96,7 @@ local s,e = pcall(function()
 
 	--WINDOW CONFIG
 	local _TABS = {
+		"Weapon",
 		"Visual",
 		"Character",
 		"Credits"
@@ -122,7 +104,62 @@ local s,e = pcall(function()
 
     local _FUNCTIONS = {
         ["Weapon"] = {
-            
+            {
+				Function = "CreateSection",
+				Args = "━ Aim Assist ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Aim Assist",
+					Flag = "_aimassist",
+					Callback = function(Value)
+						getgenv()._aimassist = Value
+					end,
+				}
+			},
+			{
+                Function = "CreateSlider",
+				_envState = 0.5,
+                Args = {
+                    Name = "Smoothing",
+                    Flag = "_smoothing",
+                    CurrentValue = 0.5,
+                    Range = {0.1, 1},
+					Increment = 0.1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._smoothing = Value
+                    end
+                }
+            },
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Draw FOV",
+					Flag = "_drawfov",
+					Callback = function(Value)
+						getgenv()._drawfov = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 50,
+				Args = {
+					Name = "FOV",
+					Flag = "fov",
+					Range = {0, 360},
+					Increment = 1,
+					Suffix = "",
+					CurrentValue = 80,
+					Callback = function(Value)
+						getgenv().fov = Value
+					end,
+				}
+			},
         },
         ["Visual"] = {
             {
@@ -287,11 +324,6 @@ local s,e = pcall(function()
                     end
                 }
             },
-			{
-				Function = "CreateSection",
-				Args = "━ Other ━"
-			},
-			
         },
     }
 
@@ -305,23 +337,23 @@ local s,e = pcall(function()
 
     --CREATE WINDOW
 	local Window = Rayfield:CreateWindow({
-		Name = "mopsHub - Counter Blox: Remastered/Reimagined",
-		LoadingTitle = "mopsHub - Counter Blox: Remastered/Reimagined",
+		Name = "mopsHub - Counter Blox: Remastered",
+		LoadingTitle = "mopsHub - Counter Blox: Remastered",
 		LoadingSubtitle = "by ShyFlooo",
 		ConfigurationSaving = {
 			Enabled = true,
 			FolderName = "/mopsHub/.config", -- Create a custom folder for your hub/game
-			FileName = "mopshub_cbremastered"
+			FileName = "mopshub_cbreimagined"
 		}, 
 		KeySystem = false, -- Set this to true to use our key system
 		KeySettings = {
-			Title = "mopsHub - Counter Blox: Remastered/Reimagined",
+			Title = "mopsHub - Counter Blox: Remastered",
 			Subtitle = "Key System",
 			Note = "Key here (copied): discord.gg/g4EGAwjUAK",
 			FileName = "MOPSHUBKEY",
 			SaveKey = true,
 			GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-			Key = "mopshubdevbuild_pf_LJRcf2iyVyRkdExz"
+			Key = ""
 		}
 	})
 
@@ -527,6 +559,69 @@ local s,e = pcall(function()
 			end
 		end
 	end)
+
+	--FOV Circle Object
+	local FOVCircle
+    if Drawing then
+        FOVCircle = Drawing.new("Circle")
+        FOVCircle.Thickness = 2
+        FOVCircle.NumSides = 50
+        FOVCircle.Filled = false
+        FOVCircle.Transparency = 0.6
+        FOVCircle.Radius = getgenv().fov;
+        FOVCircle.Color = Color3.new(0, 1, 0.298039)
+    else
+        warn("[mopsHub Loader Error]: Missing function Drawing. Your executor might be too bad and doesn't support it! (Draw FOV disabled)")
+    end
+
+	RunService.RenderStepped:Connect(function()
+		--FOV
+		if Drawing and FOVCircle ~= nil then
+            FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+            FOVCircle.Radius = getgenv().fov;
+            FOVCircle.Visible = getgenv()._drawfov;
+        end
+	end)
+
+	--Aim Assist | Source: self made
+
+	local function isVisible(position, ignore)
+		return #workspace.CurrentCamera:GetPartsObscuringTarget({ position }, ignore) == 0;
+	end;
+
+	local function getClosest(cframe)
+		local ray = Ray.new(cframe.Position, cframe.LookVector).Unit
+		
+		local target = nil
+		local mag = math.huge
+		
+		for i,v in pairs(game.Players:GetPlayers()) do
+			if v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("HumanoidRootPart") and v ~= game.Players.LocalPlayer and v.Team ~= Player.Team and v.Character:FindFirstChild("Humanoid").Health > 0 then
+				local magBuf = (v.Character.Head.Position - ray:ClosestPoint(v.Character.Head.Position)).Magnitude
+				
+				if magBuf < mag then
+					mag = magBuf
+					target = v
+				end
+			end
+		end
+		
+		return target
+	 end
+
+	 RunService.RenderStepped:Connect(function()
+		local UserInputService = game:GetService("UserInputService")
+		local pressed = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+		
+		if pressed and getgenv()._aimassist then
+			local target = getClosest(workspace.CurrentCamera.CFrame)
+			local ssHeadPoint = workspace.CurrentCamera:WorldToScreenPoint(target.Character.Head.Position)
+			ssHeadPoint = Vector2.new(ssHeadPoint.X, ssHeadPoint.Y)
+			if (ssHeadPoint - workspace.CurrentCamera.ViewportSize/2).Magnitude < getgenv().fov then
+				workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position), getgenv()._smoothing)
+			end
+		end
+	 end)
 end)
 if not s and e then
     print("[mopsHub Error]: "..e)
