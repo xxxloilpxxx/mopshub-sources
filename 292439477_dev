@@ -1,3 +1,16 @@
-local function findByName(t, name) for _, v in pairs(t) do if v.name == name then return v end end end
-local actor = findByName(getactors(), 'lol')
-syn.run_on_actor(actor, "loadstring(game:HttpGet('https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477_dev_synactormethod'))()") 
+local runonactor = ((syns and syn.run_on_actor))
+local getactors = ((syns and getactors))
+
+if runonactor and getactors then
+    local function findByName(t, name) for _, v in pairs(t) do if v.name == name then return v end end end
+    local actor = findByName(getactors(), 'lol')
+    syn.run_on_actor(actor, "loadstring(game:HttpGet('https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477_dev_synactormethod'))()") 
+else
+    local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+    local Notify = AkaliNotif.Notify;
+    return Notify({
+		Title = "<font color='#ff0000'>Executor unsupported.</font>",
+		Description = "Your executor does not support a actor method or it's not implemented yet.<br /><br />Join our discord server for support: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
+		Duration = 15,
+	})
+end
