@@ -1097,89 +1097,104 @@ end;
 
 	--Silent Aim | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
 
-	-- modules
-	local particle, replication, solve;
-	for _, v in next, getgc(true) do
-		if particle and replication and solve then
-			break;
-		elseif type(v) == "table" then
-			if rawget(v, "new") and rawget(v, "step") and rawget(v, "reset") then
-				particle = v;
-			elseif rawget(v, "getPlayerFromBodyPart") then
-				replication = v;
-			elseif rawget(v, "timehit") then
-				solve = debug.getupvalue(v.timehit, 2);
+	task.spawn(function()
+		-- variables
+		local params = getgenv();
+		local localPlayer = game:GetService("Players").LocalPlayer;
+		local camera = game:GetService("Workspace").CurrentCamera;
+
+		-- modules
+		local newParticle, solveQuartic, entryTable;
+		local garbageCollection = getgc(false);
+
+		for i = 1, #garbageCollection do
+			local object = garbageCollection[i];
+			local source, name = debug.info(object, "sn");
+			local script = string.match(source, "%w+$");
+
+			if name == "new" and script == "particle" then
+				newParticle = object;
+			elseif name == "solve" and script == "physics" then
+				solveQuartic = object;
+			elseif name == "getEntry" and script == "ReplicationInterface" then
+				entryTable = debug.getupvalue(object, 1);
+			end
+			
+			if newParticle and solveQuartic and entryTable then
+				break;
 			end
 		end
-	end
 
-	local function isVisible(position, ignore)
-		return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
-	end;
+		assert(newParticle and solveQuartic and entryTable, "Failed to find module(s)");
 
-	local function calculateHitChance()
-		return (math.random() < getgenv().hitChance/100)
-	end
-	
-	local function getClosest(dir, origin, ignore)
-		local _angle = getgenv().fov or 180;
-		local _position, _entry;
-	
-		replication.operateOnAllEntries(function(player, entry)
-			local tpObject = entry and entry._thirdPersonObject;
-			local character = tpObject and tpObject._character;
-			if character and player.Team ~= Player.Team then
-				local part = character[getgenv().targetedPart == "Random" and
-					(math.random() < (getgenv().headChance or 0.5) and "Head" or "Torso") or
-					(getgenv().targetedPart or "Head")];
-	
-				local position = part.Position + (part.Size * 0.5 * (math.random() * 2 - 1)) * getgenv().randomization;
-				local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
+		-- functions
+		local function isVisible(position, ignore)
+			return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
+		end
 
-				if not (getgenv().visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and (getgenv()._slientaimbot or getgenv()._triggerbot) then
-					local dot = dir.Unit:Dot((position - origin).Unit);
-					local angle = 180 - (dot + 1) * 90;
-					local c1, c2 = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(screenPos.X, screenPos.Y)
-					local magnitude = (c2-c1).Magnitude
-					if magnitude < _angle then
-						_angle = angle;
-						_position = position;
-						_entry = entry;
+		local function getClosest(dir, origin, ignore)
+			local _angle = params.fov or 180;
+			local _position, _entry;
+
+			for player, entry in next, entryTable do
+				local tpObject = entry and entry._thirdPersonObject;
+				local character = tpObject and tpObject._character;
+				if character and player.Team ~= localPlayer.Team then
+					local part = character[params.targetedPart == "Random" and
+						(math.random() < (params.headChance or 0.5) and "Head" or "Torso") or
+						(params.targetedPart or "Head")];
+
+					local position = part.Position + (part.Size * 0.5 * (math.random() * 2 - 1)) * (params.randomization or 0);
+					local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
+
+					if not (params.visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and (getgenv()._slientaimbot or getgenv()._triggerbot) then
+						local dot = dir.Unit:Dot((position - origin).Unit);
+						local angle = 180 - (dot + 1) * 90;
+						if angle < _angle then
+							_angle = angle;
+							_position = position;
+							_entry = entry;
+						end
 					end
 				end
 			end
-		end);
-	
-		return _position, _entry;
-	end; local function trajectory(dir, velocity, accel, speed)
-		local t1, t2, t3, t4 = solve(
-			accel:Dot(accel) * 0.25,
-			accel:Dot(velocity),
-			accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
-			dir:Dot(velocity) * 2,
-			dir:Dot(dir));
 
-		local time = (t1>0 and t1) or (t2>0 and t2) or (t3>0 and t3) or t4;
-		local bullet = 0.5*accel*time + dir/time + velocity;
-		return bullet, time;
-	end; local old;
-	old = hookfunction(particle.new, function(args)
-		if debug.info(2, "n") == "fireRound" then
-			local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
-			if position and entry then
-				local index = table.find(debug.getstack(2), args.velocity);
-
-				args.velocity = trajectory(
-					position - args.visualorigin,
-					entry._velspring._p0,
-					-args.acceleration,
-					args.velocity.Magnitude);
-
-				debug.setstack(2, index, args.velocity);
-			end
+			return _position, _entry;
 		end
-		return old(args);
-	end);
+
+		local function getTrajectory(dir, velocity, accel, speed)
+			local r1, r2, r3, r4 = solveQuartic(
+				accel:Dot(accel) * 0.25,
+				accel:Dot(velocity),
+				accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
+				dir:Dot(velocity) * 2,
+				dir:Dot(dir));
+
+			local time = (r1>0 and r1) or (r2>0 and r2) or (r3>0 and r3) or r4;
+			local bullet = dir/time + velocity + 0.5*accel*time;
+			return bullet, time;
+		end
+
+		-- hooks
+		local old;
+		old = hookfunction(newParticle, function(args)
+			if debug.info(2, "n") == "fireRound" then
+				local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
+				if position and entry then
+					local index = table.find(debug.getstack(2), args.velocity);
+
+					args.velocity = getTrajectory(
+						position - args.visualorigin,
+						entry._velspring._p0,
+						-args.acceleration,
+						args.velocity.Magnitude);
+
+					debug.setstack(2, index, args.velocity);
+				end
+			end
+			return old(args);
+		end);
+	end)
 
 	--Rage Bot | Source: self made
 	
