@@ -1097,6 +1097,10 @@ end;
 
 	--Silent Aim | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
 
+	local function isVisible(position, ignore)
+		return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
+	end
+	
 	task.spawn(function()
 		-- variables
 		local params = getgenv();
@@ -1128,9 +1132,6 @@ end;
 		assert(newParticle and solveQuartic and entryTable, "Failed to find module(s)");
 
 		-- functions
-		local function isVisible(position, ignore)
-			return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
-		end
 
 		local function getClosest(dir, origin, ignore)
 			local _angle = params.fov or 180;
@@ -1206,7 +1207,7 @@ end;
 		end)
 		RunService.RenderStepped:Connect(function()
 			if getgenv()._triggerbot and game_client:inGame() and game_client:getActiveWeapon() ~= nil then
-				replication.operateOnAllEntries(function(player, entry)
+				game_client.replication_interface.operateOnAllEntries(function(player, entry)
 					local tpObject = entry and entry._thirdPersonObject;
 					local character = tpObject and tpObject._character;
 
