@@ -348,6 +348,11 @@ local s,e = pcall(function()
 				}
 			},
 			{
+				Function = "CreateParagraph",
+				_envState = false,
+				Args = {Title = "Notes:",Content = "Default Keybind is X."}
+			},
+			{
 				Function = "CreateToggle",
 				_envState =  false,
 				Args = {
