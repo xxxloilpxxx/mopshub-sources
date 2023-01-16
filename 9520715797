@@ -142,7 +142,7 @@ local s,e = pcall(function()
 				Args = {
 					Name = "Kill All Method",
 					CurrentOption = "Baton",
-					Options = {"Baton", "Machete"},
+					Options = {"Baton", "Machete", "Pocket Knife"},
 					Flag = "_killallmethod",
 					Callback = function(Option)
 						getgenv()._killallmethod = Option
@@ -150,12 +150,29 @@ local s,e = pcall(function()
 				},
 			},
 			{
+                Function = "CreateSection",
+                Args = "━ Give Tool ━",
+            },
+			{
+				Function = "CreateDropdown",
+				_envState = "Pocket Knife",
+				Args = {
+					Name = "Steal Item Tool",
+					CurrentOption = "Pocket Knife",
+					Options = {"Baton", "Machete", "Pocket Knife"},
+					Flag = "_stealitem",
+					Callback = function(Option)
+						getgenv()._stealitem = Option
+					end
+				},
+			},
+			{
 				Function = "CreateButton",
 				_envState =  false,
 				Args = {
-					Name = "Give Baton [POLICE REQUIRED]",
+					Name = "Try steal selected Tool",
 					Callback = function()
-						game_client:givebaton()
+						game_client:give_item(getgenv()._stealitem)
 					end,
 				}
 			},
@@ -333,6 +350,25 @@ local s,e = pcall(function()
 		["Character"] = {
 			{
 				Function = "CreateSection",
+				Args = "━ Walspeed Changer ━",
+			},
+			{
+                Function = "CreateSlider",
+                _envState = 16,
+                Args = {
+                    Name = "Walkspeed",
+                    Flag = "_walkspeed",
+                    CurrentValue = 16,
+                    Range = {0, 200},
+					Increment = 1,
+					Suffix = "",
+                    Callback = function(Value)
+                        getgenv()._walkspeed = Value
+                    end
+                }
+            },
+			{
+				Function = "CreateSection",
 				Args = "━ Fling ━",
 			},
 			{
@@ -462,30 +498,21 @@ local s,e = pcall(function()
 				Function = "CreateToggle",
 				_envState =  false,
 				Args = {
-					Name = "Chat Spammer [EQUIP PHONE]",
+					Name = "Chat Spammer",
 					Flag = "_chatspam",
 					Callback = function(Value)
-						if Value == true then
-							if not Player.Character:FindFirstChild("iPhone 6") then
-								return Rayfield:Notify({
-									Title = "Error Occured",
-									Content = "Equip your iPhone 6 in order to use the chat spammer.",
-									Duration = 6.5,
-								})
-							end
-							getgenv()._chatspam = Value
-						end
+						getgenv()._chatspam = Value
 					end,
 				}
 			},
 			{
 				Function = "CreateInput",
-				_envState = "...",
+				_envState = "SHYFLOOO AND DELU ON TOP",
 				Args = {
 					Name = "Chat Spam Message",
 					Flag = "_chatspammsg",
+					PlaceholderText = "Spam Message",
 					Callback = function(Text)
-						Text = tostring(Text)
 						getgenv()._chatspammsg = Text
 					end
 				}
@@ -496,7 +523,7 @@ local s,e = pcall(function()
                 Args = {
                     Name = "Spam Interval",
                     Flag = "_spaminterval",
-                    CurrentValue = 1,
+                    CurrentValue = 0.1,
                     Range = {0, 5},
 					Increment = 1,
 					Suffix = "",
@@ -505,6 +532,21 @@ local s,e = pcall(function()
                     end
                 }
             },
+			{
+				Function = "CreateSection",
+				Args = "━ Other Useless Stuff ━",
+			},
+			{
+				Function = "CreateToggle",
+				_envState =  false,
+				Args = {
+					Name = "Spam Random Roleplay Name",
+					Flag = "_spamrpname",
+					Callback = function(Value)
+						getgenv()._spamrpname = Value
+					end,
+				}
+			},
 		}
     }
 
@@ -512,7 +554,7 @@ local s,e = pcall(function()
 		["Developers"] = {
 			{"ShyFlooo","mopsHub Lead Programmer"},
 			{"Delu#1000/FraudGoat","mopsHub Programmer"},
-			{"", ""}
+			{"Anonymous User", "Contributor"}
 		},
 	}
 
@@ -682,11 +724,11 @@ local s,e = pcall(function()
 				Duration = 6.5,
 			})
 		end
-	end; function game_client:givebaton()
+	end; function game_client:give_item(item)
 		for i,v in pairs (game.Players:GetChildren()) do
 			task.wait()
 			for _,v in pairs (v.Backpack:GetChildren()) do
-				if v.Name == "Baton" then
+				if v.Name == item then
 					v.Parent = game.Players.LocalPlayer.Backpack
 				end
 			end
@@ -712,6 +754,27 @@ local s,e = pcall(function()
     end; getgenv().updateespvalues()
 
 	--> MAIN
+
+	--> WalkSpeed & JumpPower Changer
+
+	task.spawn(function()
+		while task.wait() do
+			pcall(function()
+				Player.Character.Humanoid.WalkSpeed = getgenv()._walkspeed
+			end)
+		end
+	end)
+	
+	--> Random Roleplay Name
+	
+	task.spawn(function()
+		while task.wait() do
+			if getgenv()._spamrpname then
+				local Args = {"Penis", "Penis", "GayBoy",0,1,0}
+				game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.RemoteEvent:FireServer(unpack(Args))
+			end
+		end
+	end)
 
 	--Fling All
 
@@ -750,10 +813,10 @@ local s,e = pcall(function()
 	task.spawn(function()
 		while task.wait(getgenv()._spaminterval) do
 			if getgenv()._chatspam then
-				for _, v in pairs(game.Players:GetPlayers()) do
-					game.ReplicatedStorage.despacito_labs.events.playerUtil.phone.relayText:FireServer(v, getgenv()._chatspammsg or "DELU AND SHYFLOO ON TOP")
+				if getgenv()._chatspammsg then
+					print(getgenv()._chatspammsg)
+					game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(getgenv()._chatspammsg, "All")
 				end
-				if not getgenv()._chatspam then break end;
 			end
 		end
 	end)
