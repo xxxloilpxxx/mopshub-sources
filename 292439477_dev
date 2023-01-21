@@ -10,7 +10,7 @@ else
     local Notify = AkaliNotif.Notify;
     return Notify({
 		Title = "<font color='#ff0000'>Executor unsupported.</font>",
-		Description = "Your executor does not support a actor method or it's not implemented yet.<br /><br />Join our discord server for support: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
+		Description = "Your executor does not support a actor method or it's not implemented in this script yet.<br /><br />Join our discord server for support: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
 		Duration = 15,
 	})
 end
