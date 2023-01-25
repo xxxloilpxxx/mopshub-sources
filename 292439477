@@ -13,6 +13,7 @@ local s,e = pcall(function()
 	local writeclipboard,encodeb64,decodeb64,Request = ((syn and syn.write_clipboard) or setclipboard),((syn and syn.crypt.base64.encode) or (Krnl and Krnl.Base64.Encode)),((syn and syn.crypt.base64.decode) or (Krnl and Krnl.Base64.Decode)),(http_request or syn and syn.request or request or nil)
 	local game_client = {}
 	local _players = {}
+	local HitBoxes = {}
 	local Players = game:GetService("Players")
 	local Player = Players.LocalPlayer
 	local RunService = game:GetService("RunService")
@@ -136,10 +137,10 @@ local s,e = pcall(function()
 		else
 			warn("[mopsHub Loader Error]: Missing function writeclipboard. Your executor might be too bad and doesn't support it!")
 		end
-		warn("Phantom Forces Patch not executed. Be sure you place it in your auto execute folder.\n\nPatch Script: ".. "discord.gg/g4EGAwjUAK")
+		warn("Unable to get client modules on actor.\n\nJoin the discord for help: ".. "discord.gg/g4EGAwjUAK")
 		return Notify({
-			Title = "<font color='#ff0000'>Patch not installed</font>",
-			Description = "You must place a patch script in your auto execute folder to use this script.<br /><br />You can find it on our discord server: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)<br /><br />no other fix than this right now sorry",
+			Title = "<font color='#ff0000'>Actor error.</font>",
+			Description = "Unable to get client modules on actor.<br /><br />Join our discord server for help: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
 			Duration = 60,
 		})
 	end
@@ -545,6 +546,84 @@ local s,e = pcall(function()
                     end
                 }
             },
+			{
+				Function = "CreateSection",
+				Args = "━ Hitbox Extender ━"
+			},
+			{
+				Function = "CreateToggle",
+				_envState = false,
+				Args = {
+					Name = "Hitbox Extender",
+					Flag = "_hitboxext",
+					Callback = function(Value)
+						getgenv()._hitboxext = Value
+					end,
+				}
+			},
+			{
+				Function = "CreateDropdown",
+				_envState = "Head",
+				Args = {
+					Name = "Hitbox",
+					Flag = "_hitbox",
+					Options = {"Head"},
+					CurrentOption = getgenv()._hitbox or "Head",
+					Callback = function(Value)
+						getgenv()._hitbox = Value
+						if getgenv()._hitboxext then
+							game_client:ReturnHB()
+							game_client:UpdateHB(getgenv()._hitbox,getgenv()._hextsize)
+						end
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 8,
+				Args = {
+					Name = "Hitbox Size",
+					Flag = "_hextsize",
+					Range = {1, 8},
+					Increment = 0.1,
+					Suffix = "",
+					CurrentValue = getgenv()._hextsize,
+					Callback = function(Value)
+						getgenv()._hextsize = Value
+						if getgenv()._hitboxext then
+							game_client:ReturnHB()
+							game_client:UpdateHB(getgenv()._hitbox,getgenv()._hextsize)
+						end
+					end,
+				}
+			},
+			{
+				Function = "CreateSlider",
+				_envState = 0.5,
+				Args = {
+					Name = "Hitbox Transparency",
+					Flag = "_hexttransparency",
+					Range = {0, 1},
+					Increment = 0.1,
+					Suffix = "",
+					CurrentValue = 0.5,
+					Callback = function(Value)
+						getgenv()._hexttransparency = Value
+					end,
+				}
+			},
+			{
+                Function = "CreateColorPicker",
+                _envState = Color3.fromRGB(255,255,255),
+                Args = {
+                    Name = "Hitbox Color",
+                    Flag = "_hextcolor",
+                    Color = Color3.fromRGB(255,255,255),
+                    Callback = function(Value)
+						getgenv()._hextcolor = Value
+                    end
+                }
+            },
             {
 				Function = "CreateSection",
 				Args = "━ Radar Hack ━"
@@ -565,71 +644,6 @@ local s,e = pcall(function()
 				Function = "CreateSection",
 				Args = "━ Hitbox Extender ━"
 			},
-			--[[{
-				Function = "CreateToggle",
-				_envState = false,
-				Args = {
-					Name = "Hitbox Extender",
-					Flag = "_hitboxext",
-					Callback = function(Value)
-						getgenv()._hitboxext = Value
-					end,
-				}
-			},
-			{
-				Function = "CreateDropdown",
-				_envState = "Head",
-				Args = {
-					Name = "Hitbox",
-					Flag = "_hitbox",
-					Options = {"Head","Torso"},
-					CurrentOption = getgenv()._hitbox or "Head",
-					Callback = function(Value)
-						getgenv()._hitbox = Value
-					end,
-				}
-			},
-			{
-				Function = "CreateSlider",
-				_envState = 8,
-				Args = {
-					Name = "Hitbox Size",
-					Flag = "_hextsize",
-					Range = {1, 8},
-					Increment = 0.1,
-					Suffix = "",
-					CurrentValue = getgenv()._hextsize,
-					Callback = function(Value)
-						getgenv()._hextsize = Value
-					end,
-				}
-			},
-			{
-				Function = "CreateSlider",
-				_envState = 0.5,
-				Args = {
-					Name = "Hitbox Transparency",
-					Flag = "_hexttransparency",
-					Range = {0, 1},
-					Increment = 0.1,
-					Suffix = "",
-					CurrentValue = 0.5,
-					Callback = function(Value)
-						getgenv()._hexttransparency = Value
-					end,
-				}
-			},
-			{
-				Function = "CreateToggle",
-				_envState = false,
-				Args = {
-					Name = "Head Team Color",
-					Flag = "_hteamcolor",
-					Callback = function(Value)
-						getgenv()._hteamcolor = Value
-					end,
-				}
-			},]]
 			{
 				Function = "CreateParagraph",
 				_envState = false,
@@ -943,6 +957,7 @@ local s,e = pcall(function()
 		if game_client.weapon_controller_interface.getController() then
 			local activeWeaponReg =  game_client.weapon_controller_interface.getController()._activeWeaponRegistry
 			for _, reg in pairs(activeWeaponReg) do
+				setreadonly(reg, false)
 				for _, v in pairs(reg) do
 					reg._weaponData.walkspeed = walkspeed
 				end
@@ -1048,7 +1063,7 @@ local s,e = pcall(function()
 					return old_is_spotted(character)
 				end
 			end
-		end; function game_client:enableESPRainbow()
+	end; function game_client:enableESPRainbow()
 		task.spawn(function()
 			while getgenv()._esprainbowcolors do task.wait()
 				getgenv().esp.misc_layout.box.color = Color3.fromHSV((tick() % 5 / 5), 1, 1)
@@ -1062,7 +1077,22 @@ local s,e = pcall(function()
 				end
 			end
 		end)
-end;
+	end; function game_client:OriginalHB()
+		return {["Left Leg"]={radius=0.1,precedence=4,size=Vector3.new(1,2,1)},["Right Arm"]={radius=0.1,precedence=3,size=Vector3.new(1,2,1)},Head={radius=0.1,precedence=1,size=Vector3.new(1,1,1)},Torso={radius=0.1,precedence=2,size=Vector3.new(2,2,1)},["Right Leg"]={radius=0.1,precedence=4,size=Vector3.new(1,2,1)},["Left Arm"]={radius=0.1,precedence=3,size=Vector3.new(1,2,1)}}
+	end; function game_client:UpdateHB(target,size)
+		for _,v in pairs(HitBoxes) do
+			v[target].size = Vector3.new(size,size,size)
+			v[target].radius = size
+		end
+	end; function game_client:ReturnHB()
+		for i,v in pairs(HitBoxes)do
+			for i2,v2 in pairs(v)do
+				for i3 in pairs(v2)do
+					HitBoxes[i][i2][i3]=game_client:OriginalHB()[i2][i3]
+				end
+			end
+		end
+	end
 
 	--Other Functions
 	local function getServers()
@@ -1085,101 +1115,103 @@ end;
 		return game:GetService("HttpService"):JSONDecode(servers)
 	end
 
-	local Rejoin = coroutine.create(function()
-		local Success, ErrorMessage = pcall(function()
-			game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
-		end)
-	
-		if ErrorMessage and not Success then
-			warn(ErrorMessage)
-		end
-	end)
-
-	--Silent Aim | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
-
-	-- modules
-	local particle, replication, solve;
-	for _, v in next, getgc(true) do
-		if particle and replication and solve then
-			break;
-		elseif type(v) == "table" then
-			if rawget(v, "new") and rawget(v, "step") and rawget(v, "reset") then
-				particle = v;
-			elseif rawget(v, "getPlayerFromBodyPart") then
-				replication = v;
-			elseif rawget(v, "timehit") then
-				solve = debug.getupvalue(v.timehit, 2);
-			end
-		end
-	end
+	--Silent Aim new | Source: https://raw.githubusercontent.com/Spoorloos/scripts/main/silent_aim_v2.lua
 
 	local function isVisible(position, ignore)
 		return #camera:GetPartsObscuringTarget({ position }, ignore) == 0;
-	end;
-
-	local function calculateHitChance()
-		return (math.random() < getgenv().hitChance/100)
 	end
-	
-	local function getClosest(dir, origin, ignore)
-		local _angle = getgenv().fov or 180;
-		local _position, _entry;
-	
-		replication.operateOnAllEntries(function(player, entry)
-			local tpObject = entry and entry._thirdPersonObject;
-			local character = tpObject and tpObject._character;
-			if character and player.Team ~= Player.Team then
-				local part = character[getgenv().targetedPart == "Random" and
-					(math.random() < (getgenv().headChance or 0.5) and "Head" or "Torso") or
-					(getgenv().targetedPart or "Head")];
-	
-				local position = part.Position + (part.Size * 0.5 * (math.random() * 2 - 1)) * getgenv().randomization;
-				local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
 
-				if not (getgenv().visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and (getgenv()._slientaimbot or getgenv()._triggerbot) then
-					local dot = dir.Unit:Dot((position - origin).Unit);
-					local angle = 180 - (dot + 1) * 90;
-					local c1, c2 = Vector2.new(Player:GetMouse().X, Player:GetMouse().Y), Vector2.new(screenPos.X, screenPos.Y)
-					local magnitude = (c2-c1).Magnitude
-					if magnitude < _angle then
-						_angle = angle;
-						_position = position;
-						_entry = entry;
+	task.spawn(function()
+		-- variables
+
+		-- modules
+		local newParticle, solveQuartic, entryTable;
+		local garbageCollection = getgc(false);
+
+		for i = 1, #garbageCollection do
+			local object = garbageCollection[i];
+			local source, name = debug.info(object, "sn");
+			local script = string.match(source, "%w+$");
+
+			if name == "new" and script == "particle" then
+				newParticle = object;
+			elseif name == "solve" and script == "physics" then
+				solveQuartic = object;
+			elseif name == "getEntry" and script == "ReplicationInterface" then
+				entryTable = debug.getupvalue(object, 1);
+			end
+			
+			if newParticle and solveQuartic and entryTable then
+				break;
+			end
+		end
+
+		assert(newParticle and solveQuartic and entryTable, "Failed to find module(s)");
+
+		-- functions
+
+		local function getClosest(dir, origin, ignore)
+			local _angle = getgenv().fov or 180;
+			local _position, _entry;
+
+			for player, entry in next, entryTable do
+				local tpObject = entry and entry._thirdPersonObject;
+				local character = tpObject and tpObject._character;
+				if character and player.Team ~= Player.Team then
+					local part = character[getgenv().targetedPart == "Random" and
+						(math.random() < (getgenv().headChance or 0.5) and "Head" or "Torso") or
+						(getgenv().targetedPart or "Head")];
+
+					local position = part.Position + (part.Size * 0.5 * (math.random() * 2 - 1)) * (getgenv().randomization or 0);
+					local s, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
+
+					if not (getgenv().visibleCheck and not isVisible(position, ignore)) and not (getgenv().visibleCheck and not visible) and (getgenv()._slientaimbot or getgenv()._triggerbot) then
+						local dot = dir.Unit:Dot((position - origin).Unit);
+						local angle = 180 - (dot + 1) * 90;
+						if angle < _angle then
+							_angle = angle;
+							_position = position;
+							_entry = entry;
+						end
 					end
 				end
 			end
-		end);
-	
-		return _position, _entry;
-	end; local function trajectory(dir, velocity, accel, speed)
-		local t1, t2, t3, t4 = solve(
-			accel:Dot(accel) * 0.25,
-			accel:Dot(velocity),
-			accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
-			dir:Dot(velocity) * 2,
-			dir:Dot(dir));
-
-		local time = (t1>0 and t1) or (t2>0 and t2) or (t3>0 and t3) or t4;
-		local bullet = 0.5*accel*time + dir/time + velocity;
-		return bullet, time;
-	end; local old;
-	old = hookfunction(particle.new, function(args)
-		if debug.info(2, "n") == "fireRound" then
-			local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
-			if position and entry then
-				local index = table.find(debug.getstack(2), args.velocity);
-
-				args.velocity = trajectory(
-					position - args.visualorigin,
-					entry._velspring._p0,
-					-args.acceleration,
-					args.velocity.Magnitude);
-
-				debug.setstack(2, index, args.velocity);
-			end
+			return _position, _entry;
 		end
-		return old(args);
-	end);
+
+		local function getTrajectory(dir, velocity, accel, speed)
+			local r1, r2, r3, r4 = solveQuartic(
+				accel:Dot(accel) * 0.25,
+				accel:Dot(velocity),
+				accel:Dot(dir) + velocity:Dot(velocity) - speed^2,
+				dir:Dot(velocity) * 2,
+				dir:Dot(dir));
+
+			local time = (r1>0 and r1) or (r2>0 and r2) or (r3>0 and r3) or r4;
+			local bullet = dir/time + velocity + 0.5*accel*time;
+			return bullet, time;
+		end
+
+		-- hooks
+		local old;
+		old = hookfunction(newParticle, function(args)
+			if debug.info(2, "n") == "fireRound" then
+				local position, entry = getClosest(args.velocity, args.visualorigin, args.physicsignore);
+				if position and entry then
+					local index = table.find(debug.getstack(2), args.velocity);
+
+					args.velocity = getTrajectory(
+						position - args.visualorigin,
+						entry._velspring._p0,
+						-args.acceleration,
+						args.velocity.Magnitude);
+
+					debug.setstack(2, index, args.velocity);
+				end
+			end
+			return old(args);
+		end);
+	end)
 
 	--Rage Bot | Source: self made
 	
@@ -1191,7 +1223,7 @@ end;
 		end)
 		RunService.RenderStepped:Connect(function()
 			if getgenv()._triggerbot and game_client:inGame() and game_client:getActiveWeapon() ~= nil then
-				replication.operateOnAllEntries(function(player, entry)
+				game_client.replication_interface.operateOnAllEntries(function(player, entry)
 					local tpObject = entry and entry._thirdPersonObject;
 					local character = tpObject and tpObject._character;
 
@@ -1201,9 +1233,9 @@ end;
 						(getgenv().targetedPart or "Head")];
 
 						local position = part.Position;
-						local screenPos, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
+						local s, visible = workspace.CurrentCamera.WorldToScreenPoint(workspace.CurrentCamera, position)
 
-						if (isVisible(position, {game.Workspace.Terrain, game.Workspace.Ignore, game.Workspace.CurrentCamera, game.Workspace.Players}) and visible) and character and iswindowactive() then
+						if (isVisible(position, {game.Workspace.Terrain, game.Workspace.Ignore, game.Workspace.CurrentCamera, game.Workspace.Players}) and visible) and character and iswindowactive() and game_client:check_status(player) then
 							coroutine.wrap(function()
 								game_client.firearm_object.shoot(game_client:getActiveWeapon(), true)
 								task.wait(0.1)
@@ -1220,72 +1252,60 @@ end;
 
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua"))()
 
-	--Hitbox Extender | Source: self made - PATCHED
+	--Hitbox Expander New
 
-	--[[local hsize = 1
-	local htrans = 0
-	game:GetService("RunService").Stepped:Connect(function()
-		if getgenv()._hitboxext then
-			hsize = getgenv()._hextsize
-			htrans = getgenv()._hexttransparency
-		else
-			hsize = 1
-			htrans = 0
-		end
-		for i,v in next, workspace.Players:GetDescendants() do
-			if v:FindFirstChild("Head") and v:FindFirstChild("Torso") and not v:FindFirstChildWhichIsA("MeshPart") then
-				if getgenv()._hitbox == "Head" then
-					sethiddenproperty(v.Torso, "Massless", false)
-					v.Torso.Size = Vector3.new(1,1,1)
-					v.Torso.Mesh.Scale = Vector3.new(1,1,1)
-					v.Torso.BrickColor = BrickColor.new("Cashmere")
-					v.Torso.Transparency = 0
-				elseif getgenv()._hitbox == "Torso" then
-					sethiddenproperty(v.Head, "Massless", false)
-					v.Head.Size = Vector3.new(1,1,1)
-					v.Head.Mesh.Scale = Vector3.new(1,1,1)
-					v.Head.BrickColor = BrickColor.new("Cashmere")
-					v.Head.Transparency = 0
-				end
-				local s,e = pcall(function()
-					sethiddenproperty(v[getgenv()._hitbox], "Massless", true)
-					v[getgenv()._hitbox].CanCollide = false
-					v[getgenv()._hitbox].Transparency = htrans
-	
-					if getgenv()._hitbox == "Torso" then
-						v[getgenv()._hitbox].Shirt.Transparency = htrans
-						v[getgenv()._hitbox].Pant.Transparency = htrans
-					else
-						v.Torso.Shirt.Transparency = 0
-						v.Torso.Pant.Transparency = 0
+	task.spawn(function()
+		for _,v in pairs(getgc(true))do
+			if type(v)=="table"then
+				for i,c in pairs(v)do
+					if i=="Head"and type(c)=="table"and c.size then
+						HitBoxes[#HitBoxes+1] = v
 					end
-	
-					if v[getgenv()._hitbox].Size ~= Vector3.new(hsize,hsize,hsize) and v[getgenv()._hitbox].Mesh.Scale ~= Vector3.new(hsize,hsize,hsize) then
-						v[getgenv()._hitbox].Size = Vector3.new(hsize,hsize,hsize)
-						v[getgenv()._hitbox].Mesh.Scale = Vector3.new(hsize,hsize,hsize)
-					end
-					if getgenv()._hitboxext then
-						if getgenv()._hteamcolor and v[getgenv()._hitbox].Parent.Parent.Name == "Bright blue" then
-							v[getgenv()._hitbox].BrickColor = BrickColor.new("Bright blue")
-						else
-							v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
-						end
-						if getgenv()._hteamcolor and v[getgenv()._hitbox].Parent.Parent.Name == "Bright orange" then
-							v[getgenv()._hitbox].BrickColor = BrickColor.new("Bright orange")
-						else
-							v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
-						end
-					else
-						v[getgenv()._hitbox].BrickColor = BrickColor.new("Cashmere")
-					end
-					
-				end)
-				if not s and e then
-					warn(e)
 				end
 			end
 		end
-	end)]]
+		local GetEnemys = function()--simple ass get enemys
+			local players = {}
+			local characters = {}
+			local enemyteam
+			for _,v in pairs(game.Players:GetChildren()) do
+				if v.Team ~= game.Players.LocalPlayer.Team then
+					enemyteam = tostring(v.TeamColor)
+					players[#players+1] = v
+				end
+			end
+			if not enemyteam then
+				enemyteam = "Bright orange"
+				if game.Players.LocalPlayer.Team.Name == "Ghosts"then
+					enemyteam = "Bright blue"
+				end
+			end
+			for _,v in pairs(game.Workspace.Players[enemyteam]:GetChildren()) do
+				characters[#characters+1] = v
+			end
+			return{characters, players}
+		end
+		RunService.RenderStepped:Connect(function()
+			if getgenv()._hitboxext and game_client:inGame() then
+				for _,v in pairs(GetEnemys()[1]) do
+					warn(v[getgenv()._hitbox])
+					local cham = Instance.new("Part")
+					cham.Transparency = getgenv()._hexttransparency
+					cham.Size = Vector3.new(getgenv()._hextsize,getgenv()._hextsize,getgenv()._hextsize)
+					cham.Color = getgenv()._hextcolor or Color3.fromRGB(255,255,255)
+					cham.Material = Enum.Material.SmoothPlastic
+					cham.CanCollide = false
+					cham.CFrame = v[getgenv()._hitbox].CFrame
+					cham.Parent = v[getgenv()._hitbox]
+					coroutine.wrap(function()
+						game.RunService.RenderStepped:Wait()
+						cham:Destroy()
+					end)()
+				end
+			end
+		end)
+	end)
+
 
 	--Set Walkspeed | Source: self made
 
