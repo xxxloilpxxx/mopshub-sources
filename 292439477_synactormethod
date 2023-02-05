@@ -1,3 +1,24 @@
-local function findByName(t, name) for _, v in pairs(t) do if v.name == name then return v end end end
-local actor = findByName(getactors(), 'lol')
-syn.run_on_actor(actor, "loadstring(game:HttpGet('https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477'))()") 
+local runonactor = ((syn and syn.run_on_actor))
+local getactors = ((syn and getactors))
+local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
+local Notify = AkaliNotif.Notify;
+
+if runonactor and getactors and syn then
+    local function findByName(t, name) for _, v in pairs(t) do if v.name == name then return v end end end
+    local actor = findByName(getactors(), 'lol')
+    if not actor then
+        return Notify({
+            Title = "<font color='#ff0000'>Error</font>",
+            Description = "Unable to find the Phantom Forces Actor.<br /><br />Join our discord server for support: <font color='#7289da'>discord.gg/g4EGAwjUAK</font> (copied)",
+            Duration = 15,
+        })
+    end
+    syn.run_on_actor(actor, "loadstring(game:HttpGet('https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477'))()")
+else
+	Notify({
+		Title = "<font color='#0000ff'>Info</font>",
+		Description = "Loading non-synapse script for Phantom Forces.<br />This script version contains less features due to the actors.<br />",
+		Duration = 5,
+	})
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/292439477_nonsyn'))()
+end
