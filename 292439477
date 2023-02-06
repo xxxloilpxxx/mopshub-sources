@@ -957,10 +957,11 @@ local s,e = pcall(function()
 		if game_client.weapon_controller_interface.getController() then
 			local activeWeaponReg =  game_client.weapon_controller_interface.getController()._activeWeaponRegistry
 			for _, reg in pairs(activeWeaponReg) do
-				setreadonly(reg, false)
+				setreadonly(reg._weaponData, false)
 				for _, v in pairs(reg) do
 					reg._weaponData.walkspeed = walkspeed
 				end
+				setreadonly(reg._weaponData, true)
 			end
 		end
 	end; function game_client:isEnemy(character)
@@ -1016,7 +1017,7 @@ local s,e = pcall(function()
 		local player = game_client.replication_interface.getEntry(plr)
 		
 		if player then 
-			return player._alive 
+			return player._alive
 		end
 	end; function game_client:get_tool(plr)
 		local player = game_client.replication_interface.getEntry(plr)
