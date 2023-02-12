@@ -6,7 +6,6 @@ local s,e = pcall(function()
 		task.wait()
 	until game:IsLoaded()
 	getgenv().__mpho_1__loaded__ = true
-	
 	--MODULES
 	local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 	local Notify = AkaliNotif.Notify;
@@ -22,9 +21,8 @@ local s,e = pcall(function()
 		autoLoadConfigs = nil,
 	}
 	local fake_rep_object = nil
-	local Blacklisted = {"Flame", "SightMark", "SightMark2A", "Tip", "Trigger"}
 	local camera = workspace.CurrentCamera;
-
+	local Blacklisted = {"Flame", "SightMark", "SightMark2A", "Tip", "Trigger"}
 	--STUFF THAT NEEDS TO RUN AT EXECUTE
 	if isfile("/mopsHub/settings_phantomforces.mhs") then
 		local s,e = pcall(function()
@@ -61,7 +59,6 @@ local s,e = pcall(function()
 	getgenv()._hextsize = 5
 	getgenv()._hexttransparency = 0.5
 	getgenv()._hteamcolor = false
-
 	getgenv()._hitbox = "Head"
 
 	--CHECK GAME CLIENT PATCH
@@ -642,15 +639,6 @@ local s,e = pcall(function()
 			},
 			{
 				Function = "CreateSection",
-				Args = "━ Hitbox Extender ━"
-			},
-			{
-				Function = "CreateParagraph",
-				_envState = false,
-				Args = {Title = "Note:",Content = "Currently patched. :("}
-			},
-			{
-				Function = "CreateSection",
 				Args = "━ Gun Customization ━"
 			},
 			{
@@ -1123,8 +1111,6 @@ local s,e = pcall(function()
 	end
 
 	task.spawn(function()
-		-- variables
-
 		-- modules
 		local newParticle, solveQuartic, entryTable;
 		local garbageCollection = getgc(false);
@@ -1251,7 +1237,7 @@ local s,e = pcall(function()
 
 	--ESP | Source: https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua
 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/LURKLURKLURKLURKLURKLURKLURKLURK/pf/main/esp.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxloilpxxx/56u8vnbdfg3wrn-jfasd-6-/main/esp.lua"))()
 
 	--Hitbox Expander New
 
