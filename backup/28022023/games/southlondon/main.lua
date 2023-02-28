@@ -1,0 +1,257 @@
+--mopsHub South London 2 [RELEASE] | 2023
+--Written by mopsfl and delu/fraudgoat 
+-- clout  i love you honey boo 
+-- @copyrights MopsHUBNiggerf
+
+getactors = getactors
+getgenv = getgenv
+getrenv = getrenv
+syn = syn
+setreadonly = setreadonly
+hookmetamethod = hookmetamethod
+checkcaller = checkcaller
+writeclipboard = writeclipboard
+identifyexecutor = identifyexecutor
+rconsoleprint = rconsoleprint
+rconsoleclear = rconsoleclear
+rconsoleerr = rconsoleerr
+rconsoleinfo = rconsoleinfo
+rconsolename = rconsolename
+rconsolewarn = rconsolewarn
+hookfunction = hookfunction
+getgc = getgc
+Drawing = Drawing
+mousemoverel = mousemoverel
+getrawmetatable = getrawmetatable
+
+if writeclipboard then writeclipboard("discord.gg/g4EGAwjUAK") end
+repeat task.wait() until game:IsLoaded()
+
+--Modules
+local Notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))(); Notify = Notify.Notify
+
+--Variables
+
+local FileName = string.format("mopshub_%s", game.PlaceId)
+local ExecutorName, ExecutorVersion = identifyexecutor()
+local ScriptTitle = string.format("mopsHub - %s - %s", "South London 2", ExecutorName)
+
+local ScriptVersion = "1.0.0"
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local Camera = game:GetService("Workspace").CurrentCamera
+local Debris = game:GetService("Debris")
+
+local mopsHub = {
+    Settings = { _DEBUG = true },
+
+    Character_Modifications = { WalkSpeed = { Speed = 16 }, InfiniteJump = { Enabled = false, JumpHeight = 55 }, InfiniteStamina = { Enabled = false } },
+    Values = { InfiniteKarma = { Enabled = false } },
+
+    Functions = {},
+
+    Misc = {
+        gameRawMetatable = getrawmetatable(game),
+        oldIndex = nil,
+    },
+}
+
+getgenv()._WINDOW = { Tabs = {} }
+
+local UI = {
+    Tabs = {
+        "Player",
+        "Weapon",
+		"Visual",
+		"Character",
+		"Misc",
+		"Credits"
+    },
+    Functions = {
+        ["Player"] = {},
+        ["Weapon"] = {},
+        ["Visual"] = {},
+        ["Character"] = {},
+        ["Misc"] = {},
+        ["Settings"] = {},
+    },
+    Credits = {
+        [1] = {
+            Name = "Developers",
+            Content = {
+                { "ShyFlooo", "Lead Programmer" },
+                { "FraudGoat", "MopsHub Project Lead (Loves FNTCLOUT)" },
+            },
+        }
+    },
+}
+
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+local Window = Rayfield:CreateWindow({
+    Name = ScriptTitle,
+    LoadingTitle = ScriptTitle,
+    LoadingSubtitle = "by ShyFlooo & FraudGoat",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "/mopsHub/.config",
+        FileName = FileName
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = ScriptTitle,
+        Subtitle = "Key System",
+        Note = "discord.gg/g4EGAwjUAK",
+        FileName = ".mopshubkey",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = "delumadethisfree"
+    }
+})
+
+UI.Functions.Player = {
+    { Function = "CreateSection", Args = "━ Values ━" },
+    { Function = "CreateToggle", Args = { Name = "Infinite Karma", Flag = "_infkarma", CurrentValue = mopsHub.Character_Modifications.InfiniteStamina.Enabled, Callback = function(Value) mopsHub.Character_Modifications.InfiniteStamina.Enabled = Value end } },
+}
+
+UI.Functions.Character = {
+    { Function = "CreateSection", Args = "━ Character Modification ━" },
+    { Function = "CreateToggle", Args = { Name = "Infinite Stamina", Flag = "_infstamina", CurrentValue = mopsHub.Values.InfiniteKarma.Enabled, Callback = function(Value) mopsHub.Values.InfiniteKarma.Enabled = Value end } },
+}
+
+--UI Init (my ass automatic rayfield ui loader lol xd)
+do
+    local success, err = pcall(function()
+        for _, n in pairs(UI.Tabs) do
+            local w = Window:CreateTab(n)
+            getgenv()._WINDOW.Tabs[n] = w
+        end
+        for _, c in pairs(UI.Credits) do
+            local _c = ""
+            for _,v in pairs(c.Content) do
+                if #v[2] > 0 then
+                    _c = _c.."\n"..v[1].." - ".. v[2]
+                else
+                    _c = _c.."\n"..v[1]
+                end
+            end
+            getgenv()._WINDOW.Tabs["Credits"]:CreateSection(string.format("━ %s ━", c.Name))
+            getgenv()._WINDOW.Tabs["Credits"]:CreateParagraph({Title = c.Name, Content = _c})
+        end
+
+        for index, funcs in pairs(UI.Functions) do
+            if mopsHub.Settings._DEBUG then
+                rconsolewarn("[mopsHub UI Init]: Creating "..#funcs.." function(s) for ".. index.. "")
+            end
+            for i, func in pairs(funcs) do
+                if func.Function and func.Args then
+                    local Tab = getgenv()._WINDOW.Tabs[index]
+                    if Tab then
+                        pcall(function()
+                            local f,_s = func.Function, true
+                            if f == "CreateSection" then
+                                Tab:CreateSection(func.Args)
+                            elseif f == "CreateButton" then
+                                Tab:CreateButton(func.Args)
+                            elseif f == "CreateToggle" then
+                                Tab:CreateToggle(func.Args)
+                            elseif f == "CreateDropdown" then
+                                Tab:CreateDropdown(func.Args)
+                            elseif f == "CreateInput" then
+                                Tab:CreateInput(func.Args)
+                            elseif f == "CreateSlider" then
+                                Tab:CreateSlider(func.Args)
+                            elseif f == "CreateParagraph" then
+                                Tab:CreateParagraph(func.Args)
+                            elseif f == "CreateLabel" then
+                                Tab:CreateLabel(func.Args)
+                            elseif f == "CreateKeybind" then
+                                Tab:CreateKeybind(func.Args)
+                            elseif f == "CreateColorPicker" then
+                                Tab:CreateColorPicker(func.Args)
+                            else
+                                _s = false
+                            end;
+                            if mopsHub.Settings._DEBUG then
+                                if _s then
+                                    rconsoleinfo("[mopsHub UI Init]: Created "..tostring((func.Args.Flag and "function element".. func.Args.Flag) or "section element ["..func.Args:gsub('━','').."]").. " for ".. index.. " ["..string.gsub(func.Function, "Create", "").. "]")
+                                else
+                                    rconsoleerr("[mopsHub UI Init]: Invalid function [ "..tostring(func.Function).. " ] for [".. index .. "] index: ("..i..")")
+                                end
+                            end
+                        end)
+                    end
+                end
+            end
+        end
+    end)
+    if not success and err then
+        rconsoleerr(string.format("[mopsHub UI Init - Error]: Unexpected error occurred while initalizin the UI."))
+        rconsoleerr(string.format("Support: discord.gg/g4EGAwjUAK"))
+        rconsoleerr("Error: ".. err)
+        Window:Destroy()
+    end
+end
+
+mopsHub.Functions = {
+    spawnTask = function(f) return task.spawn(f) end,
+}
+
+--Values Hooks
+-- @CopyRight Delu2023
+
+mopsHub.Functions.spawnTask(function()
+    local mt = getrawmetatable(game)
+    local oldIndex = mt.__index
+    setreadonly(mt, false)
+    mt.__index = function (a,b)
+        if tostring(a) == "Stamina" and tostring(b) == "Value" and mopsHub.Character_Modifications.InfiniteStamina.Enabled then
+            --Stamina
+            return 100
+        elseif tostring(a) == "Karma" and tostring(b) == "Value" and mopsHub.Values.InfiniteKarma.Enabled then
+            --Karma
+            return math.huge
+        end
+        return oldIndex(a,b)
+    end
+    setreadonly(mt, true)
+end)
+
+
+
+-- scripts that need adding
+
+-- message all XD
+for _,v in pairs(game.Players:GetPlayers()) do
+    local ohString1 = "XD"
+    local ohInstance2 = v
+    game:GetService("ReplicatedStorage").Message:FireServer(ohString1, ohInstance2)
+end
+
+-- 
+
+for _,v in pairs(game.Players:GetPlayers()) do
+    local ohInstance1 = v
+    game:GetService("ReplicatedStorage").CreateMessages:FireServer(ohInstance1)
+end
+
+-- idk about that above one links to messages figure it out retard
+
+
+while task.wait() do
+    for _,v in pairs(game.Players:GetPlayers()) do
+        local ohInstance1 = v
+        local ohString2 = "Starting"
+
+        game:GetService("ReplicatedStorage").Call:FireServer(ohInstance1, ohString2)
+    end
+end
+
+-- this is loop call all XD, config it make it op and shit yeah ^^^
+
+-- these all 3 scripts needed adding uWuOwwO RAWR
