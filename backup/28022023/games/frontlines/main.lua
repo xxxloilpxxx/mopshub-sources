@@ -1,13 +1,4 @@
-local request = (syn and syn.request or request) or http_request
-if request then
-    local res = request({Url = "https://raw.githubusercontent.com/mopsfl/roblox-scripts/main/temp"})
-    if not res.Success then return game.Players.LocalPlayer:Kick() end
-else
-    return game.Players.LocalPlayer:Kick()
-end
-
---mopsHub SCRIPTNAME | 2023
---Written by DELU <- cant even script this faggot
+--mopsHub FRONTLINES | 2023
 
 getactors = getactors
 getgenv = getgenv
@@ -148,18 +139,17 @@ local UI = {
         [1] = {
             Name = "Developers",
             Content = {
-                { "ShyFlooo", "Lead Programmer" },
-                { "Delu", "Programmer" },
+                { "ShyShai", "Lead Programmer" }
             },
         }
     },
 }
 
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = ScriptTitle,
     LoadingTitle = ScriptTitle,
-    LoadingSubtitle = "ShyFlooo",
+    LoadingSubtitle = "ShyShai",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "/mopsHub/.config",
