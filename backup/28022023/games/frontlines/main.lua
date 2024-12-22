@@ -1,42 +1,5 @@
 --mopsHub FRONTLINES | 2023
 
-getactors = getactors
-getgenv = getgenv
-getrenv = getrenv
-syn = syn
-setreadonly = setreadonly
-hookmetamethod = hookmetamethod
-checkcaller = checkcaller
-writeclipboard = writeclipboard
-identifyexecutor = identifyexecutor
-rconsoleprint = rconsoleprint
-rconsoleclear = rconsoleclear
-rconsoleerr = rconsoleerr
-rconsoleinfo = rconsoleinfo
-rconsolename = rconsolename
-rconsolewarn = rconsolewarn
-hookfunction = hookfunction
-printconsole = printconsole
-getgc = getgc
-Drawing = Drawing
-mousemoverel = mousemoverel
-getrawmetatable = getrawmetatable
-islclosure = islclosure
-getupvalues = getupvalues
-setupvalue = setupvalue
-getinfo = getinfo
-is_synapse_function = is_synapse_function
-iskrnlclosure = iskrnlclosure
-isourclosure = isourclosure
-queue_on_teleport = queue_on_teleport
-fluxus = fluxus
-isactor = isactor
-isfile = isfile
-writefile = writefile
-readfile = readfile
-LRM_LinkedDiscordID = LRM_LinkedDiscordID
-LRM_TotalExecutions = LRM_TotalExecutions
-
 if writeclipboard then writeclipboard("discord.gg/g4EGAwjUAK") end
 repeat task.wait() until game:IsLoaded()
 
